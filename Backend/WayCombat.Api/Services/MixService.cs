@@ -101,14 +101,46 @@ namespace WayCombat.Api.Services
 
         public async Task<bool> UpdateAsync(int id, UpdateMixDto updateMixDto)
         {
-            var mix = await _context.Mixes.FindAsync(id);
+            var mix = await _context.Mixes
+                .Include(m => m.ArchivoMixes)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            
             if (mix == null)
                 return false;
 
+            // Actualizar datos básicos del Mix
             mix.Titulo = updateMixDto.Titulo;
             mix.Descripcion = updateMixDto.Descripcion;
             mix.Activo = updateMixDto.Activo;
             mix.FechaActualizacion = DateTime.UtcNow;
+
+            // Actualizar archivos si se proporcionaron
+            if (updateMixDto.Archivos != null)
+            {
+                foreach (var archivoDto in updateMixDto.Archivos)
+                {
+                    var archivo = mix.ArchivoMixes.FirstOrDefault(a => a.Id == archivoDto.Id);
+                    if (archivo != null)
+                    {
+                        archivo.Tipo = archivoDto.Tipo;
+                        archivo.Nombre = archivoDto.Nombre;
+                        archivo.URL = archivoDto.URL;
+                        archivo.MimeType = archivoDto.MimeType;
+                        archivo.TamañoBytes = archivoDto.TamañoBytes;
+                        archivo.Orden = archivoDto.Orden;
+                        archivo.Activo = archivoDto.Activo;
+                        archivo.FechaActualizacion = DateTime.UtcNow;
+                    }
+                }
+                
+                // Recalcular el tamaño total del Mix
+                if (mix.ArchivoMixes.Any())
+                {
+                    mix.TamañoBytes = mix.ArchivoMixes
+                        .Where(a => a.Activo)
+                        .Sum(a => a.TamañoBytes ?? 0);
+                }
+            }
 
             await _context.SaveChangesAsync();
             return true;
@@ -144,6 +176,23 @@ namespace WayCombat.Api.Services
             };
 
             _context.ArchivoMixes.Add(archivo);
+            
+            // Actualizar el tamaño total del Mix
+            var mix = await _context.Mixes.FindAsync(mixId);
+            if (mix != null)
+            {
+                var totalTamaño = await _context.ArchivoMixes
+                    .Where(a => a.MixId == mixId && a.Activo)
+                    .SumAsync(a => a.TamañoBytes ?? 0);
+                
+                // Agregar el tamaño del nuevo archivo
+                totalTamaño += createArchivoDto.TamañoBytes ?? 0;
+                
+                mix.TamañoBytes = totalTamaño;
+                mix.FechaActualizacion = DateTime.UtcNow;
+                _context.Mixes.Update(mix);
+            }
+            
             await _context.SaveChangesAsync();
 
             return MapArchivoToDto(archivo);

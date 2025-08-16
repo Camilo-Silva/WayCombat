@@ -224,12 +224,16 @@ export class MixDetalleComponent implements OnInit {
 
   getAudios(): ArchivoMix[] {
     if (!this.mix) return [];
-    return this.mix.archivos.filter(archivo => archivo.tipo === 'Audio' && archivo.activo);
+    return this.mix.archivos.filter(archivo => 
+      archivo.tipo && archivo.tipo.toLowerCase() === 'audio' && archivo.activo
+    );
   }
 
   getVideos(): ArchivoMix[] {
     if (!this.mix) return [];
-    return this.mix.archivos.filter(archivo => archivo.tipo === 'Video' && archivo.activo);
+    return this.mix.archivos.filter(archivo => 
+      archivo.tipo && archivo.tipo.toLowerCase() === 'video' && archivo.activo
+    );
   }
 
   // Método para obtener URL procesada para reproductores HTML

@@ -36,9 +36,7 @@ export class MixService {
 
   getMixById(mixId: number): Observable<Mix> {
     return this.http.get<Mix>(`${this.apiUrl}/mixs/${mixId}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: this.authService.getAuthHeaders()
     });
   }
 

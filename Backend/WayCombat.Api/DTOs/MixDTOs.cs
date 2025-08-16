@@ -32,6 +32,20 @@ namespace WayCombat.Api.DTOs
         public string? Descripcion { get; set; }
 
         public bool Activo { get; set; }
+        
+        public List<UpdateArchivoMixDto>? Archivos { get; set; }
+    }
+
+    public class UpdateArchivoMixDto
+    {
+        public int Id { get; set; }
+        public string Tipo { get; set; } = string.Empty;
+        public string Nombre { get; set; } = string.Empty;
+        public string URL { get; set; } = string.Empty;
+        public string? MimeType { get; set; }
+        public long? TamañoBytes { get; set; }
+        public int Orden { get; set; }
+        public bool Activo { get; set; }
     }
 
     public class ArchivoMixDto

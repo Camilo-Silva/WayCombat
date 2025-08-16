@@ -14,6 +14,8 @@ namespace WayCombat.Api.Models
         [StringLength(1000)]
         public string? Descripcion { get; set; }
 
+        public long? TamañoBytes { get; set; }
+
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
         public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;

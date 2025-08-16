@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { MixService } from '../../services/mix.service';
 import { Usuario } from '../../models/auth.models';
-import { Mix, ArchivoMix, CreateMixRequest, UpdateMixRequest, CreateArchivoMixRequest } from '../../models/mix.models';
+import { Mix, ArchivoMix, CreateMixRequest, UpdateMixRequest, CreateArchivoMixRequest, UpdateArchivoMixRequest } from '../../models/mix.models';
 
 interface UsuarioMixPermiso {
   usuarioId: number;
@@ -218,10 +218,25 @@ export class AdminDashboardComponent implements OnInit {
       
       if (this.editingMixId) {
         // Actualizar mix existente
+        const editingMix = this.mixs.find(m => m.id === this.editingMixId);
+        
+        // Obtener los datos de archivos del formulario (con los cambios del usuario)
+        const archivosFromForm = formValue.archivos || [];
+        
         const updateData: UpdateMixRequest = {
           titulo: formValue.titulo,
           descripcion: formValue.descripcion,
-          activo: true // Por defecto activo al actualizar
+          activo: true, // Por defecto activo al actualizar
+          archivos: archivosFromForm.map((archivo: any, index: number) => ({
+            id: editingMix?.archivos[index]?.id || 0, // Usar el ID original del archivo
+            tipo: archivo.tipo, // Usar el tipo del formulario (puede haber cambiado)
+            nombre: archivo.nombre,
+            url: archivo.url,
+            mimeType: archivo.tipo === 'audio' ? 'audio/mpeg' : 'video/mp4', // Actualizar mimeType según el tipo
+            tamañoBytes: editingMix?.archivos[index]?.tamañoBytes,
+            orden: index + 1,
+            activo: true
+          }))
         };
         
         this.mixService.updateMix(this.editingMixId, updateData).subscribe({

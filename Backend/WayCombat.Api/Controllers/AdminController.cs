@@ -120,6 +120,21 @@ namespace WayCombat.Api.Controllers
             try
             {
                 var mix = await _mixService.CreateAsync(createMixDto);
+                
+                // Obtener el ID del usuario admin actual
+                var userIdClaim = User.FindFirst("userId");
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int adminUserId))
+                {
+                    // Asignar automáticamente acceso al admin que creó el mix
+                    var createAccesoRequest = new CreateAccesoMixRequest
+                    {
+                        UsuarioId = adminUserId,
+                        MixId = mix.Id
+                    };
+                    
+                    await _mixService.CreateAccesoAsync(createAccesoRequest);
+                }
+                
                 return CreatedAtAction(nameof(GetMix), new { id = mix.Id }, mix);
             }
             catch (Exception ex)
@@ -267,6 +282,49 @@ namespace WayCombat.Api.Controllers
             {
                 await _mixService.DeleteAccesoAsync(usuarioId, mixId);
                 return Ok(new { message = "Acceso eliminado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
+        [HttpPost("fix-mix-access")]
+        public async Task<ActionResult> FixMixAccess()
+        {
+            try
+            {
+                // Obtener usuario admin
+                var adminUser = await _usuarioService.GetByEmailAsync("admin@waycombat.com");
+                if (adminUser == null)
+                {
+                    return BadRequest(new { message = "Usuario admin no encontrado" });
+                }
+
+                // Crear accesos para Mixes 5 y 6
+                var mixIds = new[] { 5, 6 };
+                var results = new List<string>();
+
+                foreach (var mixId in mixIds)
+                {
+                    try
+                    {
+                        var request = new CreateAccesoMixRequest
+                        {
+                            UsuarioId = adminUser.Id,
+                            MixId = mixId
+                        };
+                        
+                        await _mixService.CreateAccesoAsync(request);
+                        results.Add($"Acceso creado para Mix {mixId}");
+                    }
+                    catch (Exception ex)
+                    {
+                        results.Add($"Error en Mix {mixId}: {ex.Message}");
+                    }
+                }
+
+                return Ok(new { message = "Proceso completado", results });
             }
             catch (Exception ex)
             {

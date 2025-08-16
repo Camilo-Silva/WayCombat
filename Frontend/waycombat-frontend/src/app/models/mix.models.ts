@@ -29,6 +29,18 @@ export interface UpdateMixRequest {
   titulo: string;
   descripcion?: string;
   activo: boolean;
+  archivos?: UpdateArchivoMixRequest[];
+}
+
+export interface UpdateArchivoMixRequest {
+  id: number;
+  tipo: string;
+  nombre: string;
+  url: string;
+  mimeType?: string;
+  tamañoBytes?: number;
+  orden: number;
+  activo: boolean;
 }
 
 export interface CreateArchivoMixRequest {
