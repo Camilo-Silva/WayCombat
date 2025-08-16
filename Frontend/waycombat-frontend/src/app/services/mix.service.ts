@@ -53,31 +53,31 @@ export class MixService {
 
   // Métodos de administración (solo para admins)
   createMix(mix: CreateMixRequest): Observable<Mix> {
-    return this.http.post<Mix>(`${this.apiUrl}/admin/mixs`, mix, {
+    return this.http.post<Mix>(`${this.apiUrl}/mixs`, mix, {
       headers: this.authService.getAuthHeaders()
     });
   }
 
   updateMix(id: number, mix: UpdateMixRequest): Observable<any> {
-    return this.http.put(`${this.apiUrl}/admin/mixs/${id}`, mix, {
+    return this.http.put(`${this.apiUrl}/mixs/${id}`, mix, {
       headers: this.authService.getAuthHeaders()
     });
   }
 
   deleteMix(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/admin/mixs/${id}`, {
+    return this.http.delete(`${this.apiUrl}/mixs/${id}`, {
       headers: this.authService.getAuthHeaders()
     });
   }
 
   addArchivo(mixId: number, archivo: CreateArchivoMixRequest): Observable<ArchivoMix> {
-    return this.http.post<ArchivoMix>(`${this.apiUrl}/admin/mixs/${mixId}/archivos`, archivo, {
+    return this.http.post<ArchivoMix>(`${this.apiUrl}/mixs/${mixId}/archivos`, archivo, {
       headers: this.authService.getAuthHeaders()
     });
   }
 
   deleteArchivo(mixId: number, archivoId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/admin/mixs/${mixId}/archivos/${archivoId}`, {
+    return this.http.delete(`${this.apiUrl}/mixs/${mixId}/archivos/${archivoId}`, {
       headers: this.authService.getAuthHeaders()
     });
   }

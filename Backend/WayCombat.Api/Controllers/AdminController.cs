@@ -8,7 +8,7 @@ namespace WayCombat.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public class AdminController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -99,6 +99,20 @@ namespace WayCombat.Api.Controllers
         #endregion
 
         #region Gestión de Mixes
+
+        [HttpGet("mixs")]
+        public async Task<ActionResult<List<MixDto>>> GetAllMixs()
+        {
+            try
+            {
+                var mixs = await _mixService.GetAllAsync();
+                return Ok(mixs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
 
         [HttpPost("mixs")]
         public async Task<ActionResult<MixDto>> CreateMix(CreateMixDto createMixDto)

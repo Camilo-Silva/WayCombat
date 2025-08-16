@@ -2,24 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
+import { MixService } from './mix.service';
 import { Usuario } from '../models/auth.models';
-
-interface ArchivoMix {
-  id?: number;
-  nombre: string;
-  url: string;
-  tipo: 'audio' | 'video';
-  descripcion?: string;
-}
-
-interface Mix {
-  id?: number;
-  titulo: string;
-  descripcion: string;
-  archivos: ArchivoMix[];
-  fechaCreacion?: Date;
-  activo: boolean;
-}
+import { Mix, ArchivoMix, CreateMixRequest } from '../models/mix.models';
 
 interface UsuarioMixPermiso {
   usuarioId: number;
@@ -27,18 +12,16 @@ interface UsuarioMixPermiso {
   activo: boolean;
 }
 
-interface CreateMixRequest {
-  titulo: string;
-  descripcion: string;
+interface AccesoMixDto {
+  id: number;
+  usuarioId: number;
+  mixId: number;
+  nombreUsuario: string;
+  emailUsuario: string;
+  tituloMix: string;
+  fechaAcceso: Date;
+  fechaExpiracion?: Date;
   activo: boolean;
-  archivos: ArchivoMix[];
-}
-
-interface UpdateMixRequest {
-  titulo: string;
-  descripcion: string;
-  activo: boolean;
-  archivos: ArchivoMix[];
 }
 
 @Injectable({
@@ -49,21 +32,28 @@ export class AdminService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private mixService: MixService
   ) { }
 
   // ====== GESTIÓN DE MIXS ======
   
   async getMixs(): Promise<Mix[]> {
     try {
+      console.log('🔍 AdminService: Intentando obtener mixs desde:', `${this.apiUrl}/admin/mixs`);
+      console.log('🔍 AdminService: Headers:', this.authService.getAuthHeaders());
+      
       const response = await firstValueFrom(
         this.http.get<Mix[]>(`${this.apiUrl}/admin/mixs`, {
           headers: this.authService.getAuthHeaders()
         })
       );
+      
+      console.log('✅ AdminService: Mixs obtenidos exitosamente:', response);
       return response;
     } catch (error) {
-      console.error('Error getting mixs:', error);
+      console.error('❌ AdminService: Error getting mixs:', error);
+      console.error('❌ AdminService: Cayendo a datos mock');
       // Retornar datos de ejemplo por ahora
       return this.getMockMixs();
     }
@@ -82,13 +72,16 @@ export class AdminService {
       // Simular creación exitosa por ahora
       return {
         id: Date.now(),
-        ...mixData,
-        fechaCreacion: new Date()
+        titulo: mixData.titulo,
+        descripcion: mixData.descripcion,
+        fechaCreacion: new Date(),
+        activo: true,
+        archivos: []
       };
     }
   }
 
-  async updateMix(mixId: number, mixData: UpdateMixRequest): Promise<Mix> {
+  async updateMix(mixId: number, mixData: CreateMixRequest): Promise<Mix> {
     try {
       const response = await firstValueFrom(
         this.http.put<Mix>(`${this.apiUrl}/admin/mixs/${mixId}`, mixData, {
@@ -101,8 +94,11 @@ export class AdminService {
       // Simular actualización exitosa por ahora
       return {
         id: mixId,
-        ...mixData,
-        fechaCreacion: new Date()
+        titulo: mixData.titulo,
+        descripcion: mixData.descripcion,
+        fechaCreacion: new Date(),
+        activo: true,
+        archivos: []
       };
     }
   }
@@ -116,25 +112,11 @@ export class AdminService {
       );
     } catch (error) {
       console.error('Error deleting mix:', error);
-      // Simular eliminación exitosa por ahora
-    }
-  }
-
-  async toggleMixActive(mixId: number): Promise<void> {
-    try {
-      await firstValueFrom(
-        this.http.patch(`${this.apiUrl}/admin/mixs/${mixId}/toggle-active`, {}, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
-    } catch (error) {
-      console.error('Error toggling mix active:', error);
-      // Simular toggle exitoso por ahora
     }
   }
 
   // ====== GESTIÓN DE USUARIOS ======
-  
+
   async getUsuarios(): Promise<Usuario[]> {
     try {
       const response = await firstValueFrom(
@@ -145,118 +127,190 @@ export class AdminService {
       return response;
     } catch (error) {
       console.error('Error getting usuarios:', error);
-      // Retornar datos de ejemplo por ahora
       return this.getMockUsuarios();
     }
   }
 
-  // ====== GESTIÓN DE PERMISOS ======
-  
-  async getPermisos(): Promise<UsuarioMixPermiso[]> {
+  async createUsuario(userData: any): Promise<Usuario> {
     try {
       const response = await firstValueFrom(
-        this.http.get<UsuarioMixPermiso[]>(`${this.apiUrl}/admin/permisos`, {
+        this.http.post<Usuario>(`${this.apiUrl}/admin/usuarios`, userData, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+      return response;
+    } catch (error) {
+      console.error('Error creating usuario:', error);
+      throw error;
+    }
+  }
+
+  async updateUsuario(userId: number, userData: any): Promise<Usuario> {
+    try {
+      const response = await firstValueFrom(
+        this.http.put<Usuario>(`${this.apiUrl}/admin/usuarios/${userId}`, userData, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+      return response;
+    } catch (error) {
+      console.error('Error updating usuario:', error);
+      throw error;
+    }
+  }
+
+  async deleteUsuario(userId: number): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.delete(`${this.apiUrl}/admin/usuarios/${userId}`, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+    } catch (error) {
+      console.error('Error deleting usuario:', error);
+      throw error;
+    }
+  }
+
+  // ====== GESTIÓN DE PERMISOS ======
+
+  async getAccesosMixes(): Promise<AccesoMixDto[]> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<AccesoMixDto[]>(`${this.apiUrl}/admin/accesos`, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+      return response;
+    } catch (error) {
+      console.error('Error getting accesos:', error);
+      return this.getMockAccesos();
+    }
+  }
+
+  async assignMixToUser(usuarioId: number, mixId: number): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post(`${this.apiUrl}/admin/accesos`, {
+          usuarioId,
+          mixId,
+          activo: true
+        }, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+    } catch (error) {
+      console.error('Error assigning mix to user:', error);
+      throw error;
+    }
+  }
+
+  async removeMixFromUser(usuarioId: number, mixId: number): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.delete(`${this.apiUrl}/admin/accesos/${usuarioId}/${mixId}`, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+    } catch (error) {
+      console.error('Error removing mix from user:', error);
+      throw error;
+    }
+  }
+
+  async getPermisos(): Promise<any[]> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<any[]>(`${this.apiUrl}/admin/permisos`, {
           headers: this.authService.getAuthHeaders()
         })
       );
       return response;
     } catch (error) {
       console.error('Error getting permisos:', error);
-      // Retornar datos de ejemplo por ahora
-      return this.getMockPermisos();
+      return [];
     }
   }
 
   async toggleUsuarioMixPermiso(usuarioId: number, mixId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post(`${this.apiUrl}/admin/permisos/toggle`, 
-          { usuarioId, mixId }, 
-          {
-            headers: this.authService.getAuthHeaders()
-          }
-        )
-      );
-    } catch (error) {
-      console.error('Error toggling permiso:', error);
-      // Simular toggle exitoso por ahora
-    }
-  }
-
-  async assignMixToUsuario(usuarioId: number, mixId: number): Promise<void> {
-    try {
-      await firstValueFrom(
-        this.http.post(`${this.apiUrl}/admin/permisos/assign`, 
-          { usuarioId, mixId }, 
-          {
-            headers: this.authService.getAuthHeaders()
-          }
-        )
-      );
-    } catch (error) {
-      console.error('Error assigning mix to usuario:', error);
-    }
-  }
-
-  async removeMixFromUsuario(usuarioId: number, mixId: number): Promise<void> {
-    try {
-      await firstValueFrom(
-        this.http.delete(`${this.apiUrl}/admin/permisos/${usuarioId}/${mixId}`, {
+        this.http.post(`${this.apiUrl}/admin/permisos/toggle`, {
+          usuarioId,
+          mixId
+        }, {
           headers: this.authService.getAuthHeaders()
         })
       );
     } catch (error) {
-      console.error('Error removing mix from usuario:', error);
+      console.error('Error toggling permiso:', error);
+      throw error;
     }
   }
 
-  // ====== DATOS DE EJEMPLO (Mock) ======
-  
+  // ====== DATOS MOCK ======
+
   private getMockMixs(): Mix[] {
     return [
       {
         id: 1,
         titulo: 'Mix Combat Básico',
-        descripcion: 'Mix introductorio para principiantes con movimientos básicos',
-        activo: true,
+        descripcion: 'Entrenamiento básico de combate con técnicas fundamentales',
         fechaCreacion: new Date('2024-01-15'),
+        activo: true,
         archivos: [
           {
             id: 1,
+            mixId: 1,
             nombre: 'Mix_Basico_Audio.mp3',
             url: 'https://drive.google.com/file/d/1abc123def456/view',
-            tipo: 'audio',
-            descripcion: 'Audio principal del mix básico'
+            tipo: 'Audio',
+            mimeType: 'audio/mpeg',
+            orden: 1,
+            activo: true,
+            fechaCreacion: new Date('2024-01-15')
           },
           {
             id: 2,
+            mixId: 1,
             nombre: 'Tutorial_Movimientos_Basicos.mp4',
-            url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            tipo: 'video',
-            descripcion: 'Video tutorial de movimientos básicos'
+            url: 'https://drive.google.com/file/d/2def456ghi789/view',
+            tipo: 'Video',
+            mimeType: 'video/mp4',
+            orden: 2,
+            activo: true,
+            fechaCreacion: new Date('2024-01-15')
           }
         ]
       },
       {
         id: 2,
         titulo: 'Mix Combat Avanzado',
-        descripcion: 'Mix para estudiantes avanzados con combinaciones complejas',
+        descripcion: 'Entrenamiento avanzado con técnicas de combate especializado',
+        fechaCreacion: new Date('2024-02-10'),
         activo: true,
-        fechaCreacion: new Date('2024-02-01'),
         archivos: [
           {
             id: 3,
+            mixId: 2,
             nombre: 'Mix_Avanzado_Audio.mp3',
-            url: 'https://drive.google.com/file/d/1def456ghi789/view',
-            tipo: 'audio',
-            descripcion: 'Audio del mix avanzado'
+            url: 'https://drive.google.com/file/d/3ghi789jkl012/view',
+            tipo: 'Audio',
+            mimeType: 'audio/mpeg',
+            orden: 1,
+            activo: true,
+            fechaCreacion: new Date('2024-02-10')
           },
           {
             id: 4,
+            mixId: 2,
             nombre: 'Coreografia_Avanzada.mp4',
-            url: 'https://drive.google.com/file/d/1ghi789jkl012/view',
-            tipo: 'video',
-            descripcion: 'Video de coreografía avanzada'
+            url: 'https://drive.google.com/file/d/4jkl012mno345/view',
+            tipo: 'Video',
+            mimeType: 'video/mp4',
+            orden: 2,
+            activo: true,
+            fechaCreacion: new Date('2024-02-10')
           }
         ]
       }
@@ -267,33 +321,61 @@ export class AdminService {
     return [
       {
         id: 1,
-        nombre: 'Admin',
+        nombre: 'Admin Principal',
         email: 'admin@waycombat.com',
-        rol: 'Admin',
+        rol: 'admin',
         fechaCreacion: new Date('2024-01-01')
       },
       {
         id: 2,
-        nombre: 'Juan Pérez',
-        email: 'juan@email.com',
-        rol: 'Usuario',
-        fechaCreacion: new Date('2024-01-15')
+        nombre: 'Carlos Rodriguez',
+        email: 'carlos@email.com',
+        rol: 'usuario',
+        fechaCreacion: new Date('2024-01-10')
       },
       {
         id: 3,
-        nombre: 'María García',
+        nombre: 'María González',
         email: 'maria@email.com',
-        rol: 'Usuario',
-        fechaCreacion: new Date('2024-02-01')
+        rol: 'usuario',
+        fechaCreacion: new Date('2024-01-15')
       }
     ];
   }
 
-  private getMockPermisos(): UsuarioMixPermiso[] {
+  private getMockAccesos(): AccesoMixDto[] {
     return [
-      { usuarioId: 2, mixId: 1, activo: true },   // Juan tiene acceso al Mix Básico
-      { usuarioId: 3, mixId: 1, activo: true },   // María tiene acceso al Mix Básico
-      { usuarioId: 3, mixId: 2, activo: true },   // María tiene acceso al Mix Avanzado
+      {
+        id: 1,
+        usuarioId: 2,
+        mixId: 1,
+        nombreUsuario: 'Carlos Rodriguez',
+        emailUsuario: 'carlos@email.com',
+        tituloMix: 'Mix Combat Básico',
+        fechaAcceso: new Date('2024-01-20'),
+        activo: true
+      },
+      {
+        id: 2,
+        usuarioId: 3,
+        mixId: 1,
+        nombreUsuario: 'María González',
+        emailUsuario: 'maria@email.com',
+        tituloMix: 'Mix Combat Básico',
+        fechaAcceso: new Date('2024-01-22'),
+        fechaExpiracion: new Date('2024-03-22'),
+        activo: true
+      },
+      {
+        id: 3,
+        usuarioId: 2,
+        mixId: 2,
+        nombreUsuario: 'Carlos Rodriguez',
+        emailUsuario: 'carlos@email.com',
+        tituloMix: 'Mix Combat Avanzado',
+        fechaAcceso: new Date('2024-02-15'),
+        activo: true
+      }
     ];
   }
 }

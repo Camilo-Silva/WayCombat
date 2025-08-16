@@ -5,24 +5,9 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } fr
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
+import { MixService } from '../../services/mix.service';
 import { Usuario } from '../../models/auth.models';
-
-interface ArchivoMix {
-  id?: number;
-  nombre: string;
-  url: string;
-  tipo: 'audio' | 'video';
-  descripcion?: string;
-}
-
-interface Mix {
-  id?: number;
-  titulo: string;
-  descripcion: string;
-  archivos: ArchivoMix[];
-  fechaCreacion?: Date;
-  activo: boolean;
-}
+import { Mix, ArchivoMix, CreateMixRequest, UpdateMixRequest, CreateArchivoMixRequest } from '../../models/mix.models';
 
 interface UsuarioMixPermiso {
   usuarioId: number;
@@ -40,6 +25,7 @@ interface UsuarioMixPermiso {
 export class AdminDashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private adminService = inject(AdminService);
+  private mixService = inject(MixService);
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
 
@@ -96,35 +82,53 @@ export class AdminDashboardComponent implements OnInit {
 
   async loadMixs(): Promise<void> {
     try {
-      // Simulamos datos por ahora
-      this.mixs = [
-        {
-          id: 1,
-          titulo: 'Mix de Prueba 1',
-          descripcion: 'Descripción del primer mix',
-          activo: true,
-          fechaCreacion: new Date(),
-          archivos: [
-            {
-              id: 1,
-              nombre: 'Audio Track 1.mp3',
-              url: 'https://drive.google.com/file/d/1abc123/view',
-              tipo: 'audio',
-              descripcion: 'Pista principal del mix'
-            },
-            {
-              id: 2,
-              nombre: 'Video Tutorial 1.mp4',
-              url: 'https://www.youtube.com/watch?v=xyz789',
-              tipo: 'video',
-              descripcion: 'Video tutorial del movimiento'
-            }
-          ]
-        }
-      ];
+      console.log('🔍 AdminDashboard: Cargando mixs desde adminService...');
+      // Cargar TODOS los mixs desde el admin service
+      this.mixs = await this.adminService.getMixs();
+      console.log('✅ AdminDashboard: Mixs cargados:', this.mixs);
     } catch (error) {
-      console.error('Error loading mixs:', error);
+      console.error('❌ AdminDashboard: Error loading mixs:', error);
+      this.loadMockMixs();
     }
+  }
+
+  private loadMockMixs(): void {
+    // Datos mock para desarrollo
+    this.mixs = [
+      {
+        id: 1,
+        titulo: 'Mix Principiantes',
+        descripcion: 'Primer mix para estudiantes',
+        fechaCreacion: new Date(),
+        activo: true,
+        archivos: [
+          {
+            id: 1,
+            mixId: 1,
+            nombre: 'track1.mp3',
+            url: 'https://drive.google.com/file/d/example1',
+            tipo: 'Audio',
+            mimeType: 'audio/mpeg',
+            tamañoBytes: 5242880,
+            orden: 1,
+            fechaCreacion: new Date(),
+            activo: true
+          },
+          {
+            id: 2,
+            mixId: 1,
+            nombre: 'video1.mp4',
+            url: 'https://drive.google.com/file/d/example2',
+            tipo: 'Video',
+            mimeType: 'video/mp4',
+            tamañoBytes: 52428800,
+            orden: 2,
+            fechaCreacion: new Date(),
+            activo: true
+          }
+        ]
+      }
+    ];
   }
 
   async loadUsuarios(): Promise<void> {
@@ -210,23 +214,95 @@ export class AdminDashboardComponent implements OnInit {
 
     this.isLoading = true;
     try {
-      const mixData = this.mixForm.value;
+      const formValue = this.mixForm.value;
       
       if (this.editingMixId) {
         // Actualizar mix existente
-        await this.adminService.updateMix(this.editingMixId, mixData);
+        const updateData: UpdateMixRequest = {
+          titulo: formValue.titulo,
+          descripcion: formValue.descripcion,
+          activo: true // Por defecto activo al actualizar
+        };
+        
+        this.mixService.updateMix(this.editingMixId, updateData).subscribe({
+          next: () => {
+            console.log('Mix actualizado exitosamente');
+            this.loadMixs();
+            this.cancelEdit();
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Error actualizando mix:', error);
+            this.isLoading = false;
+          }
+        });
       } else {
         // Crear nuevo mix
-        await this.adminService.createMix(mixData);
-      }
+        const createMixData: CreateMixRequest = {
+          titulo: formValue.titulo,
+          descripcion: formValue.descripcion
+        };
 
-      await this.loadMixs();
-      this.cancelEdit();
+        this.mixService.createMix(createMixData).subscribe({
+          next: (newMix) => {
+            console.log('Mix creado exitosamente:', newMix);
+            
+            // Crear archivos del mix
+            const archivos = formValue.archivos || [];
+            if (archivos.length > 0) {
+              this.createMixArchivos(newMix.id, archivos);
+            } else {
+              this.loadMixs();
+              this.cancelEdit();
+              this.isLoading = false;
+            }
+          },
+          error: (error) => {
+            console.error('Error creando mix:', error);
+            this.isLoading = false;
+          }
+        });
+      }
     } catch (error) {
       console.error('Error saving mix:', error);
-    } finally {
       this.isLoading = false;
     }
+  }
+
+  private createMixArchivos(mixId: number, archivos: any[]): void {
+    let completedRequests = 0;
+    const totalRequests = archivos.length;
+
+    archivos.forEach((archivo, index) => {
+      const archivoData: CreateArchivoMixRequest = {
+        tipo: archivo.tipo === 'audio' ? 'Audio' : 'Video',
+        nombre: archivo.nombre,
+        url: archivo.url,
+        mimeType: archivo.tipo === 'audio' ? 'audio/mpeg' : 'video/mp4',
+        orden: index + 1
+      };
+
+      this.mixService.addArchivo(mixId, archivoData).subscribe({
+        next: () => {
+          completedRequests++;
+          if (completedRequests === totalRequests) {
+            console.log('Todos los archivos creados exitosamente');
+            this.loadMixs();
+            this.cancelEdit();
+            this.isLoading = false;
+          }
+        },
+        error: (error: any) => {
+          console.error('Error creando archivo:', error);
+          completedRequests++;
+          if (completedRequests === totalRequests) {
+            this.loadMixs();
+            this.cancelEdit();
+            this.isLoading = false;
+          }
+        }
+      });
+    });
   }
 
   async deleteMix(mixId: number): Promise<void> {
@@ -234,20 +310,22 @@ export class AdminDashboardComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
     try {
-      await this.adminService.deleteMix(mixId);
-      await this.loadMixs();
+      this.mixService.deleteMix(mixId).subscribe({
+        next: () => {
+          console.log('Mix eliminado exitosamente');
+          this.loadMixs();
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error eliminando mix:', error);
+          this.isLoading = false;
+        }
+      });
     } catch (error) {
       console.error('Error deleting mix:', error);
-    }
-  }
-
-  async toggleMixActive(mixId: number): Promise<void> {
-    try {
-      await this.adminService.toggleMixActive(mixId);
-      await this.loadMixs();
-    } catch (error) {
-      console.error('Error toggling mix active:', error);
+      this.isLoading = false;
     }
   }
 

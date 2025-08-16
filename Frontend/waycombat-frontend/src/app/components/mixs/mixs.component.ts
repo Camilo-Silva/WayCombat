@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MixService } from '../../services/mix.service';
 import { Mix, ArchivoMix } from '../../models/mix.models';
@@ -15,6 +15,7 @@ import { Mix, ArchivoMix } from '../../models/mix.models';
 export class MixsComponent implements OnInit {
   private authService = inject(AuthService);
   private mixService = inject(MixService);
+  private router = inject(Router);
 
   isAuthenticated: boolean = false;
   isLoading: boolean = false;
@@ -32,9 +33,19 @@ export class MixsComponent implements OnInit {
   private loadUserMixs(): void {
     this.isLoading = true;
     
-    // Cargar desde el backend
-    this.mixService.getAllMixes().subscribe({
+    // Cargar solo los mixs del usuario autenticado
+    this.mixService.getMisMixes().subscribe({
       next: (mixs) => {
+        console.log('=== DEBUG CARGA MIXS DEL USUARIO ===');
+        console.log('Mixs del usuario recibidos del backend:', mixs);
+        console.log('Cantidad de mixs del usuario:', mixs.length);
+        mixs.forEach((mix, index) => {
+          console.log(`Mix ${index}:`, {
+            id: mix.id,
+            titulo: mix.titulo,
+            tipoId: typeof mix.id
+          });
+        });
         this.userMixs = mixs;
         this.isLoading = false;
       },
@@ -102,11 +113,6 @@ export class MixsComponent implements OnInit {
     return mix.archivos?.filter(archivo => archivo.activo)?.length || 0;
   }
 
-  verMix(mixId: number): void {
-    // La navegación ya está manejada por RouterModule en el template
-    console.log('Navegando al mix:', mixId);
-  }
-
   downloadFile(file: ArchivoMix): void {
     if (file.mimeType === 'video/youtube') {
       // Para videos de YouTube, abrir en nueva pestaña
@@ -157,5 +163,23 @@ export class MixsComponent implements OnInit {
     const videoExtensions = ['.mp4', '.webm', '.mov', '.avi'];
     return videoExtensions.some(ext => fileName.toLowerCase().includes(ext)) || 
            fileName.toLowerCase().includes('youtube');
+  }
+
+  verMix(mixId: number): void {
+    console.log('=== DEBUG NAVEGACIÓN ===');
+    console.log('verMix llamado con mixId:', mixId);
+    console.log('Tipo de mixId:', typeof mixId);
+    console.log('mixId válido?', mixId && mixId > 0);
+    console.log('Ruta a navegar:', `/mixs/${mixId}`);
+    
+    if (mixId && mixId > 0) {
+      console.log('Navegando a:', ['/mixs', mixId]);
+      this.router.navigate(['/mixs', mixId]).then(
+        (success) => console.log('Navegación exitosa:', success),
+        (error) => console.error('Error en navegación:', error)
+      );
+    } else {
+      console.error('ID de mix inválido:', mixId);
+    }
   }
 }

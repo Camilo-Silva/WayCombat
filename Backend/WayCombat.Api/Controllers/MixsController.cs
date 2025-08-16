@@ -18,7 +18,7 @@ namespace WayCombat.Api.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous] // Temporalmente público para pruebas
+        [Authorize]
         public async Task<ActionResult<List<MixDto>>> GetMixes()
         {
             try
@@ -42,7 +42,7 @@ namespace WayCombat.Api.Controllers
                 var currentUserId = GetCurrentUserId();
                 var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-                if (currentUserId != userId && currentUserRole != "Admin")
+                if (currentUserId != userId && currentUserRole != "admin")
                 {
                     return Forbid("No tienes permisos para acceder a esta información");
                 }
@@ -57,17 +57,31 @@ namespace WayCombat.Api.Controllers
         }
 
         [HttpGet("{mixId}")]
-        [AllowAnonymous] // Temporalmente público para pruebas
+        [Authorize]
         public async Task<ActionResult<MixDto>> GetMix(int mixId)
         {
             try
             {
-                // Temporalmente permitir acceso público para pruebas
-                var mix = await _mixService.GetByIdAsync(mixId);
+                var currentUserId = GetCurrentUserId();
+                var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+                // Los administradores pueden acceder a cualquier mix
+                if (currentUserRole == "admin")
+                {
+                    var adminMix = await _mixService.GetByIdAsync(mixId);
+                    if (adminMix == null)
+                    {
+                        return NotFound(new { message = "Mix no encontrado" });
+                    }
+                    return Ok(adminMix);
+                }
+
+                // Para usuarios normales, verificar acceso específico
+                var mix = await _mixService.GetMixWithAccessCheckAsync(mixId, currentUserId);
 
                 if (mix == null)
                 {
-                    return NotFound(new { message = "Mix no encontrado" });
+                    return NotFound(new { message = "Mix no encontrado o sin acceso" });
                 }
 
                 return Ok(mix);
@@ -75,6 +89,77 @@ namespace WayCombat.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<MixDto>> CreateMix([FromBody] CreateMixDto createMixDto)
+        {
+            try
+            {
+                var mix = await _mixService.CreateAsync(createMixDto);
+                return CreatedAtAction(nameof(GetMix), new { mixId = mix.Id }, mix);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error creando mix", error = ex.Message });
+            }
+        }
+
+        [HttpPut("{mixId}")]
+        [Authorize]
+        public async Task<ActionResult<MixDto>> UpdateMix(int mixId, [FromBody] UpdateMixDto updateMixDto)
+        {
+            try
+            {
+                var success = await _mixService.UpdateAsync(mixId, updateMixDto);
+                if (!success)
+                {
+                    return NotFound(new { message = "Mix no encontrado" });
+                }
+
+                var updatedMix = await _mixService.GetByIdAsync(mixId);
+                return Ok(updatedMix);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error actualizando mix", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("{mixId}")]
+        [Authorize]
+        public async Task<ActionResult> DeleteMix(int mixId)
+        {
+            try
+            {
+                var success = await _mixService.DeleteAsync(mixId);
+                if (!success)
+                {
+                    return NotFound(new { message = "Mix no encontrado" });
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error eliminando mix", error = ex.Message });
+            }
+        }
+
+        [HttpPost("{mixId}/archivos")]
+        [AllowAnonymous] // Temporalmente público para pruebas
+        public async Task<ActionResult<ArchivoMixDto>> AddArchivo(int mixId, [FromBody] CreateArchivoMixDto createArchivoDto)
+        {
+            try
+            {
+                var archivo = await _mixService.AddArchivoAsync(mixId, createArchivoDto);
+                return Ok(archivo);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error agregando archivo", error = ex.Message });
             }
         }
 

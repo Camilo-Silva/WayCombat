@@ -45,7 +45,7 @@ namespace WayCombat.Api.Migrations
                     b.HasIndex("UsuarioId", "MixId")
                         .IsUnique();
 
-                    b.ToTable("AccesoMixes");
+                    b.ToTable("AccesoMixes", (string)null);
 
                     b.HasData(
                         new
@@ -121,7 +121,7 @@ namespace WayCombat.Api.Migrations
 
                     b.HasIndex("MixId");
 
-                    b.ToTable("ArchivoMixes");
+                    b.ToTable("ArchivoMixes", (string)null);
                 });
 
             modelBuilder.Entity("WayCombat.Api.Models.Mix", b =>
@@ -150,7 +150,7 @@ namespace WayCombat.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Mixes");
+                    b.ToTable("Mixes", (string)null);
 
                     b.HasData(
                         new
@@ -221,7 +221,7 @@ namespace WayCombat.Api.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
 
                     b.HasData(
                         new

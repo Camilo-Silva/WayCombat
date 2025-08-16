@@ -579,6 +579,13 @@
   box-shadow: 0 6px 20px rgba(30, 77, 114, 0.4);
 }
 
+/* Asegurar que los botones en las cards estén por encima de overlays */
+.mix-card .btn {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+}
+
 .btn-way-outline {
   border: 2px solid var(--way-primary);
   color: var(--way-primary);
@@ -740,4 +747,9 @@
 .mix-card .mix-card-body {
   position: relative;
   z-index: 2;
+}
+
+.mix-card .mix-card-body * {
+  position: relative;
+  z-index: 3;
 }

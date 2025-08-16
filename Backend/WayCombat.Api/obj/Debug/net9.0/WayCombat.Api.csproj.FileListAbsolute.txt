@@ -167,3 +167,4 @@ D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\bin\Debug\net9.0\runtimes\win-x64
 D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\bin\Debug\net9.0\runtimes\win-x86\native\e_sqlite3.dll
 D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\bin\Debug\net9.0\package-lock.json
 D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\bin\Debug\net9.0\package.json
+D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\obj\Debug\net9.0\WayCombat.Api.sourcelink.json
