@@ -1,0 +1,300 @@
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="row w-100 justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+      <div class="row bg-white rounded-lg shadow-lg overflow-hidden">
+        <!-- Columna izquierda - Información -->
+        <div class="col-lg-6 bg-primary-blue text-white p-5 d-flex flex-column justify-content-center">
+          <div class="text-center mb-4">
+            <h2 class="fw-bold mb-3">¡Bienvenido a Way Combat!</h2>
+            <p class="lead mb-4">
+              Accede a tu cuenta para disfrutar de entrenamientos exclusivos y contenido premium
+            </p>
+          </div>
+          
+          <div class="mb-4">
+            <h5 class="mb-3"><i class="fas fa-star me-2"></i>Beneficios Exclusivos</h5>
+            <ul class="list-unstyled">
+              <li class="mb-2"><i class="fas fa-check me-2"></i>Acceso a mixes únicos de entrenamiento</li>
+              <li class="mb-2"><i class="fas fa-check me-2"></i>Videos y audios descargables</li>
+              <li class="mb-2"><i class="fas fa-check me-2"></i>Contenido actualizado regularmente</li>
+              <li class="mb-2"><i class="fas fa-check me-2"></i>Seguimiento de progreso personalizado</li>
+            </ul>
+          </div>
+
+          <div class="text-center">
+            <p class="mb-2"><small>¿Necesitas ayuda?</small></p>
+            <a href="https://wa.me/5491127355020" target="_blank" class="btn btn-success btn-sm">
+              <i class="fab fa-whatsapp me-1"></i>Contactar WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <!-- Columna derecha - Formularios -->
+        <div class="col-lg-6 p-5">
+          <!-- Pestañas -->
+          <nav class="nav nav-pills nav-justified mb-4" role="tablist">
+            <button 
+              class="nav-link" 
+              [class.active]="activeTab === 'login'"
+              (click)="setActiveTab('login')"
+              type="button">
+              <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+            </button>
+            <button 
+              class="nav-link" 
+              [class.active]="activeTab === 'register'"
+              (click)="setActiveTab('register')"
+              type="button">
+              <i class="fas fa-user-plus me-2"></i>Registrarse
+            </button>
+          </nav>
+
+          <!-- Formulario de Login -->
+          <div *ngIf="activeTab === 'login'" class="tab-content fade-in">
+            <form [formGroup]="loginForm" (ngSubmit)="onLogin()" novalidate>
+              <div class="mb-3">
+                <label for="loginEmail" class="form-label">
+                  <i class="fas fa-envelope me-2"></i>Email
+                </label>
+                <input 
+                  type="email" 
+                  class="form-control form-control-lg"
+                  [class.is-invalid]="loginForm.get('email')?.touched && loginForm.get('email')?.errors"
+                  id="loginEmail"
+                  formControlName="email"
+                  placeholder="tu@email.com"
+                  autocomplete="username">
+                <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors" class="invalid-feedback">
+                  <div *ngIf="loginForm.get('email')?.errors?.['required']">El email es requerido</div>
+                  <div *ngIf="loginForm.get('email')?.errors?.['email']">El formato del email no es válido</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="loginPassword" class="form-label">
+                  <i class="fas fa-lock me-2"></i>Contraseña
+                </label>
+                <div class="input-group">
+                  <input 
+                    [type]="showPassword ? 'text' : 'password'"
+                    class="form-control form-control-lg"
+                    [class.is-invalid]="loginForm.get('contraseña')?.touched && loginForm.get('contraseña')?.errors"
+                    id="loginPassword"
+                    formControlName="contraseña"
+                    placeholder="Tu contraseña"
+                    autocomplete="current-password">
+                  <button 
+                    class="btn btn-outline-secondary" 
+                    type="button" 
+                    (click)="togglePasswordVisibility()">
+                    <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  </button>
+                </div>
+                <div *ngIf="loginForm.get('contraseña')?.touched && loginForm.get('contraseña')?.errors" class="invalid-feedback d-block">
+                  <div *ngIf="loginForm.get('contraseña')?.errors?.['required']">La contraseña es requerida</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">
+                      Recordarme
+                    </label>
+                  </div>
+                  <a href="#" class="text-primary text-decoration-none" (click)="showForgotPassword($event)">
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+              </div>
+
+              <!-- Mensaje de error -->
+              <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage }}
+              </div>
+
+              <div class="d-grid">
+                <button 
+                  type="submit" 
+                  class="btn btn-way-primary btn-lg"
+                  [disabled]="loginForm.invalid || isLoading">
+                  <i *ngIf="isLoading" class="fas fa-spinner fa-spin me-2"></i>
+                  <i *ngIf="!isLoading" class="fas fa-sign-in-alt me-2"></i>
+                  {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Formulario de Registro -->
+          <div *ngIf="activeTab === 'register'" class="tab-content fade-in">
+            <form [formGroup]="registerForm" (ngSubmit)="onRegister()" novalidate>
+              <div class="mb-3">
+                <label for="registerName" class="form-label">
+                  <i class="fas fa-user me-2"></i>Nombre Completo
+                </label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-lg"
+                  [class.is-invalid]="registerForm.get('nombre')?.touched && registerForm.get('nombre')?.errors"
+                  id="registerName"
+                  formControlName="nombre"
+                  placeholder="Tu nombre completo"
+                  autocomplete="name">
+                <div *ngIf="registerForm.get('nombre')?.touched && registerForm.get('nombre')?.errors" class="invalid-feedback">
+                  <div *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es requerido</div>
+                  <div *ngIf="registerForm.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="registerEmail" class="form-label">
+                  <i class="fas fa-envelope me-2"></i>Email
+                </label>
+                <input 
+                  type="email" 
+                  class="form-control form-control-lg"
+                  [class.is-invalid]="registerForm.get('email')?.touched && registerForm.get('email')?.errors"
+                  id="registerEmail"
+                  formControlName="email"
+                  placeholder="tu@email.com"
+                  autocomplete="username">
+                <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.errors" class="invalid-feedback">
+                  <div *ngIf="registerForm.get('email')?.errors?.['required']">El email es requerido</div>
+                  <div *ngIf="registerForm.get('email')?.errors?.['email']">El formato del email no es válido</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="registerPassword" class="form-label">
+                  <i class="fas fa-lock me-2"></i>Contraseña
+                </label>
+                <div class="input-group">
+                  <input 
+                    [type]="showPassword ? 'text' : 'password'"
+                    class="form-control form-control-lg"
+                    [class.is-invalid]="registerForm.get('contraseña')?.touched && registerForm.get('contraseña')?.errors"
+                    id="registerPassword"
+                    formControlName="contraseña"
+                    placeholder="Mínimo 6 caracteres"
+                    autocomplete="new-password">
+                  <button 
+                    class="btn btn-outline-secondary" 
+                    type="button" 
+                    (click)="togglePasswordVisibility()">
+                    <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  </button>
+                </div>
+                <div *ngIf="registerForm.get('contraseña')?.touched && registerForm.get('contraseña')?.errors" class="invalid-feedback d-block">
+                  <div *ngIf="registerForm.get('contraseña')?.errors?.['required']">La contraseña es requerida</div>
+                  <div *ngIf="registerForm.get('contraseña')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">
+                  <i class="fas fa-lock me-2"></i>Confirmar Contraseña
+                </label>
+                <input 
+                  type="password"
+                  class="form-control form-control-lg"
+                  [class.is-invalid]="registerForm.get('confirmarContraseña')?.touched && registerForm.get('confirmarContraseña')?.errors"
+                  id="confirmPassword"
+                  formControlName="confirmarContraseña"
+                  placeholder="Repite tu contraseña"
+                  autocomplete="new-password">
+                <div *ngIf="registerForm.get('confirmarContraseña')?.touched && registerForm.get('confirmarContraseña')?.errors" class="invalid-feedback">
+                  <div *ngIf="registerForm.get('confirmarContraseña')?.errors?.['required']">Confirma tu contraseña</div>
+                  <div *ngIf="registerForm.get('confirmarContraseña')?.errors?.['passwordMismatch']">Las contraseñas no coinciden</div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    id="acceptTerms"
+                    formControlName="acceptTerms"
+                    [class.is-invalid]="registerForm.get('acceptTerms')?.touched && registerForm.get('acceptTerms')?.errors">
+                  <label class="form-check-label" for="acceptTerms">
+                    Acepto los <a href="#" class="text-primary">términos y condiciones</a> y la 
+                    <a href="#" class="text-primary">política de privacidad</a>
+                  </label>
+                  <div *ngIf="registerForm.get('acceptTerms')?.touched && registerForm.get('acceptTerms')?.errors" class="invalid-feedback d-block">
+                    Debes aceptar los términos y condiciones
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mensaje de error -->
+              <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ errorMessage }}
+              </div>
+
+              <div class="d-grid">
+                <button 
+                  type="submit" 
+                  class="btn btn-way-primary btn-lg"
+                  [disabled]="registerForm.invalid || isLoading">
+                  <i *ngIf="isLoading" class="fas fa-spinner fa-spin me-2"></i>
+                  <i *ngIf="!isLoading" class="fas fa-user-plus me-2"></i>
+                  {{ isLoading ? 'Registrando...' : 'Crear Cuenta' }}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Modal/Form de Recuperar Contraseña -->
+          <div *ngIf="showForgotPasswordForm" class="tab-content fade-in">
+            <div class="text-center mb-4">
+              <h4 class="text-primary-blue">Recuperar Contraseña</h4>
+              <p class="text-muted">Te enviaremos un email para restablecer tu contraseña</p>
+            </div>
+
+            <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPassword()" novalidate>
+              <div class="mb-3">
+                <label for="forgotEmail" class="form-label">
+                  <i class="fas fa-envelope me-2"></i>Email
+                </label>
+                <input 
+                  type="email" 
+                  class="form-control form-control-lg"
+                  [class.is-invalid]="forgotPasswordForm.get('email')?.touched && forgotPasswordForm.get('email')?.errors"
+                  id="forgotEmail"
+                  formControlName="email"
+                  placeholder="tu@email.com">
+                <div *ngIf="forgotPasswordForm.get('email')?.touched && forgotPasswordForm.get('email')?.errors" class="invalid-feedback">
+                  <div *ngIf="forgotPasswordForm.get('email')?.errors?.['required']">El email es requerido</div>
+                  <div *ngIf="forgotPasswordForm.get('email')?.errors?.['email']">El formato del email no es válido</div>
+                </div>
+              </div>
+
+              <div *ngIf="forgotPasswordMessage" class="alert alert-info" role="alert">
+                <i class="fas fa-info-circle me-2"></i>{{ forgotPasswordMessage }}
+              </div>
+
+              <div class="d-flex gap-2">
+                <button 
+                  type="button" 
+                  class="btn btn-secondary flex-fill"
+                  (click)="hideForgotPassword()">
+                  <i class="fas fa-arrow-left me-2"></i>Volver
+                </button>
+                <button 
+                  type="submit" 
+                  class="btn btn-way-primary flex-fill"
+                  [disabled]="forgotPasswordForm.invalid || isLoading">
+                  <i *ngIf="isLoading" class="fas fa-spinner fa-spin me-2"></i>
+                  <i *ngIf="!isLoading" class="fas fa-paper-plane me-2"></i>
+                  {{ isLoading ? 'Enviando...' : 'Enviar' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

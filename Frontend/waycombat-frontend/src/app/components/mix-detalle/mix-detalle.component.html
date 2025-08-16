@@ -1,0 +1,310 @@
+<!-- DETALLE DEL MIX -->
+<div class="container-fluid py-4">
+  
+  <!-- Header del mix -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h2 text-primary-blue mb-0">
+            <i class="fas fa-music me-2"></i>{{ mix?.titulo || 'Cargando...' }}
+          </h1>
+          <p class="text-muted mb-0">{{ mix?.descripcion || 'Contenido multimedia disponible' }}</p>
+        </div>
+        <div>
+          <button 
+            class="btn btn-outline-secondary"
+            routerLink="/mixs">
+            <i class="fas fa-arrow-left me-2"></i>Volver
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="row">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 text-muted">Cargando contenido del mix...</p>
+    </div>
+  </div>
+
+  <!-- Contenido del mix -->
+  <div *ngIf="!isLoading && mix" class="row">
+    <div class="col-12">
+      
+      <!-- Estadísticas del mix -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <div class="card bg-success text-white text-center">
+            <div class="card-body">
+              <i class="fas fa-music fa-2x mb-2"></i>
+              <h5>{{ audioFiles.length }}</h5>
+              <p class="mb-0">Audios</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-primary text-white text-center">
+            <div class="card-body">
+              <i class="fas fa-video fa-2x mb-2"></i>
+              <h5>{{ videoFiles.length }}</h5>
+              <p class="mb-0">Videos</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card bg-info text-white text-center">
+            <div class="card-body">
+              <i class="fas fa-download fa-2x mb-2"></i>
+              <h5>{{ totalFiles }}</h5>
+              <p class="mb-0">Total</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navegación por pestañas -->
+      <div class="card shadow-sm">
+        <div class="card-header p-0">
+          <ul class="nav nav-tabs nav-fill" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'audios'"
+                (click)="setActiveTab('audios')"
+                type="button">
+                <i class="fas fa-music me-2"></i>Audios ({{ audioFiles.length }})
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'videos'"
+                (click)="setActiveTab('videos')"
+                type="button">
+                <i class="fas fa-video me-2"></i>Videos ({{ videoFiles.length }})
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'descarga'"
+                (click)="setActiveTab('descarga')"
+                type="button">
+                <i class="fas fa-download me-2"></i>Descargar Todo
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body">
+          <!-- Contenido de las pestañas -->
+          <div class="tab-content">
+            
+            <!-- ========== PESTAÑA: AUDIOS ========== -->
+            <div *ngIf="activeTab === 'audios'" class="tab-pane fade show active">
+              <div *ngIf="audioFiles.length === 0" class="text-center py-5">
+                <i class="fas fa-music fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay archivos de audio</h5>
+                <p class="text-muted">Este mix no contiene archivos MP3</p>
+              </div>
+
+              <div *ngIf="audioFiles.length > 0" class="row">
+                <div class="col-lg-6 col-md-6 mb-4" *ngFor="let audio of audioFiles">
+                  <div class="card border-success">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                      <h6 class="mb-0">
+                        <i class="fas fa-music me-2"></i>{{ audio.nombre }}
+                      </h6>
+                    </div>
+                    <div class="card-body">
+                      
+                      <!-- Reproductor de audio -->
+                      <div class="mb-3">
+                        <div *ngIf="isGoogleDriveUrl(audio.url)" class="google-drive-audio-player">
+                          <iframe 
+                            [src]="getGoogleDriveEmbedUrl(audio)" 
+                            width="100%" 
+                            height="166"
+                            title="Reproductor de Audio Google Drive"
+                            allowfullscreen
+                            allow="autoplay"
+                            style="border: none;">
+                          </iframe>
+                        </div>
+                        <div *ngIf="!isGoogleDriveUrl(audio.url)">
+                          <audio controls class="w-100" [src]="getPlayableUrl(audio)" preload="metadata">
+                            Tu navegador no soporta audio HTML5.
+                          </audio>
+                        </div>
+                      </div>
+
+                      <!-- Información del archivo -->
+                      <div class="mb-3">
+                        <small class="text-muted">
+                          <i class="fas fa-file-audio me-1"></i>
+                          <span *ngIf="isGoogleDriveUrl(audio.url)">Reproductor de Google Drive</span>
+                          <span *ngIf="!isGoogleDriveUrl(audio.url)">Archivo de audio MP3</span>
+                        </small>
+                      </div>
+
+                      <!-- Botones de acción -->
+                      <div class="d-flex gap-2">
+                        <button 
+                          class="btn btn-success btn-sm flex-fill"
+                          (click)="downloadFile(audio)">
+                          <i class="fas fa-download me-1"></i>Descargar
+                        </button>
+                        <button 
+                          class="btn btn-outline-success btn-sm"
+                          (click)="openFile(audio)"
+                          title="Abrir en nueva pestaña">
+                          <i class="fas fa-external-link-alt"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== PESTAÑA: VIDEOS ========== -->
+            <div *ngIf="activeTab === 'videos'" class="tab-pane fade show active">
+              <div *ngIf="videoFiles.length === 0" class="text-center py-5">
+                <i class="fas fa-video fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay archivos de video</h5>
+                <p class="text-muted">Este mix no contiene archivos MP4</p>
+              </div>
+
+              <div *ngIf="videoFiles.length > 0" class="row">
+                <div class="col-lg-6 col-md-6 mb-4" *ngFor="let video of videoFiles">
+                  <div class="card border-primary">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                      <h6 class="mb-0">
+                        <i class="fas fa-video me-2"></i>{{ video.nombre }}
+                      </h6>
+                    </div>
+                    <div class="card-body">
+                      
+                      <!-- Vista previa del video -->
+                      <div class="mb-3">
+                        <div *ngIf="isGoogleDriveUrl(video.url)" class="ratio ratio-16x9 google-drive-video-player">
+                          <iframe 
+                            [src]="getGoogleDriveEmbedUrl(video)"
+                            title="Reproductor de Video Google Drive"
+                            allowfullscreen
+                            allow="autoplay"
+                            style="border: none;">
+                          </iframe>
+                        </div>
+                        <div *ngIf="!isGoogleDriveUrl(video.url)" class="ratio ratio-16x9">
+                          <video controls [src]="getPlayableUrl(video)" preload="metadata">
+                            Tu navegador no soporta video HTML5.
+                          </video>
+                        </div>
+                      </div>
+
+                      <!-- Información del archivo -->
+                      <div class="mb-3">
+                        <small class="text-muted">
+                          <i class="fas fa-file-video me-1"></i>
+                          <span *ngIf="isGoogleDriveUrl(video.url)">Reproductor de Video Google Drive</span>
+                          <span *ngIf="!isGoogleDriveUrl(video.url)">Archivo de video MP4</span>
+                        </small>
+                      </div>
+
+                      <!-- Botones de acción -->
+                      <div class="d-flex gap-2">
+                        <button 
+                          class="btn btn-primary btn-sm flex-fill"
+                          (click)="downloadFile(video)">
+                          <i class="fas fa-download me-1"></i>Descargar
+                        </button>
+                        <button 
+                          class="btn btn-outline-primary btn-sm"
+                          (click)="openFile(video)"
+                          title="Abrir en nueva pestaña">
+                          <i class="fas fa-external-link-alt"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== PESTAÑA: DESCARGAR TODO ========== -->
+            <div *ngIf="activeTab === 'descarga'" class="tab-pane fade show active">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card bg-light">
+                    <div class="card-body text-center py-5">
+                      <i class="fas fa-download fa-4x text-primary mb-4"></i>
+                      <h4 class="mb-4">Descargar Todo el Contenido</h4>
+                      <p class="lead mb-4">
+                        Descarga todos los archivos de audio y video de este mix
+                      </p>
+                      
+                      <div class="row mb-4">
+                        <div class="col-md-6">
+                          <div class="d-grid">
+                            <button 
+                              class="btn btn-success btn-lg"
+                              (click)="downloadAllAudios()"
+                              [disabled]="audioFiles.length === 0">
+                              <i class="fas fa-music me-2"></i>
+                              Descargar Todos los Audios ({{ audioFiles.length }})
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="d-grid">
+                            <button 
+                              class="btn btn-primary btn-lg"
+                              (click)="downloadAllVideos()"
+                              [disabled]="videoFiles.length === 0">
+                              <i class="fas fa-video me-2"></i>
+                              Descargar Todos los Videos ({{ videoFiles.length }})
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="d-grid">
+                        <button 
+                          class="btn btn-info btn-lg"
+                          (click)="downloadAllFiles()"
+                          [disabled]="totalFiles === 0">
+                          <i class="fas fa-download me-2"></i>
+                          Descargar Todo el Mix ({{ totalFiles }} archivos)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!isLoading && !mix" class="row">
+    <div class="col-12 text-center py-5">
+      <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+      <h4 class="text-muted">Mix no encontrado</h4>
+      <p class="text-muted">El mix solicitado no existe o no tienes permisos para acceder</p>
+      <button class="btn btn-way-primary" routerLink="/mixs">
+        <i class="fas fa-arrow-left me-2"></i>Volver a Mixs
+      </button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,424 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="hero-title">Contactanos</h1>
+        <p class="hero-subtitle">Estamos aquí para ayudarte. Contáctanos y resolveremos todas tus dudas sobre nuestras capacitaciones y servicios.</p>
+        <button class="btn btn-way-light btn-lg" (click)="scrollToForm()">
+          <i class="fas fa-envelope me-2"></i>Enviar Mensaje
+        </button>
+      </div>
+      <div class="col-lg-4">
+        <div class="contact-hero-card">
+          <div class="contact-item">
+            <i class="fas fa-phone contact-icon"></i>
+            <div>
+              <h5>Teléfono</h5>
+              <p>{{ contactInfo.telefono }}</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-envelope contact-icon"></i>
+            <div>
+              <h5>Email</h5>
+              <p>{{ contactInfo.email }}</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-map-marker-alt contact-icon"></i>
+            <div>
+              <h5>Dirección</h5>
+              <p>{{ contactInfo.direccion }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Info Section -->
+<section class="contact-info-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="info-card" (click)="callPhone()" (keydown.enter)="callPhone()" tabindex="0" role="button">
+          <div class="info-icon phone">
+            <i class="fas fa-phone-alt"></i>
+          </div>
+          <h4>Llámanos</h4>
+          <p>{{ contactInfo.telefono }}</p>
+          <small>Atención telefónica</small>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="info-card" (click)="sendEmail()" (keydown.enter)="sendEmail()" tabindex="0" role="button">
+          <div class="info-icon email">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <h4>Escríbenos</h4>
+          <p>{{ contactInfo.email }}</p>
+          <small>Respuesta en 24hs</small>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="info-card" (click)="openMap()" (keydown.enter)="openMap()" tabindex="0" role="button">
+          <div class="info-icon location">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <h4>Visítanos</h4>
+          <p>{{ contactInfo.direccion }}</p>
+          <small>Ver en el mapa</small>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="info-card">
+          <div class="info-icon hours">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h4>Horarios</h4>
+          <div class="horarios">
+            <small *ngFor="let linea of contactInfo.horarios.split('\\n')">{{ linea }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social Networks -->
+<section class="social-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h3>Síguenos en nuestras redes sociales</h3>
+        <p>Mantente al día con las últimas noticias, entrenamientos y contenido exclusivo</p>
+        <div class="social-links">
+          <button class="social-btn facebook" (click)="openSocialNetwork('facebook')">
+            <i class="fab fa-facebook-f"></i>
+            <span>Facebook</span>
+          </button>
+          <button class="social-btn instagram" (click)="openSocialNetwork('instagram')">
+            <i class="fab fa-instagram"></i>
+            <span>Instagram</span>
+          </button>
+          <button class="social-btn twitter" (click)="openSocialNetwork('twitter')">
+            <i class="fab fa-twitter"></i>
+            <span>Twitter</span>
+          </button>
+          <button class="social-btn youtube" (click)="openSocialNetwork('youtube')">
+            <i class="fab fa-youtube"></i>
+            <span>YouTube</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2>Preguntas Frecuentes</h2>
+      <p>Encuentra respuestas rápidas a las preguntas más comunes</p>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div class="faq-categories">
+      <div class="row">
+        <div 
+          *ngFor="let category of faqCategories" 
+          class="col-lg-3 col-md-4 col-sm-6 mb-3">
+          <button 
+            class="category-btn"
+            [class.active]="selectedFAQCategory === category.key"
+            (click)="filterFAQs(category.key)">
+            <i [class]="category.icon"></i>
+            <span>{{ category.label }}</span>
+            <small *ngIf="category.key !== 'todas'">({{ getFAQCountForCategory(category.key) }})</small>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Category Info -->
+    <div class="current-category" *ngIf="getCurrentCategoryInfo()">
+      <div class="category-header">
+        <i [class]="getCurrentCategoryInfo()?.icon"></i>
+        <h4>{{ getCurrentCategoryInfo()?.label }}</h4>
+        <span class="question-count">{{ getFilteredFAQs().length }} preguntas</span>
+      </div>
+    </div>
+
+    <!-- FAQ List -->
+    <div class="faq-list">
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <div 
+            *ngFor="let faq of getFilteredFAQs(); let i = index" 
+            class="faq-item"
+            [attr.data-index]="i">
+            <div class="faq-question" (click)="toggleFAQ(faq)" (keydown.enter)="toggleFAQ(faq)" tabindex="0" role="button">
+              <h5>{{ faq.pregunta }}</h5>
+              <i class="fas fa-plus faq-toggle"></i>
+            </div>
+            <div class="faq-answer">
+              <p>{{ faq.respuesta }}</p>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="getFilteredFAQs().length === 0" class="faq-empty">
+            <i class="fas fa-question-circle"></i>
+            <h4>No hay preguntas en esta categoría</h4>
+            <p>Selecciona otra categoría o envíanos tu consulta</p>
+            <button class="btn btn-way-primary" (click)="scrollToForm()">
+              <i class="fas fa-envelope me-2"></i>Hacer Consulta
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="contact-form-section" id="contact-form">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
+        <div class="form-header text-center">
+          <h2>Envíanos tu consulta</h2>
+          <p>Completa el formulario y nos pondremos en contacto contigo a la brevedad</p>
+        </div>
+
+        <!-- Success Message -->
+        <div *ngIf="isSubmitted" class="alert alert-success text-center" role="alert">
+          <i class="fas fa-check-circle fa-2x mb-3"></i>
+          <h4>¡Mensaje enviado con éxito!</h4>
+          <p>Gracias por contactarnos. Responderemos tu consulta dentro de las próximas 24 horas.</p>
+        </div>
+
+        <!-- Contact Form -->
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" *ngIf="!isSubmitted" class="contact-form">
+          <!-- Personal Information -->
+          <div class="form-section">
+            <h4 class="section-title">Información Personal</h4>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nombre">Nombre *</label>
+                  <input 
+                    type="text" 
+                    id="nombre"
+                    class="form-control"
+                    [class.is-invalid]="isFieldInvalid('nombre')"
+                    formControlName="nombre"
+                    placeholder="Tu nombre">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('nombre')">
+                    {{ getFieldError('nombre') }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="apellido">Apellido *</label>
+                  <input 
+                    type="text" 
+                    id="apellido"
+                    class="form-control"
+                    [class.is-invalid]="isFieldInvalid('apellido')"
+                    formControlName="apellido"
+                    placeholder="Tu apellido">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('apellido')">
+                    {{ getFieldError('apellido') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-8">
+                <div class="form-group">
+                  <label for="email">Email *</label>
+                  <input 
+                    type="email" 
+                    id="email"
+                    class="form-control"
+                    [class.is-invalid]="isFieldInvalid('email')"
+                    formControlName="email"
+                    placeholder="tu@email.com">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                    {{ getFieldError('email') }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="telefono">Teléfono</label>
+                  <input 
+                    type="tel" 
+                    id="telefono"
+                    class="form-control"
+                    formControlName="telefono"
+                    placeholder="+54 11 1234-5678">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Consultation Details -->
+          <div class="form-section">
+            <h4 class="section-title">Detalles de la Consulta</h4>
+            <div class="form-group">
+              <label for="tipoConsulta">Tipo de Consulta *</label>
+              <select 
+                id="tipoConsulta"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('tipoConsulta')"
+                formControlName="tipoConsulta">
+                <option value="">Selecciona el tipo de consulta</option>
+                <option *ngFor="let tipo of consultaTypes" [value]="tipo">{{ tipo }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('tipoConsulta')">
+                {{ getFieldError('tipoConsulta') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="asunto">Asunto *</label>
+              <input 
+                type="text" 
+                id="asunto"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('asunto') || isCharacterLimitExceeded('asunto')"
+                formControlName="asunto"
+                placeholder="Describe brevemente tu consulta"
+                maxlength="100">
+              <div class="form-text">
+                <span [class.text-danger]="isCharacterLimitExceeded('asunto')">
+                  {{ getCharacterCount('asunto') }}/{{ getCharacterLimit('asunto') }} caracteres
+                </span>
+              </div>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('asunto')">
+                {{ getFieldError('asunto') }}
+              </div>
+              <div class="invalid-feedback" *ngIf="isCharacterLimitExceeded('asunto')">
+                El asunto no puede exceder los {{ getCharacterLimit('asunto') }} caracteres
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="mensaje">Mensaje *</label>
+              <textarea 
+                id="mensaje"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('mensaje') || isCharacterLimitExceeded('mensaje')"
+                formControlName="mensaje"
+                rows="6"
+                placeholder="Describe detalladamente tu consulta o problema..."
+                maxlength="1000"></textarea>
+              <div class="form-text">
+                <span [class.text-danger]="isCharacterLimitExceeded('mensaje')">
+                  {{ getCharacterCount('mensaje') }}/{{ getCharacterLimit('mensaje') }} caracteres
+                </span>
+              </div>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('mensaje')">
+                {{ getFieldError('mensaje') }}
+              </div>
+              <div class="invalid-feedback" *ngIf="isCharacterLimitExceeded('mensaje')">
+                El mensaje no puede exceder los {{ getCharacterLimit('mensaje') }} caracteres
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms and Submit -->
+          <div class="form-section">
+            <div class="form-check">
+              <input 
+                type="checkbox" 
+                class="form-check-input"
+                [class.is-invalid]="isFieldInvalid('acepta')"
+                id="acepta"
+                formControlName="acepta">
+              <label class="form-check-label" for="acepta">
+                Acepto los <a href="#" target="_blank">términos y condiciones</a> y la 
+                <a href="#" target="_blank">política de privacidad</a> *
+              </label>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('acepta')">
+                {{ getFieldError('acepta') }}
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button 
+                type="submit" 
+                class="btn btn-way-primary btn-lg"
+                [disabled]="contactForm.invalid || isSubmitting || isCharacterLimitExceeded('asunto') || isCharacterLimitExceeded('mensaje')">
+                <span *ngIf="!isSubmitting">
+                  <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                </span>
+                <span *ngIf="isSubmitting">
+                  <i class="fas fa-spinner fa-spin me-2"></i>Enviando...
+                </span>
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-outline-secondary btn-lg"
+                (click)="contactForm.reset()"
+                [disabled]="isSubmitting">
+                <i class="fas fa-eraser me-2"></i>Limpiar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Additional Help Section -->
+<section class="help-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <div class="help-card">
+          <div class="help-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <h4>Soporte Técnico</h4>
+          <p>¿Problemas para acceder o usar la plataforma? Nuestro equipo técnico está listo para ayudarte.</p>
+          <button class="btn btn-way-outline" (click)="sendEmail()">
+            <i class="fas fa-envelope me-2"></i>Contactar Soporte
+          </button>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="help-card">
+          <div class="help-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <h4>Asesoría Académica</h4>
+          <p>¿No sabes qué curso elegir? Te ayudamos a encontrar el programa perfecto para tu nivel.</p>
+          <button class="btn btn-way-outline" (click)="scrollToForm()">
+            <i class="fas fa-comments me-2"></i>Pedir Asesoría
+          </button>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="help-card">
+          <div class="help-icon">
+            <i class="fas fa-handshake"></i>
+          </div>
+          <h4>Colaboraciones</h4>
+          <p>¿Eres instructor o tienes una propuesta comercial? Conversemos sobre oportunidades de colaboración.</p>
+          <button class="btn btn-way-outline" (click)="sendEmail()">
+            <i class="fas fa-briefcase me-2"></i>Proponer Colaboración
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

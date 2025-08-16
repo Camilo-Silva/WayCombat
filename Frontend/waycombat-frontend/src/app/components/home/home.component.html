@@ -1,0 +1,144 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="hero-content fade-in">
+          <h1 class="hero-title">WAY COMBAT</h1>
+          <p class="hero-subtitle">Programa de Fitness de combate</p>
+          <p class="lead mb-4">
+            Descubre una nueva forma de entrenar. Únete a nuestra comunidad y transforma tu cuerpo con 
+            técnicas de combate profesionales.
+          </p>
+          <a class="btn btn-way-secondary btn-lg" routerLink="/acceso-instructores">
+            <i class="fas fa-fist-raised me-2"></i>ÚNETE
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6 text-center">
+        <div class="hero-image slide-in-right">
+          <!-- Placeholder para imagen hero -->
+          <div class="hero-placeholder bg-white bg-opacity-10 rounded-3 p-5">
+            <i class="fas fa-fist-raised fa-8x text-white opacity-75"></i>
+            <p class="text-white mt-3">Imagen Hero<br><small>1200x800px</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sobre Nosotros -->
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 slide-in-left">
+        <div class="about-image text-center mb-4 mb-lg-0">
+          <!-- Placeholder para imagen sobre nosotros -->
+          <div class="about-placeholder bg-light rounded-3 p-5">
+            <i class="fas fa-users fa-6x text-primary-blue opacity-75"></i>
+            <p class="text-dark mt-3">Sobre Nosotros<br><small>800x600px</small></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 slide-in-right">
+        <div class="about-content ps-lg-4">
+          <h2 class="text-primary-blue mb-4">Sobre Nosotros</h2>
+          <p class="lead mb-3">
+            Way Combat nació de la pasión por las artes marciales y el deseo de crear una experiencia 
+            de entrenamiento única y accesible para todos.
+          </p>
+          <p class="mb-3">
+            Nuestro equipo de expertos ha desarrollado un sistema de entrenamiento revolucionario que 
+            combina técnicas tradicionales de combate con métodos modernos de fitness.
+          </p>
+          <p class="mb-4">
+            Creemos que cada persona tiene el potencial de convertirse en su mejor versión, y estamos 
+            aquí para guiarte en ese camino.
+          </p>
+          <a class="btn btn-way-primary" routerLink="/capacitaciones">
+            <i class="fas fa-arrow-right me-2"></i>Conoce Más
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Beneficios del Entrenamiento -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5 fade-in">
+      <h2 class="text-primary-blue mb-3">Beneficios del Entrenamiento</h2>
+      <p class="lead">Descubre todos los beneficios que Way Combat puede ofrecerte</p>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6" *ngFor="let benefit of benefits">
+        <div class="card h-100 border-0 shadow-sm text-center fade-in">
+          <div class="card-body p-4">
+            <div class="benefit-icon mb-3">
+              <i [class]="benefit.icon" class="fa-3x text-primary-blue"></i>
+            </div>
+            <h5 class="card-title text-primary-blue">{{ benefit.title }}</h5>
+            <p class="card-text">{{ benefit.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Nuestra Misión -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center fade-in">
+        <h2 class="text-primary-blue mb-4">Nuestra Misión</h2>
+        <p class="lead mb-3">
+          Transformar vidas a través del arte del combate, creando una comunidad global de individuos 
+          fuertes, disciplinados y confiados.
+        </p>
+        <p class="mb-4">
+          En Way Combat, no solo enseñamos técnicas de pelea; cultivamos el carácter, fortalecemos 
+          el cuerpo y liberamos el potencial mental de cada estudiante. Nuestra misión es hacer 
+          accesible el entrenamiento de combate de élite para personas de todos los niveles.
+        </p>
+        <blockquote class="blockquote">
+          <p class="mb-0 fst-italic text-primary-blue">
+            "El verdadero combate no está en derrotar al oponente, sino en conquistar tus propios límites."
+          </p>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Conócenos -->
+<section class="py-5 bg-primary-blue text-white">
+  <div class="container">
+    <div class="text-center mb-5 fade-in">
+      <h2 class="mb-3">Conócenos</h2>
+      <p class="lead">Conoce a los expertos que guiarán tu entrenamiento</p>
+    </div>
+    
+    <div class="row justify-content-center g-4">
+      <div class="col-lg-4 col-md-6" *ngFor="let director of directors">
+        <div class="card border-0 shadow-lg text-center slide-in-left">
+          <div class="card-body p-4">
+            <div class="director-image mb-3">
+              <!-- Placeholder para imagen de director -->
+              <div class="director-placeholder bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" 
+                   style="width: 150px; height: 150px;">
+                <i class="fas fa-user fa-4x text-primary-blue"></i>
+              </div>
+            </div>
+            <h5 class="card-title text-primary-blue">{{ director.name }}</h5>
+            <p class="card-text text-muted">{{ director.position }}</p>
+            <p class="card-text">{{ director.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

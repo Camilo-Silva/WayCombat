@@ -1,0 +1,266 @@
+/* Componente Capacitaciones */
+.bg-primary-blue {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.text-primary-blue {
+  color: #1e3a8a;
+}
+
+.btn-way-primary {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-way-primary:hover {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  color: white;
+}
+
+.btn-way-primary.active,
+.btn-outline-primary.active {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+  border-color: #1e3a8a !important;
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Cards de Capacitaciones */
+.training-card {
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.training-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.training-image {
+  height: 220px;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.training-card:hover .training-image {
+  transform: scale(1.05);
+}
+
+/* Overlay gradiente para las imágenes */
+.bg-gradient-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+/* Instructor Avatar */
+.instructor-avatar {
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+}
+
+.instructor-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Badges de nivel */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+}
+
+/* Rating stars */
+.rating .fas.text-warning {
+  color: #fbbf24 !important;
+}
+
+.rating .fas.text-muted {
+  color: #9ca3af !important;
+}
+
+/* Botones de filtro */
+.btn-outline-primary {
+  border: 2px solid #3b82f6;
+  color: #3b82f6;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Características badges */
+.badge.bg-light {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  border: 1px solid #e5e7eb;
+}
+
+/* Modal personalizado */
+.modal-content {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.modal-header.bg-primary-blue {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+}
+
+/* Accordion personalizado */
+.accordion-button {
+  background-color: #f8fafc;
+  border: none;
+  color: #1e3a8a;
+  font-weight: 500;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #e0f2fe;
+  color: #1e3a8a;
+}
+
+.accordion-button:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Estados especiales */
+.card-img-top {
+  position: relative;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+/* Stagger effect para las cards */
+.training-card:nth-child(1) { animation-delay: 0.1s; }
+.training-card:nth-child(2) { animation-delay: 0.2s; }
+.training-card:nth-child(3) { animation-delay: 0.3s; }
+.training-card:nth-child(4) { animation-delay: 0.4s; }
+.training-card:nth-child(5) { animation-delay: 0.5s; }
+.training-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Spinner personalizado */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Call to action section */
+.bg-primary-blue.text-white a.btn-light:hover {
+  background-color: #f8fafc;
+  transform: translateY(-2px);
+}
+
+.bg-primary-blue.text-white a.btn-outline-light:hover {
+  background-color: white;
+  color: #1e3a8a !important;
+  transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .training-card {
+    margin-bottom: 2rem;
+  }
+  
+  .btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+  
+  .display-4 {
+    font-size: 2rem;
+  }
+  
+  .training-image {
+    height: 200px;
+  }
+  
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .d-flex.gap-3.justify-content-center.flex-wrap {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .d-flex.gap-3.justify-content-center.flex-wrap .btn {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .instructor-avatar {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* Mejoras de accesibilidad */
+.btn:focus,
+.card:focus {
+  outline: 3px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Hover effects para mejor UX */
+.card-title {
+  transition: color 0.3s ease;
+}
+
+.training-card:hover .card-title {
+  color: #1e3a8a !important;
+}
+
+/* Precio destacado */
+.text-success {
+  font-weight: 700;
+}
+
+.text-decoration-line-through {
+  opacity: 0.7;
+}
+
+/* Estados de loading y empty */
+.text-center.py-5 {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

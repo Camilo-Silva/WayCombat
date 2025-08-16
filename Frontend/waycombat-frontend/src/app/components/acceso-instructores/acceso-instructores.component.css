@@ -1,0 +1,233 @@
+/* Componente Acceso Instructores */
+.bg-primary-blue {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.text-primary-blue {
+  color: #1e3a8a;
+}
+
+.btn-way-primary {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border: none;
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-way-primary:hover {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  color: white;
+}
+
+.btn-way-primary:active {
+  transform: translateY(0);
+}
+
+.btn-way-primary:disabled {
+  background: #6b7280;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Animaciones */
+.fade-in {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pestañas de navegación */
+.nav-pills .nav-link {
+  color: #6b7280;
+  border: 2px solid transparent;
+  background: transparent;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link:hover {
+  color: #1e3a8a;
+  background: rgba(30, 58, 138, 0.1);
+}
+
+.nav-pills .nav-link.active {
+  color: white;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border: 2px solid #1e3a8a;
+}
+
+/* Formularios */
+.form-control {
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-control.is-invalid {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-control.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+/* Estilos para los labels */
+.form-label {
+  color: #374151;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.form-label i {
+  color: #1e3a8a;
+}
+
+/* Input groups para el botón de mostrar/ocultar contraseña */
+.input-group .btn {
+  border-left: none;
+}
+
+.input-group .form-control {
+  border-right: none;
+}
+
+.input-group .form-control:focus {
+  z-index: 3;
+}
+
+/* Checkbox personalizado */
+.form-check-input:checked {
+  background-color: #1e3a8a;
+  border-color: #1e3a8a;
+}
+
+.form-check-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Enlaces */
+a {
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #1e40af !important;
+}
+
+/* Alertas */
+.alert {
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.alert-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-left: 4px solid #ef4444;
+}
+
+.alert-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1e40af;
+  border-left: 4px solid #3b82f6;
+}
+
+/* Lista de beneficios */
+.list-unstyled li {
+  padding: 4px 0;
+}
+
+.list-unstyled i {
+  color: #10b981;
+}
+
+/* Efectos de sombra */
+.shadow-lg {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .bg-primary-blue {
+    background: linear-gradient(to bottom, #1e3a8a 0%, #3b82f6 100%);
+    text-align: center;
+  }
+  
+  .col-lg-6 {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .container-fluid {
+    padding: 15px;
+  }
+  
+  .p-5 {
+    padding: 2rem !important;
+  }
+  
+  .btn-lg {
+    padding: 12px 24px;
+  }
+  
+  .form-control-lg {
+    padding: 12px 16px;
+  }
+}
+
+/* Spinner de carga */
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mejoras visuales para mejor UX */
+.rounded-lg {
+  border-radius: 12px;
+}
+
+/* Estado hover para botones secundarios */
+.btn-outline-secondary:hover {
+  background-color: #6b7280;
+  border-color: #6b7280;
+}
+
+/* Espaciado mejorado */
+.mb-3 {
+  margin-bottom: 1.5rem;
+}
+
+/* Texto del WhatsApp */
+.btn-success {
+  transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}

@@ -1,0 +1,569 @@
+<!-- ADMIN DASHBOARD -->
+<div class="container-fluid py-4">
+  <!-- Header del Dashboard -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h2 text-primary-blue mb-0">
+            <i class="fas fa-tachometer-alt me-2"></i>Panel de Administración
+          </h1>
+          <p class="text-muted mb-0">Gestiona mixs, usuarios y permisos</p>
+        </div>
+        <div>
+          <span class="badge bg-success fs-6">
+            <i class="fas fa-shield-alt me-1"></i>Administrador
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón para crear mix de prueba -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="alert alert-info d-flex align-items-center justify-content-between">
+        <div>
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>Crear datos de prueba:</strong> Haz clic aquí para crear el MIX 1 con archivos reales de Google Drive y YouTube Music
+        </div>
+        <button 
+          class="btn btn-primary btn-sm"
+          (click)="createTestMix()"
+          [disabled]="isLoading">
+          <i class="fas fa-plus me-1"></i>
+          {{ isLoading ? 'Creando...' : 'Crear MIX de Prueba' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navegación por pestañas -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <ul class="nav nav-tabs nav-fill" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button 
+            class="nav-link" 
+            [class.active]="activeTab === 'mixs'"
+            (click)="setActiveTab('mixs')"
+            type="button">
+            <i class="fas fa-music me-2"></i>Gestión de Mixs
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button 
+            class="nav-link" 
+            [class.active]="activeTab === 'usuarios'"
+            (click)="setActiveTab('usuarios')"
+            type="button">
+            <i class="fas fa-users me-2"></i>Usuarios Registrados
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button 
+            class="nav-link" 
+            [class.active]="activeTab === 'permisos'"
+            (click)="setActiveTab('permisos')"
+            type="button">
+            <i class="fas fa-key me-2"></i>Asignación de Permisos
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Contenido de las pestañas -->
+  <div class="tab-content">
+    
+    <!-- ========== PESTAÑA: GESTIÓN DE MIXS ========== -->
+    <div *ngIf="activeTab === 'mixs'" class="tab-pane fade show active">
+      
+      <!-- Botón para crear nuevo mix -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <button 
+            class="btn btn-way-primary btn-lg"
+            (click)="startCreatingMix()"
+            *ngIf="!isCreatingMix">
+            <i class="fas fa-plus me-2"></i>Crear Nuevo Mix
+          </button>
+        </div>
+      </div>
+
+      <!-- Formulario de creación/edición de mix -->
+      <div *ngIf="isCreatingMix" class="row mb-5">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary-blue text-white">
+              <h5 class="mb-0">
+                <i class="fas fa-edit me-2"></i>
+                {{ editingMixId ? 'Editar Mix' : 'Crear Nuevo Mix' }}
+              </h5>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="mixForm" (ngSubmit)="saveMix()">
+                
+                <!-- Información básica del mix -->
+                <div class="row mb-3">
+                  <div class="col-md-8">
+                    <label class="form-label fw-bold">Título del Mix *</label>
+                    <input 
+                      type="text" 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('titulo')"
+                      formControlName="titulo"
+                      placeholder="Ej: Mix Combat Principiantes">
+                    <div class="invalid-feedback">{{ getFieldError('titulo') }}</div>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label fw-bold">Estado</label>
+                    <div class="form-check form-switch">
+                      <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        formControlName="activo"
+                        id="mixActivo">
+                      <label class="form-check-label" for="mixActivo">
+                        Activo
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col-12">
+                    <label class="form-label fw-bold">Descripción *</label>
+                    <textarea 
+                      class="form-control"
+                      [class.is-invalid]="isFieldInvalid('descripcion')"
+                      formControlName="descripcion"
+                      rows="3"
+                      placeholder="Describe el contenido y nivel del mix..."></textarea>
+                    <div class="invalid-feedback">{{ getFieldError('descripcion') }}</div>
+                  </div>
+                </div>
+
+                <!-- Gestión de archivos -->
+                <div class="mb-4">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-primary-blue mb-0">
+                      <i class="fas fa-folder-open me-2"></i>Archivos del Mix
+                    </h6>
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-primary btn-sm"
+                      (click)="addArchivo()">
+                      <i class="fas fa-plus me-1"></i>Agregar Archivo
+                    </button>
+                  </div>
+
+                  <div formArrayName="archivos">
+                    <div 
+                      *ngFor="let archivo of archivosFormArray.controls; let i = index"
+                      [formGroupName]="i"
+                      class="card mb-3 border-secondary">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                          <h6 class="card-title text-secondary mb-0">
+                            <i class="fas fa-file me-2"></i>Archivo {{ i + 1 }}
+                          </h6>
+                          <button 
+                            type="button" 
+                            class="btn btn-outline-danger btn-sm"
+                            (click)="removeArchivo(i)"
+                            [disabled]="archivosFormArray.length === 1">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre del Archivo *</label>
+                            <input 
+                              type="text" 
+                              class="form-control form-control-sm"
+                              formControlName="nombre"
+                              placeholder="Ej: Mix_Principiantes.mp3">
+                          </div>
+                          <div class="col-md-3 mb-3">
+                            <label class="form-label">Tipo *</label>
+                            <select class="form-select form-select-sm" formControlName="tipo">
+                              <option value="audio">Audio (MP3)</option>
+                              <option value="video">Video (MP4/YouTube)</option>
+                            </select>
+                          </div>
+                          <div class="col-md-3 mb-3">
+                            <label class="form-label">Estado</label>
+                            <div class="form-check form-switch mt-2">
+                              <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                [checked]="true"
+                                [id]="'archivoActivo' + i">
+                              <label class="form-check-label" [for]="'archivoActivo' + i">
+                                Activo
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-12 mb-3">
+                            <label class="form-label">URL del Archivo *</label>
+                            <div class="input-group">
+                              <input 
+                                type="url" 
+                                class="form-control form-control-sm"
+                                formControlName="url"
+                                placeholder="https://drive.google.com/... o https://youtube.com/...">
+                              <button 
+                                type="button" 
+                                class="btn btn-outline-secondary btn-sm"
+                                (click)="convertDriveUrl(i)"
+                                title="Convertir URL de Drive a formato directo">
+                                <i class="fas fa-magic"></i>
+                              </button>
+                            </div>
+                            <div class="form-text">
+                              <i class="fas fa-info-circle me-1"></i>
+                              <strong>Google Drive:</strong> Pega la URL de compartir y haz clic en <i class="fas fa-magic"></i> para convertir |
+                              <strong>YouTube:</strong> URL completa del video
+                            </div>
+                            
+                            <!-- Ayuda visual para Google Drive -->
+                            <div class="mt-2">
+                              <button 
+                                type="button" 
+                                class="btn btn-link btn-sm p-0"
+                                (click)="toggleDriveHelp()"
+                                [attr.aria-expanded]="showDriveHelp">
+                                <i class="fas fa-question-circle me-1"></i>¿Cómo obtener URLs de Google Drive?
+                              </button>
+                              
+                              <div *ngIf="showDriveHelp" class="alert alert-info mt-2">
+                                <h6><i class="fab fa-google-drive me-2"></i>Pasos para Google Drive:</h6>
+                                <ol class="mb-2">
+                                  <li>Sube tu archivo a Google Drive</li>
+                                  <li>Haz clic derecho → "Obtener enlace"</li>
+                                  <li>Cambia a "Cualquier persona con el enlace"</li>
+                                  <li>Copia la URL completa aquí</li>
+                                  <li>Haz clic en <i class="fas fa-magic"></i> para convertir automáticamente</li>
+                                </ol>
+                                <small class="text-muted">
+                                  <i class="fas fa-lightbulb me-1"></i>
+                                  La URL se convertirá automáticamente al formato directo para reproducción
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-12">
+                            <label class="form-label">Descripción</label>
+                            <textarea 
+                              class="form-control form-control-sm"
+                              formControlName="descripcion"
+                              rows="2"
+                              placeholder="Descripción opcional del archivo..."></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="d-flex gap-2">
+                  <button 
+                    type="submit" 
+                    class="btn btn-success"
+                    [disabled]="isLoading">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                    <i class="fas fa-save me-2" *ngIf="!isLoading"></i>
+                    {{ editingMixId ? 'Actualizar Mix' : 'Crear Mix' }}
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-secondary"
+                    (click)="cancelEdit()">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de mixs existentes -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Mixs Existentes ({{ mixs.length }})
+              </h5>
+              <span class="badge bg-info">Total: {{ mixs.length }}</span>
+            </div>
+            <div class="card-body p-0">
+              
+              <!-- Loading state -->
+              <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2 text-muted">Cargando mixs...</p>
+              </div>
+
+              <!-- Lista de mixs -->
+              <div *ngIf="!isLoading" class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>ID</th>
+                      <th>Título</th>
+                      <th>Descripción</th>
+                      <th>Archivos</th>
+                      <th>Estado</th>
+                      <th>Fecha</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let mix of mixs">
+                      <td>{{ mix.id }}</td>
+                      <td>
+                        <strong>{{ mix.titulo }}</strong>
+                      </td>
+                      <td>
+                        <span class="text-muted">{{ mix.descripcion | slice:0:50 }}{{ mix.descripcion && mix.descripcion.length > 50 ? '...' : '' }}</span>
+                      </td>
+                      <td>
+                        <span class="badge bg-secondary">{{ mix.archivos.length }} archivos</span>
+                      </td>
+                      <td>
+                        <div class="form-check form-switch">
+                          <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            [checked]="mix.activo"
+                            (change)="toggleMixActive(mix.id!)"
+                            [id]="'switch' + mix.id">
+                          <label class="form-check-label" [for]="'switch' + mix.id">
+                            <span class="badge" [class.bg-success]="mix.activo" [class.bg-secondary]="!mix.activo">
+                              {{ mix.activo ? 'Activo' : 'Inactivo' }}
+                            </span>
+                          </label>
+                        </div>
+                      </td>
+                      <td>
+                        <small class="text-muted">{{ mix.fechaCreacion | date:'dd/MM/yyyy' }}</small>
+                      </td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <button 
+                            class="btn btn-outline-primary" 
+                            (click)="editMix(mix)"
+                            title="Editar mix">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                          <button 
+                            class="btn btn-outline-danger" 
+                            (click)="deleteMix(mix.id!)"
+                            title="Eliminar mix">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Empty state -->
+              <div *ngIf="!isLoading && mixs.length === 0" class="text-center py-5">
+                <i class="fas fa-music fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay mixs creados</h5>
+                <p class="text-muted">Comienza creando tu primer mix</p>
+                <button class="btn btn-way-primary" (click)="startCreatingMix()">
+                  <i class="fas fa-plus me-2"></i>Crear Primer Mix
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PESTAÑA: USUARIOS REGISTRADOS ========== -->
+    <div *ngIf="activeTab === 'usuarios'" class="tab-pane fade show active">
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="fas fa-users me-2"></i>Usuarios Registrados ({{ usuarios.length }})
+              </h5>
+              <span class="badge bg-info">Total: {{ usuarios.length }}</span>
+            </div>
+            <div class="card-body p-0">
+              
+              <!-- Loading state -->
+              <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2 text-muted">Cargando usuarios...</p>
+              </div>
+
+              <!-- Lista de usuarios -->
+              <div *ngIf="!isLoading" class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>ID</th>
+                      <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Rol</th>
+                      <th>Fecha Registro</th>
+                      <th>Mixs Asignados</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let usuario of usuarios">
+                      <td>{{ usuario.id }}</td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-user-circle me-2 text-primary"></i>
+                          <strong>{{ usuario.nombre }}</strong>
+                        </div>
+                      </td>
+                      <td>{{ usuario.email }}</td>
+                      <td>
+                        <span 
+                          class="badge"
+                          [class.bg-danger]="usuario.rol === 'Admin'"
+                          [class.bg-primary]="usuario.rol === 'Usuario'">
+                          {{ usuario.rol }}
+                        </span>
+                      </td>
+                      <td>
+                        <small class="text-muted">{{ usuario.fechaCreacion | date:'dd/MM/yyyy' }}</small>
+                      </td>
+                      <td>
+                        <span class="badge bg-secondary">
+                          {{ getPermisosActivosCount(usuario.id!) }} mixs
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge bg-success">Activo</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Empty state -->
+              <div *ngIf="!isLoading && usuarios.length === 0" class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay usuarios registrados</h5>
+                <p class="text-muted">Los usuarios aparecerán aquí cuando se registren</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PESTAÑA: ASIGNACIÓN DE PERMISOS ========== -->
+    <div *ngIf="activeTab === 'permisos'" class="tab-pane fade show active">
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <i class="fas fa-key me-2"></i>Matriz de Permisos: Usuarios vs Mixs
+              </h5>
+              <small class="text-muted">Haz clic en las casillas para otorgar o quitar acceso</small>
+            </div>
+            <div class="card-body">
+              
+              <!-- Loading state -->
+              <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2 text-muted">Cargando permisos...</p>
+              </div>
+
+              <!-- Matriz de permisos -->
+              <div *ngIf="!isLoading && usuarios.length > 0 && mixs.length > 0" class="table-responsive">
+                <table class="table table-bordered table-hover">
+                  <thead class="table-dark">
+                    <tr>
+                      <th class="sticky-column">Usuario</th>
+                      <th *ngFor="let mix of mixs" class="text-center">
+                        <div class="d-flex flex-column align-items-center">
+                          <strong>{{ mix.titulo }}</strong>
+                          <small class="text-muted">ID: {{ mix.id }}</small>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let usuario of usuarios">
+                      <td class="sticky-column fw-bold">
+                        <div class="d-flex align-items-center">
+                          <i class="fas fa-user me-2"></i>
+                          <div>
+                            <div>{{ usuario.nombre }}</div>
+                            <small class="text-muted">{{ usuario.email }}</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td *ngFor="let mix of mixs" class="text-center">
+                        <div class="form-check form-switch d-flex justify-content-center">
+                          <input 
+                            class="form-check-input" 
+                            type="checkbox"
+                            [checked]="hasPermiso(usuario.id!, mix.id!)"
+                            (change)="toggleUsuarioMixPermiso(usuario.id!, mix.id!)"
+                            [id]="'permiso_' + usuario.id + '_' + mix.id">
+                          <label 
+                            class="form-check-label" 
+                            [for]="'permiso_' + usuario.id + '_' + mix.id"
+                            style="display: none;">
+                          </label>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Empty states -->
+              <div *ngIf="!isLoading && usuarios.length === 0" class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay usuarios para asignar permisos</h5>
+                <p class="text-muted">Primero necesitas tener usuarios registrados</p>
+              </div>
+
+              <div *ngIf="!isLoading && mixs.length === 0" class="text-center py-5">
+                <i class="fas fa-music fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay mixs para asignar</h5>
+                <p class="text-muted">Primero crea algunos mixs en la pestaña "Gestión de Mixs"</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

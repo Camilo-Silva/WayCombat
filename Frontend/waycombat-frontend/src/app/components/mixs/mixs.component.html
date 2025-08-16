@@ -1,0 +1,154 @@
+<!-- MIXS - Contenido dinámico con acceso controlado -->
+<div class="container-fluid py-5 bg-light">
+  <!-- Hero Section -->
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-12">
+        <h1 class="display-4 fw-bold text-primary-blue mb-3">
+          <i class="fas fa-music me-3"></i>Mixs Way Combat
+        </h1>
+        <p class="lead text-muted" *ngIf="!isAuthenticated">
+          Inicia sesión para acceder a tus mixs asignados
+        </p>
+        <p class="lead text-muted" *ngIf="isAuthenticated">
+          Tus mixs disponibles
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contenido principal de mixs -->
+<div class="container py-5">
+
+  <!-- Si no está autenticado -->
+  <div *ngIf="!isAuthenticated" class="row">
+    <div class="col-12 text-center">
+      <div class="card shadow-sm border-0 py-5">
+        <div class="card-body">
+          <i class="fas fa-lock fa-4x text-muted mb-4"></i>
+          <h3 class="text-muted mb-4">Acceso Restringido</h3>
+          <p class="lead mb-4">
+            Los mixs son contenido exclusivo para usuarios registrados.
+            <br>Inicia sesión para acceder a tus mixs asignados.
+          </p>
+          <a routerLink="/acceso-instructores" class="btn btn-way-primary btn-lg">
+            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Si está autenticado pero sin mixs asignados -->
+  <div *ngIf="isAuthenticated && userMixs.length === 0 && !isLoading" class="row">
+    <div class="col-12 text-center">
+      <div class="card shadow-sm border-0 py-5">
+        <div class="card-body">
+          <i class="fas fa-music fa-4x text-muted mb-4"></i>
+          <h3 class="text-muted mb-4">Sin Mixs Asignados</h3>
+          <p class="lead mb-4">
+            Aún no tienes mixs asignados.
+            <br>Contacta con un administrador para obtener acceso.
+          </p>
+          <a 
+            href="https://wa.me/5491127355020" 
+            target="_blank" 
+            class="btn btn-success btn-lg">
+            <i class="fab fa-whatsapp me-2"></i>Contactar Admin
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cargando -->
+  <div *ngIf="isLoading" class="row">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 text-muted">Cargando tus mixs...</p>
+    </div>
+  </div>
+
+  <!-- Grid de mixs disponibles -->
+  <div *ngIf="isAuthenticated && userMixs.length > 0 && !isLoading" class="row">
+    <div class="col-lg-4 col-md-6 mb-4" *ngFor="let mix of userMixs; let i = index">
+      <div class="card shadow-sm border-0 h-100 mix-card">
+        <!-- Header del mix -->
+        <div class="card-header bg-primary-blue text-white">
+          <h5 class="card-title mb-0">
+            <i class="fas fa-music me-2"></i>{{ mix.titulo || 'Mix ' + (i + 1) }}
+          </h5>
+        </div>
+
+        <!-- Cuerpo del mix -->
+        <div class="card-body d-flex flex-column text-center">
+          
+          <!-- Información del mix -->
+          <div class="mb-3">
+            <i class="fas fa-folder fa-3x text-primary-blue mb-3"></i>
+            <h6 class="text-muted mb-2">{{ (mix.archivos && mix.archivos.length) || 0 }} archivos disponibles</h6>
+            <p class="text-muted small">{{ mix.descripcion || 'Contenido multimedia disponible' }}</p>
+          </div>
+
+          <!-- Botón para ver el mix -->
+          <div class="mt-auto">
+            <button 
+              class="btn btn-way-primary btn-lg w-100"
+              [routerLink]="['/mixs', mix.id]"
+              type="button">
+              <i class="fas fa-eye me-2"></i>VER MIX
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal para reproducir archivo -->
+<div class="modal fade" id="mediaModal" tabindex="-1" *ngIf="currentFile">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ currentFile.nombre }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        
+        <!-- Audio Player -->
+        <div *ngIf="isAudio(currentFile.nombre)" class="mb-3">
+          <audio controls class="w-100" [src]="currentFile.url" preload="metadata">
+            Tu navegador no soporta el elemento de audio.
+          </audio>
+        </div>
+
+        <!-- Video Player -->
+        <div *ngIf="isVideo(currentFile.nombre)" class="mb-3">
+          <video controls class="w-100" [src]="currentFile.url" preload="metadata" style="max-height: 400px;">
+            Tu navegador no soporta el elemento de video.
+          </video>
+        </div>
+
+        <!-- Otros archivos -->
+        <div *ngIf="!isAudio(currentFile.nombre) && !isVideo(currentFile.nombre)" class="mb-3">
+          <i class="fas fa-file fa-4x text-muted mb-3"></i>
+          <p>Este tipo de archivo no se puede reproducir en el navegador.</p>
+          <a [href]="currentFile.url" target="_blank" class="btn btn-primary">
+            <i class="fas fa-download me-2"></i>Descargar
+          </a>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <a [href]="currentFile.url" target="_blank" class="btn btn-primary">
+          <i class="fas fa-external-link-alt me-2"></i>Abrir en nueva pestaña
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

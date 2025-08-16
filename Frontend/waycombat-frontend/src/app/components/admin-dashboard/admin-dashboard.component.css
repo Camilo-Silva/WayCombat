@@ -1,0 +1,338 @@
+/* Colors personalizados Way Combat */
+:root {
+  --way-primary: #e74c3c;
+  --way-primary-dark: #c0392b;
+  --way-secondary: #2c3e50;
+  --way-accent: #f39c12;
+  --way-success: #27ae60;
+  --way-danger: #e74c3c;
+  --way-warning: #f39c12;
+  --way-info: #3498db;
+  --way-light: #ecf0f1;
+  --way-dark: #2c3e50;
+}
+
+/* Estilos generales del dashboard */
+.container-fluid {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Header del dashboard */
+.text-primary-blue {
+  color: var(--way-primary) !important;
+}
+
+.bg-primary-blue {
+  background-color: var(--way-primary) !important;
+}
+
+.btn-way-primary {
+  background-color: var(--way-primary);
+  border-color: var(--way-primary);
+  color: white;
+}
+
+.btn-way-primary:hover {
+  background-color: var(--way-primary-dark);
+  border-color: var(--way-primary-dark);
+  color: white;
+}
+
+/* Navegación por pestañas */
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--way-secondary);
+  font-weight: 500;
+  padding: 1rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--way-primary);
+  border-bottom-color: var(--way-primary);
+}
+
+.nav-tabs .nav-link.active {
+  background-color: var(--way-primary);
+  color: white;
+  border-bottom-color: var(--way-primary-dark);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Cards y paneles */
+.card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  font-weight: 600;
+}
+
+/* Formularios */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--way-primary);
+  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+}
+
+.form-check-input:checked {
+  background-color: var(--way-primary);
+  border-color: var(--way-primary);
+}
+
+.form-check-input:focus {
+  border-color: var(--way-primary);
+  box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
+}
+
+/* Archivos del mix */
+.border-secondary {
+  border-color: #dee2e6 !important;
+}
+
+.card-body .row .col-md-3,
+.card-body .row .col-md-6 {
+  margin-bottom: 0.5rem;
+}
+
+/* Badges y estados */
+.badge {
+  font-size: 0.75em;
+  padding: 0.5em 0.75em;
+}
+
+.badge.bg-success {
+  background-color: var(--way-success) !important;
+}
+
+.badge.bg-danger {
+  background-color: var(--way-danger) !important;
+}
+
+.badge.bg-info {
+  background-color: var(--way-info) !important;
+}
+
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+/* Tablas */
+.table {
+  font-size: 0.9rem;
+}
+
+.table th {
+  background-color: var(--way-light);
+  border-bottom: 2px solid var(--way-primary);
+  font-weight: 600;
+  color: var(--way-secondary);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+/* Tabla de permisos */
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.sticky-column {
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 10;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  min-width: 200px;
+}
+
+.table-dark .sticky-column {
+  background-color: var(--way-secondary) !important;
+  color: white;
+}
+
+/* Botones de acción */
+.btn-group-sm > .btn,
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
+}
+
+.btn-outline-primary {
+  border-color: var(--way-primary);
+  color: var(--way-primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--way-primary);
+  border-color: var(--way-primary);
+  color: white;
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--way-danger);
+  border-color: var(--way-danger);
+}
+
+/* Estados de carga */
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Estados vacíos */
+.text-center.py-5 {
+  padding: 3rem 0;
+}
+
+.text-center.py-5 i {
+  opacity: 0.6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .nav-tabs .nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.8rem;
+  }
+  
+  .btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .sticky-column {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .card-body {
+    padding: 1rem 0.75rem;
+  }
+  
+  .nav-tabs {
+    flex-direction: column;
+  }
+  
+  .nav-tabs .nav-link {
+    text-align: center;
+    border-radius: 0;
+  }
+}
+
+/* Animaciones y transiciones */
+.tab-pane {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form switches personalizados */
+.form-check-input {
+  width: 2.5em;
+  height: 1.25em;
+  border-radius: 2em;
+  transition: all 0.3s ease;
+}
+
+.form-check-input:checked {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+/* Tooltips y ayudas */
+.form-text {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
+}
+
+.form-text i {
+  color: var(--way-info);
+}
+
+/* Mejoras de accesibilidad */
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  outline: 2px solid var(--way-primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbar personalizado */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--way-primary);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: var(--way-primary-dark);
+}

@@ -1,0 +1,743 @@
+/* Colors personalizados Way Combat */
+:root {
+  --way-primary: #e74c3c;
+  --way-primary-dark: #c0392b;
+  --way-secondary: #2c3e50;
+  --way-accent: #f39c12;
+  --way-success: #27ae60;
+  --way-danger: #e74c3c;
+  --way-warning: #f39c12;
+  --way-info: #3498db;
+  --way-light: #ecf0f1;
+  --way-dark: #2c3e50;
+}
+
+/* Hero section */
+.hero-section {
+  background: linear-gradient(135deg, var(--way-primary) 0%, var(--way-secondary) 100%);
+  padding: 80px 0 60px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  font-weight: 300;
+  opacity: 0.95;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Filtros */
+.filter-section {
+  background: white;
+  border-bottom: 1px solid #eee;
+  padding: 20px 0;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.filter-buttons {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 20px;
+  border: 2px solid #dee2e6;
+  background: white;
+  color: #6c757d;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.filter-btn:hover {
+  border-color: var(--way-primary);
+  color: var(--way-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
+}
+
+.filter-btn.active {
+  background: var(--way-primary);
+  border-color: var(--way-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+/* Búsqueda */
+.search-container {
+  position: relative;
+  max-width: 400px;
+}
+
+.search-input {
+  padding: 12px 50px 12px 45px;
+  border: 2px solid #e9ecef;
+  border-radius: 25px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.search-input:focus {
+  border-color: var(--way-primary);
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+  background: white;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.clear-search {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.clear-search:hover {
+  color: var(--way-primary);
+  background: rgba(231, 76, 60, 0.1);
+}
+
+/* Tarjetas de Mixs */
+.mix-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  position: relative;
+}
+
+.mix-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.mix-card-image {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+  background: linear-gradient(45deg, var(--way-primary), var(--way-secondary));
+}
+
+.mix-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.mix-card:hover img {
+  transform: scale(1.05);
+}
+
+.mix-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mix-card:hover .mix-card-overlay {
+  opacity: 1;
+}
+
+.play-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--way-primary);
+  border: none;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.play-button:hover {
+  background: var(--way-primary-dark);
+  transform: scale(1.1);
+}
+
+.play-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.type-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.instructor-info {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.instructor-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+}
+
+.mix-card-body {
+  padding: 20px;
+}
+
+.mix-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--way-secondary);
+  line-height: 1.3;
+}
+
+.mix-description {
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.mix-stats {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  color: #8e9ba7;
+}
+
+.mix-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  border: none;
+  color: #6c757d;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background: var(--way-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.action-btn.favorite.active {
+  background: #dc3545;
+  color: white;
+}
+
+.rating-stars {
+  color: var(--way-accent);
+}
+
+/* Estados especiales */
+.premium-mix {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.premium-mix .mix-title,
+.premium-mix .mix-description {
+  color: white;
+}
+
+.free-badge {
+  background: var(--way-success);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Modal del reproductor */
+.player-modal .modal-dialog {
+  max-width: 600px;
+}
+
+.player-header {
+  background: linear-gradient(135deg, var(--way-primary), var(--way-secondary));
+  color: white;
+  border-radius: 15px 15px 0 0;
+  padding: 25px;
+}
+
+.player-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.3);
+}
+
+.player-controls {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.audio-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.control-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  color: var(--way-secondary);
+  font-size: 18px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.control-btn:hover:not(:disabled) {
+  background: var(--way-primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.play-pause-btn {
+  width: 70px;
+  height: 70px;
+  font-size: 24px;
+  background: var(--way-primary);
+  color: white;
+}
+
+.play-pause-btn:hover {
+  background: var(--way-primary-dark);
+}
+
+.audio-progress {
+  background: #e9ecef;
+  height: 6px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, var(--way-primary), var(--way-accent));
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: -2px;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border: 2px solid var(--way-primary);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.time-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Mix details */
+.mix-details {
+  padding: 0 25px 25px;
+}
+
+.mix-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mix-info-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f3f4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.mix-info-list li:last-child {
+  border-bottom: none;
+}
+
+.mix-info-list i {
+  color: var(--way-primary);
+  width: 16px;
+}
+
+/* Estadísticas */
+.stats-section {
+  background: var(--way-secondary);
+  color: white;
+  padding: 60px 0;
+  margin-top: 80px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 30px 15px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  color: var(--way-accent);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+/* Estados de carga */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--way-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estados vacíos */
+.empty-state {
+  text-align: center;
+  padding: 60px 30px;
+  color: #8e9ba7;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  color: #dee2e6;
+}
+
+.empty-state h4 {
+  margin-bottom: 15px;
+  color: var(--way-secondary);
+}
+
+/* Botones personalizados - Usando colores azules del brand Way Combat */
+.btn-way-primary {
+  background: linear-gradient(135deg, #1e4d72 0%, #2980b9 100%);
+  border: 2px solid #1e4d72;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(30, 77, 114, 0.3);
+}
+
+.btn-way-primary:hover {
+  background: linear-gradient(135deg, #163a5a 0%, #2471a3 100%);
+  border-color: #163a5a;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 77, 114, 0.4);
+}
+
+.btn-way-outline {
+  border: 2px solid var(--way-primary);
+  color: var(--way-primary);
+  background: transparent;
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-way-outline:hover {
+  background: var(--way-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .filter-buttons {
+    justify-content: center;
+  }
+  
+  .search-container {
+    max-width: none;
+    margin-top: 15px;
+  }
+  
+  .mix-card {
+    margin-bottom: 20px;
+  }
+  
+  .player-modal .modal-dialog {
+    margin: 10px;
+    max-width: none;
+  }
+  
+  .player-header {
+    padding: 20px 15px;
+  }
+  
+  .mix-details {
+    padding: 0 15px 20px;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    padding: 60px 0 40px;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .filter-btn {
+    font-size: 14px;
+    padding: 6px 15px;
+  }
+  
+  .mix-card-image {
+    height: 160px;
+  }
+  
+  .mix-actions {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .action-buttons {
+    justify-content: center;
+  }
+  
+  .audio-controls {
+    gap: 10px;
+  }
+  
+  .control-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
+  }
+  
+  .play-pause-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+}
+
+/* Animaciones adicionales */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Efectos de hover mejorados */
+.mix-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(44, 62, 80, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 15px;
+  z-index: 1;
+}
+
+.mix-card:hover::before {
+  opacity: 1;
+}
+
+.mix-card .mix-card-body {
+  position: relative;
+  z-index: 2;
+}
