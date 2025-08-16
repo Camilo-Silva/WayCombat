@@ -19,6 +19,9 @@ namespace WayCombat.Api.Services
         Task<List<AccesoMixDto>> GetAccesosAsync();
         Task<bool> GrantAccessAsync(CreateAccesoMixDto createAccesoDto);
         Task<bool> RevokeAccessAsync(int usuarioId, int mixId);
+        Task CreateAccesoAsync(CreateAccesoMixRequest request);
+        Task ToggleAccesoAsync(int usuarioId, int mixId);
+        Task DeleteAccesoAsync(int usuarioId, int mixId);
     }
 
     public class MixService : IMixService
@@ -257,6 +260,81 @@ namespace WayCombat.Api.Services
                 FechaExpiracion = acceso.FechaExpiracion,
                 Activo = acceso.Activo
             };
+        }
+
+        public async Task CreateAccesoAsync(CreateAccesoMixRequest request)
+        {
+            var existingAcceso = await _context.AccesoMixes
+                .FirstOrDefaultAsync(a => a.UsuarioId == request.UsuarioId && a.MixId == request.MixId);
+
+            if (existingAcceso != null)
+            {
+                // Si ya existe pero está inactivo, lo reactivamos
+                if (!existingAcceso.Activo)
+                {
+                    existingAcceso.Activo = true;
+                    existingAcceso.FechaAcceso = DateTime.UtcNow;
+                    _context.AccesoMixes.Update(existingAcceso);
+                }
+            }
+            else
+            {
+                // Crear nuevo acceso
+                var nuevoAcceso = new AccesoMix
+                {
+                    UsuarioId = request.UsuarioId,
+                    MixId = request.MixId,
+                    FechaAcceso = DateTime.UtcNow,
+                    Activo = true
+                };
+                _context.AccesoMixes.Add(nuevoAcceso);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ToggleAccesoAsync(int usuarioId, int mixId)
+        {
+            var acceso = await _context.AccesoMixes
+                .FirstOrDefaultAsync(a => a.UsuarioId == usuarioId && a.MixId == mixId);
+
+            if (acceso != null)
+            {
+                // Si existe, cambiar su estado
+                acceso.Activo = !acceso.Activo;
+                if (acceso.Activo)
+                {
+                    acceso.FechaAcceso = DateTime.UtcNow;
+                }
+                _context.AccesoMixes.Update(acceso);
+            }
+            else
+            {
+                // Si no existe, crear nuevo acceso activo
+                var nuevoAcceso = new AccesoMix
+                {
+                    UsuarioId = usuarioId,
+                    MixId = mixId,
+                    FechaAcceso = DateTime.UtcNow,
+                    Activo = true
+                };
+                _context.AccesoMixes.Add(nuevoAcceso);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAccesoAsync(int usuarioId, int mixId)
+        {
+            var acceso = await _context.AccesoMixes
+                .FirstOrDefaultAsync(a => a.UsuarioId == usuarioId && a.MixId == mixId);
+
+            if (acceso != null)
+            {
+                acceso.Activo = false;
+                _context.AccesoMixes.Update(acceso);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

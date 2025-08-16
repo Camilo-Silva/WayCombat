@@ -92,16 +92,6 @@
   box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
 }
 
-.form-check-input:checked {
-  background-color: var(--way-primary);
-  border-color: var(--way-primary);
-}
-
-.form-check-input:focus {
-  border-color: var(--way-primary);
-  box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
-}
-
 /* Archivos del mix */
 .border-secondary {
   border-color: #dee2e6 !important;
@@ -150,10 +140,86 @@
   background-color: rgba(231, 76, 60, 0.05);
 }
 
-/* Tabla de permisos */
+/* Mejoras específicas para la tabla de permisos */
 .table-bordered th,
 .table-bordered td {
   border: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+
+/* Contenedor de celda de permisos */
+.permission-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 5px;
+}
+
+/* Indicador visual del estado del permiso */
+.permission-indicator {
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.permission-indicator.active i {
+  color: var(--way-success);
+}
+
+.permission-indicator:not(.active) i {
+  color: #dc3545;
+}
+
+/* Mejora de la celda del switch */
+.table td .form-check {
+  margin-bottom: 0;
+  min-height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilos mejorados para el header de la tabla de permisos */
+.table-dark th {
+  background-color: var(--way-secondary) !important;
+  color: white !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-dark th small {
+  color: #cbd5e0 !important;
+}
+
+/* Tooltip personalizado para switches */
+.form-check-input[title] {
+  position: relative;
+}
+
+.form-check-input:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 5px;
+}
+
+/* Estilos para la leyenda explicativa */
+.bg-light {
+  background-color: #f8f9fa !important;
+  border: 1px solid #e9ecef;
+}
+
+.text-primary {
+  color: var(--way-primary) !important;
 }
 
 .sticky-column {
@@ -286,16 +352,36 @@
   }
 }
 
-/* Form switches personalizados */
+/* Form switches personalizados para permisos */
 .form-check-input {
-  width: 2.5em;
-  height: 1.25em;
+  width: 3em;
+  height: 1.5em;
   border-radius: 2em;
   transition: all 0.3s ease;
+  border: 2px solid #6c757d;
+  background-color: #ffffff;
+  cursor: pointer;
 }
 
 .form-check-input:checked {
+  background-color: var(--way-success);
+  border-color: var(--way-success);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+.form-check-input:not(:checked) {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.form-check-input:hover {
+  border-color: var(--way-primary);
+  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+}
+
+.form-check-input:focus {
+  border-color: var(--way-primary);
+  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
 }
 
 /* Tooltips y ayudas */

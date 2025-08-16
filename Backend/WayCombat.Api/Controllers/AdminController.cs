@@ -232,6 +232,48 @@ namespace WayCombat.Api.Controllers
             }
         }
 
+        [HttpPost("accesos")]
+        public async Task<ActionResult> CreateAcceso([FromBody] CreateAccesoMixRequest request)
+        {
+            try
+            {
+                await _mixService.CreateAccesoAsync(request);
+                return Ok(new { message = "Acceso creado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
+        [HttpPost("accesos/toggle")]
+        public async Task<ActionResult> ToggleAcceso([FromBody] ToggleAccesoRequest request)
+        {
+            try
+            {
+                await _mixService.ToggleAccesoAsync(request.UsuarioId, request.MixId);
+                return Ok(new { message = "Acceso actualizado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("accesos/{usuarioId}/{mixId}")]
+        public async Task<ActionResult> DeleteAcceso(int usuarioId, int mixId)
+        {
+            try
+            {
+                await _mixService.DeleteAccesoAsync(usuarioId, mixId);
+                return Ok(new { message = "Acceso eliminado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
         #endregion
     }
 }

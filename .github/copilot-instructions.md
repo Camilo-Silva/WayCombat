@@ -3,6 +3,7 @@
 ## Descripción del Proyecto
 
 WayCombat es una aplicación full-stack para una academia de artes marciales que ofrece:
+
 - Gestión de capacitaciones y entrenamientos
 - Sistema de autenticación con roles (Usuario/Admin)
 - Galería multimedia con categorización
@@ -12,12 +13,14 @@ WayCombat es una aplicación full-stack para una academia de artes marciales que
 ## Arquitectura del Sistema
 
 ### Frontend (Angular 17)
+
 - **Framework**: Angular 17 con arquitectura standalone components
 - **Estilo**: Bootstrap 5 + FontAwesome para UI/UX
 - **Puerto de desarrollo**: 4200-4204 (configurado en CORS del backend)
 - **Ubicación**: `Frontend/waycombat-frontend/`
 
 ### Backend (ASP.NET Core)
+
 - **Framework**: ASP.NET Core Web API
 - **Base de datos**: Entity Framework Core 9.0.8 + SQLite
 - **Autenticación**: JWT con BCrypt para hashing de contraseñas
@@ -25,6 +28,7 @@ WayCombat es una aplicación full-stack para una academia de artes marciales que
 - **Ubicación**: `Backend/WayCombat.Api/`
 
 ### Base de Datos
+
 - **Motor**: SQLite (`waycombat_dev.db`)
 - **ORM**: Entity Framework Core con Code First Migrations
 - **Usuario admin por defecto**: admin@waycombat.com / admin123
@@ -34,6 +38,7 @@ WayCombat es una aplicación full-stack para una academia de artes marciales que
 ### Angular Frontend
 
 #### Estructura de Componentes
+
 ```
 src/app/
 ├── components/
@@ -55,12 +60,14 @@ src/app/
 ```
 
 #### Naming Conventions
+
 - **Componentes**: PascalCase (ej: `GaleriaComponent`)
 - **Archivos**: kebab-case (ej: `galeria.component.ts`)
 - **Variables**: camelCase en inglés (NUNCA usar caracteres especiales como ñ, tildes)
 - **Interfaces**: PascalCase con sufijo (ej: `LoginRequest`, `AuthResponse`)
 
 #### Patrón de Servicios
+
 ```typescript
 @Injectable({
   providedIn: 'root'
@@ -74,6 +81,7 @@ export class AuthService {
 ```
 
 #### Standalone Components Pattern
+
 ```typescript
 @Component({
   selector: 'app-component-name',
@@ -85,6 +93,7 @@ export class AuthService {
 ```
 
 #### Guards y Navegación
+
 - Usar functional guards: `CanActivateFn`
 - Guards disponibles: `authGuard`, `adminGuard`
 - Redirección automática a `/acceso-instructores` para usuarios no autenticados
@@ -92,6 +101,7 @@ export class AuthService {
 ### Backend ASP.NET Core
 
 #### Estructura del Proyecto
+
 ```
 WayCombat.Api/
 ├── Controllers/
@@ -104,12 +114,14 @@ WayCombat.Api/
 ```
 
 #### Naming Conventions
+
 - **Controladores**: PascalCase + Controller (ej: `AuthController`)
 - **Servicios**: Interface con I + PascalCase (ej: `IUsuarioService`)
 - **Modelos**: PascalCase (ej: `Usuario`)
 - **DTOs**: PascalCase + Dto (ej: `RegisterDto`)
 
 #### Patrón de Controladores
+
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
@@ -128,6 +140,7 @@ public class AuthController : ControllerBase
 ```
 
 #### Configuración de Servicios (Program.cs)
+
 ```csharp
 // Entity Framework
 builder.Services.AddDbContext<WayCombatDbContext>(options =>
@@ -152,21 +165,25 @@ builder.Services.AddCors(options =>
 ## Patrones Específicos del Proyecto
 
 ### Autenticación JWT
+
 - Token generado en backend con roles incluidos
 - Almacenamiento en localStorage (frontend)
 - Verificación automática en AuthService
 - Guards para protección de rutas
 
 ### Gestión de Estado
+
 - Servicios Angular con BehaviorSubject para estado reactivo
 - Ejemplo: `AuthService.currentUser$` para estado de usuario
 
 ### Manejo de Errores
+
 - Try-catch en controladores con respuestas HTTP apropiadas
 - Validación de modelos con Data Annotations
 - Manejo de errores en frontend con observables
 
 ### Responsividad
+
 - Bootstrap grid system: `col-lg-4 col-md-4 col-sm-6`
 - Componentes adaptables a múltiples dispositivos
 - Mobile-first approach
@@ -188,10 +205,12 @@ builder.Services.AddCors(options =>
 4. **CORS**: Verificar que nuevos puertos estén incluidos en configuración CORS
 5. **Standalone components**: Todos los componentes nuevos deben ser standalone
 6. **Reactive forms**: Usar ReactiveFormsModule para formularios complejos
+7. Cuando ejecutes el backend siempre usa este comando: cd "d:\9.Proyectos\WayCombat\Backend\WayCombat.Api" ; dotnet run
 
 ## Flujos de Trabajo Comunes
 
 ### Agregar Nueva Funcionalidad
+
 1. Crear/modificar modelo en backend si es necesario
 2. Crear migración EF si hay cambios en BD
 3. Implementar servicio/controlador en backend
@@ -202,12 +221,14 @@ builder.Services.AddCors(options =>
 8. Agregar guards de protección si es privado
 
 ### Debugging y Testing
+
 - Backend: `dotnet run` en puerto 5165
 - Frontend: `ng serve` en puerto 4200
 - Usuario admin: admin@waycombat.com / admin123
 - Verificar CORS si hay problemas de comunicación
 
 ### Base de Datos
+
 - Archivo SQLite: `waycombat_dev.db` en directorio Backend
 - Aplicar migraciones: `dotnet ef database update`
 - Ver migraciones: carpeta `Migrations/`
@@ -223,6 +244,7 @@ builder.Services.AddCors(options =>
 ## Testing y Desarrollo
 
 ### Comandos Útiles
+
 ```bash
 # Backend
 cd Backend/WayCombat.Api
@@ -238,6 +260,7 @@ ng build
 ```
 
 ### Puertos de Desarrollo
+
 - Backend API: http://localhost:5165
 - Frontend Angular: http://localhost:4200-4204
 - Configuración CORS incluye todos los puertos

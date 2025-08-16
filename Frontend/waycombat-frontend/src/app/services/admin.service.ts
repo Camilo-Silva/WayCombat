@@ -221,7 +221,7 @@ export class AdminService {
   async getPermisos(): Promise<any[]> {
     try {
       const response = await firstValueFrom(
-        this.http.get<any[]>(`${this.apiUrl}/admin/permisos`, {
+        this.http.get<any[]>(`${this.apiUrl}/admin/accesos`, {
           headers: this.authService.getAuthHeaders()
         })
       );
@@ -235,7 +235,7 @@ export class AdminService {
   async toggleUsuarioMixPermiso(usuarioId: number, mixId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post(`${this.apiUrl}/admin/permisos/toggle`, {
+        this.http.post(`${this.apiUrl}/admin/accesos/toggle`, {
           usuarioId,
           mixId
         }, {
