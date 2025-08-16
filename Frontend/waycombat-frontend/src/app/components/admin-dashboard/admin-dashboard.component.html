@@ -190,7 +190,7 @@
                             <label class="form-label">Tipo *</label>
                             <select class="form-select form-select-sm" formControlName="tipo">
                               <option value="audio">Audio (MP3)</option>
-                              <option value="video">Video (MP4/YouTube)</option>
+                              <option value="video">Video (MP4)</option>
                             </select>
                           </div>
                           <div class="col-md-3 mb-3">
@@ -446,7 +446,7 @@
                       <td>
                         <span 
                           class="badge"
-                          [class.bg-danger]="usuario.rol === 'Admin'"
+                          [class.bg-warning]="usuario.rol === 'admin'"
                           [class.bg-primary]="usuario.rol === 'Usuario'">
                           {{ usuario.rol }}
                         </span>

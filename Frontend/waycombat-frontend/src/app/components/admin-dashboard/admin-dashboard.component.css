@@ -1,10 +1,11 @@
 /* Colors personalizados Way Combat */
 :root {
-  --way-primary: #e74c3c;
+  --way-primary: #1e3a8a;
   --way-primary-dark: #c0392b;
   --way-secondary: #2c3e50;
   --way-accent: #f39c12;
   --way-success: #27ae60;
+  --way-success-rgb: 39, 174, 96;
   --way-danger: #e74c3c;
   --way-warning: #f39c12;
   --way-info: #3498db;
@@ -19,12 +20,25 @@
 }
 
 /* Header del dashboard */
+.text-primary {
+  color: var(--way-primary) !important;
+}
+
 .text-primary-blue {
   color: var(--way-primary) !important;
 }
 
 .bg-primary-blue {
   background-color: var(--way-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--way-primary) !important;
+}
+
+.btn-primary {
+  background-color: var(--way-primary) !important;
+  border-color: var(--way-primary) !important;
 }
 
 .btn-way-primary {
@@ -47,7 +61,6 @@
 .nav-tabs .nav-link {
   border: none;
   border-bottom: 3px solid transparent;
-  background: none;
   color: var(--way-secondary);
   font-weight: 500;
   padding: 1rem 1.5rem;
@@ -55,16 +68,16 @@
 }
 
 .nav-tabs .nav-link:hover {
-  background-color: rgba(231, 76, 60, 0.1);
+  border-color: transparent;
   color: var(--way-primary);
-  border-bottom-color: var(--way-primary);
+  background-color: rgba(231, 76, 60, 0.05);
 }
 
 .nav-tabs .nav-link.active {
-  background-color: var(--way-primary);
-  color: white;
-  border-bottom-color: var(--way-primary-dark);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-bottom-color: var(--way-primary);
+  color: var(--way-primary);
+  background-color: transparent;
+  font-weight: 600;
 }
 
 /* Cards y paneles */
@@ -73,6 +86,7 @@
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: slideUp 0.4s ease-out;
 }
 
 .card:hover {
@@ -85,43 +99,112 @@
   font-weight: 600;
 }
 
-/* Formularios */
-.form-control:focus,
-.form-select:focus {
-  border-color: var(--way-primary);
-  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
-}
-
-/* Archivos del mix */
-.border-secondary {
-  border-color: #dee2e6 !important;
-}
-
 .card-body .row .col-md-3,
 .card-body .row .col-md-6 {
   margin-bottom: 0.5rem;
 }
 
-/* Badges y estados */
+/* ===============================================
+   BADGES DE ESTADO UNIFICADOS
+   =============================================== */
+
 .badge {
   font-size: 0.75em;
   padding: 0.5em 0.75em;
+  font-weight: 600;
 }
 
+/* Estado ACTIVO - Verde unificado para TODOS los contextos */
 .badge.bg-success {
   background-color: var(--way-success) !important;
+  background-image: none !important;
+  color: white !important;
+  border: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
 }
 
 .badge.bg-danger {
   background-color: var(--way-danger) !important;
+  color: white !important;
 }
 
 .badge.bg-info {
   background-color: var(--way-info) !important;
+  color: white !important;
+}
+
+.badge.bg-warning {
+  background-color: var(--way-warning) !important;
+  color: white !important;
+}
+
+.badge.bg-primary {
+  background-color: var(--way-info) !important;
+  color: white !important;
 }
 
 .badge.bg-secondary {
   background-color: #6c757d !important;
+  color: white !important;
+}
+
+/* ===============================================
+   SWITCHES UNIFICADOS
+   =============================================== */
+
+.form-check-input {
+  width: 3em;
+  height: 1.5em;
+  border-radius: 2em;
+  transition: all 0.3s ease;
+  border: 2px solid #6c757d;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+/* Estado ACTIVO del switch - Verde unificado */
+.form-check-input:checked {
+  background-color: var(--way-success) !important;
+  border-color: var(--way-success) !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
+  box-shadow: 0 0 0 0.2rem rgba(var(--way-success-rgb), 0.25) !important;
+}
+
+.form-check-input:not(:checked) {
+  background-color: white !important;
+  border-color: #ced4da !important;
+  background-image: none !important;
+}
+
+.form-check-input:hover {
+  border-color: var(--way-success) !important;
+  box-shadow: 0 0 0 0.2rem rgba(var(--way-success-rgb), 0.15) !important;
+}
+
+.form-check-input:focus {
+  border-color: var(--way-success) !important;
+  box-shadow: 0 0 0 0.2rem rgba(var(--way-success-rgb), 0.25) !important;
+  outline: none !important;
+}
+
+/* ===============================================
+   INDICADORES DE PERMISOS
+   =============================================== */
+
+.permission-indicator {
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.permission-indicator.active i {
+  color: var(--way-success) !important;
+}
+
+.permission-indicator:not(.active) i {
+  color: var(--way-danger) !important;
 }
 
 /* Tablas */
@@ -131,95 +214,37 @@
 
 .table th {
   background-color: var(--way-light);
-  border-bottom: 2px solid var(--way-primary);
+  border-bottom: 2px solid var(--way-secondary);
   font-weight: 600;
-  color: var(--way-secondary);
+  color: var(--way-secondary) !important;
+}
+
+/* Asegurar que TODO el texto del header sea azul oscuro */
+.table th,
+.table th *,
+.table thead th,
+.table thead th *,
+.table-bordered th,
+.table-bordered th * {
+  color: var(--way-secondary) !important;
 }
 
 .table-hover tbody tr:hover {
   background-color: rgba(231, 76, 60, 0.05);
 }
 
-/* Mejoras específicas para la tabla de permisos */
 .table-bordered th,
 .table-bordered td {
   border: 1px solid #dee2e6;
   vertical-align: middle;
 }
 
-/* Contenedor de celda de permisos */
 .permission-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   padding: 10px 5px;
-}
-
-/* Indicador visual del estado del permiso */
-.permission-indicator {
-  font-size: 1.2rem;
-  transition: all 0.3s ease;
-}
-
-.permission-indicator.active i {
-  color: var(--way-success);
-}
-
-.permission-indicator:not(.active) i {
-  color: #dc3545;
-}
-
-/* Mejora de la celda del switch */
-.table td .form-check {
-  margin-bottom: 0;
-  min-height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Estilos mejorados para el header de la tabla de permisos */
-.table-dark th {
-  background-color: var(--way-secondary) !important;
-  color: white !important;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.table-dark th small {
-  color: #cbd5e0 !important;
-}
-
-/* Tooltip personalizado para switches */
-.form-check-input[title] {
-  position: relative;
-}
-
-.form-check-input:hover::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  margin-bottom: 5px;
-}
-
-/* Estilos para la leyenda explicativa */
-.bg-light {
-  background-color: #f8f9fa !important;
-  border: 1px solid #e9ecef;
-}
-
-.text-primary {
-  color: var(--way-primary) !important;
 }
 
 .sticky-column {
@@ -232,7 +257,7 @@
 }
 
 .table-dark .sticky-column {
-  background-color: var(--way-secondary) !important;
+  background-color: white !important;
   color: white;
 }
 
@@ -280,47 +305,6 @@
   opacity: 0.6;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .nav-tabs .nav-link {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-  }
-  
-  .table-responsive {
-    font-size: 0.8rem;
-  }
-  
-  .btn-group-sm > .btn {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-  }
-  
-  .sticky-column {
-    min-width: 150px;
-  }
-}
-
-@media (max-width: 576px) {
-  .container-fluid {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-  
-  .card-body {
-    padding: 1rem 0.75rem;
-  }
-  
-  .nav-tabs {
-    flex-direction: column;
-  }
-  
-  .nav-tabs .nav-link {
-    text-align: center;
-    border-radius: 0;
-  }
-}
-
 /* Animaciones y transiciones */
 .tab-pane {
   animation: fadeIn 0.3s ease-in-out;
@@ -337,10 +321,6 @@
   }
 }
 
-.card {
-  animation: slideUp 0.4s ease-out;
-}
-
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -350,38 +330,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Form switches personalizados para permisos */
-.form-check-input {
-  width: 3em;
-  height: 1.5em;
-  border-radius: 2em;
-  transition: all 0.3s ease;
-  border: 2px solid #6c757d;
-  background-color: #ffffff;
-  cursor: pointer;
-}
-
-.form-check-input:checked {
-  background-color: var(--way-success);
-  border-color: var(--way-success);
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-}
-
-.form-check-input:not(:checked) {
-  background-color: #e9ecef;
-  border-color: #ced4da;
-}
-
-.form-check-input:hover {
-  border-color: var(--way-primary);
-  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
-}
-
-.form-check-input:focus {
-  border-color: var(--way-primary);
-  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
 }
 
 /* Tooltips y ayudas */
@@ -421,4 +369,45 @@
 
 .table-responsive::-webkit-scrollbar-thumb:hover {
   background: var(--way-primary-dark);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .nav-tabs .nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.8rem;
+  }
+  
+  .btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .sticky-column {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .card-body {
+    padding: 1rem 0.75rem;
+  }
+  
+  .nav-tabs {
+    flex-direction: column;
+  }
+  
+  .nav-tabs .nav-link {
+    text-align: center;
+    border-radius: 0;
+  }
 }
