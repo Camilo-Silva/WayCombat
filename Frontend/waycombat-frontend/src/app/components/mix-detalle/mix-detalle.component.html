@@ -37,7 +37,7 @@
     <div class="col-12">
       
       <!-- Estadísticas del mix -->
-      <div class="row mb-4">
+      <!-- <div class="row mb-4">
         <div class="col-md-4">
           <div class="card bg-success text-white text-center">
             <div class="card-body">
@@ -65,7 +65,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Navegación por pestañas -->
       <div class="card shadow-sm">
@@ -95,7 +95,7 @@
                 [class.active]="activeTab === 'descarga'"
                 (click)="setActiveTab('descarga')"
                 type="button">
-                <i class="fas fa-download me-2"></i>Descargar Todo
+                <i class="fas fa-download me-2"></i>Descargar Todo ({{ totalFiles }})
               </button>
             </li>
           </ul>
@@ -153,18 +153,18 @@
                       </div>
 
                       <!-- Botones de acción -->
-                      <div class="d-flex gap-2">
+                      <div class="d-flex gap-1">
                         <button 
                           class="btn btn-success btn-sm flex-fill"
                           (click)="downloadFile(audio)">
                           <i class="fas fa-download me-1"></i>Descargar
                         </button>
-                        <button 
+                        <!-- <button 
                           class="btn btn-outline-success btn-sm"
                           (click)="openFile(audio)"
                           title="Abrir en nueva pestaña">
                           <i class="fas fa-external-link-alt"></i>
-                        </button>
+                        </button> -->
                       </div>
                     </div>
                   </div>
@@ -218,18 +218,18 @@
                       </div>
 
                       <!-- Botones de acción -->
-                      <div class="d-flex gap-2">
+                      <div class="d-flex gap-1">
                         <button 
                           class="btn btn-primary btn-sm flex-fill"
                           (click)="downloadFile(video)">
                           <i class="fas fa-download me-1"></i>Descargar
                         </button>
-                        <button 
+                        <!-- <button 
                           class="btn btn-outline-primary btn-sm"
                           (click)="openFile(video)"
                           title="Abrir en nueva pestaña">
                           <i class="fas fa-external-link-alt"></i>
-                        </button>
+                        </button> -->
                       </div>
                     </div>
                   </div>

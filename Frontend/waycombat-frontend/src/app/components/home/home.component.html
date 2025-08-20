@@ -1,12 +1,15 @@
 <!-- Hero Section -->
-<section class="hero-section">
-  <div class="container">
-    <div class="row align-items-center">
+<section class="hero-section" style="background-image: url('assets/images/24.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 100vh; position: relative;">
+  <!-- Overlay para mejorar legibilidad del texto -->
+  <div class="hero-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5);"></div>
+  
+  <div class="container" style="position: relative; z-index: 2;">
+    <div class="row align-items-center" style="min-height: 100vh;">
       <div class="col-lg-6">
         <div class="hero-content fade-in">
-          <h1 class="hero-title">WAY COMBAT</h1>
-          <p class="hero-subtitle">Programa de Fitness de combate</p>
-          <p class="lead mb-4">
+          <h1 class="hero-title text-white">WAY COMBAT</h1>
+          <p class="hero-subtitle text-white">Programa de Fitness de combate</p>
+          <p class="lead mb-4 text-white">
             Descubre una nueva forma de entrenar. Únete a nuestra comunidad y transforma tu cuerpo con 
             técnicas de combate profesionales.
           </p>
@@ -17,11 +20,7 @@
       </div>
       <div class="col-lg-6 text-center">
         <div class="hero-image slide-in-right">
-          <!-- Placeholder para imagen hero -->
-          <div class="hero-placeholder bg-white bg-opacity-10 rounded-3 p-5">
-            <i class="fas fa-fist-raised fa-8x text-white opacity-75"></i>
-            <p class="text-white mt-3">Imagen Hero<br><small>1200x800px</small></p>
-          </div>
+          <!-- Espacio para contenido adicional o deja vacío para que se vea solo el fondo -->
         </div>
       </div>
     </div>
@@ -34,11 +33,11 @@
     <div class="row align-items-center">
       <div class="col-lg-6 slide-in-left">
         <div class="about-image text-center mb-4 mb-lg-0">
-          <!-- Placeholder para imagen sobre nosotros -->
-          <div class="about-placeholder bg-light rounded-3 p-5">
-            <i class="fas fa-users fa-6x text-primary-blue opacity-75"></i>
-            <p class="text-dark mt-3">Sobre Nosotros<br><small>800x600px</small></p>
-          </div>
+          <!-- Imagen sobre nosotros -->
+          <img src="assets/images/5.jpg" 
+               alt="Sobre Nosotros Way Combat" 
+               class="img-fluid rounded-3 shadow-lg"
+               style="max-height: 400px; object-fit: cover;">
         </div>
       </div>
       <div class="col-lg-6 slide-in-right">
