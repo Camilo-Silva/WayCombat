@@ -127,6 +127,20 @@ export class AuthService {
     });
   }
 
+  updateProfile(usuario: Usuario): Observable<any> {
+    return this.http.put(`${this.apiUrl}/usuario/actualizar-perfil`, usuario, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      tap(() => {
+        // Actualizar el usuario en el localStorage y BehaviorSubject
+        if (this.isBrowser) {
+          localStorage.setItem('currentUser', JSON.stringify(usuario));
+          this.currentUserSubject.next(usuario);
+        }
+      })
+    );
+  }
+
   getCurrentUser(): Usuario | null {
     return this.currentUserSubject.value;
   }

@@ -25,6 +25,10 @@ export class MiCuentaComponent implements OnInit {
   currentUser: Usuario | null = null;
   isChangingPassword: boolean = false;
   editingProfile: boolean = false;
+  
+  // Variables para edición de perfil
+  editedUserName: string = '';
+  isUpdatingProfile: boolean = false;
 
   // Contraseñas
   passwordData: PasswordData = {
@@ -44,11 +48,13 @@ export class MiCuentaComponent implements OnInit {
   toastType: 'success' | 'error' = 'success';
 
   ngOnInit(): void {
-   
-   
     this.isAuthenticated = this.authService.isLoggedIn();
     if (this.isAuthenticated) {
       this.currentUser = this.authService.getCurrentUser();
+      // Inicializar el nombre editable con el nombre actual
+      if (this.currentUser) {
+        this.editedUserName = this.currentUser.nombre;
+      }
     }
   }
 
@@ -106,9 +112,57 @@ export class MiCuentaComponent implements OnInit {
     this.showConfirmPassword = false;
   }
 
-  updateProfile(): void {
-    // Función para futuras actualizaciones de perfil
-    console.log('Update profile - coming soon');
+  toggleEditProfile(): void {
+    if (this.editingProfile) {
+      // Cancelar edición - restaurar valor original
+      if (this.currentUser) {
+        this.editedUserName = this.currentUser.nombre;
+      }
+    }
+    this.editingProfile = !this.editingProfile;
+  }
+
+  async updateProfile(): Promise<void> {
+    if (!this.currentUser || !this.editedUserName.trim()) {
+      this.showToastMessage('El nombre no puede estar vacío', 'error');
+      return;
+    }
+
+    // Verificar si realmente cambió el nombre
+    if (this.editedUserName.trim() === this.currentUser.nombre) {
+      this.editingProfile = false;
+      return;
+    }
+
+    this.isUpdatingProfile = true;
+
+    try {
+      // Crear objeto con los datos actualizados
+      const updatedUser: Usuario = {
+        ...this.currentUser,
+        nombre: this.editedUserName.trim()
+      };
+
+      await this.authService.updateProfile(updatedUser).toPromise();
+      
+      // Actualizar el usuario local
+      this.currentUser = updatedUser;
+      this.editingProfile = false;
+      
+      this.showToastMessage('Perfil actualizado exitosamente', 'success');
+      
+    } catch (error: any) {
+      const message = error?.error?.message || 'Error al actualizar el perfil';
+      this.showToastMessage(message, 'error');
+      console.error('Error updating profile:', error);
+      
+      // Restaurar valor original en caso de error
+      if (this.currentUser) {
+        this.editedUserName = this.currentUser.nombre;
+      }
+    } finally {
+      this.isUpdatingProfile = false;
+    }
   }
 
   logout(): void {
