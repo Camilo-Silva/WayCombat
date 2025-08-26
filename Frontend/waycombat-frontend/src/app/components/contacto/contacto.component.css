@@ -1,17 +1,3 @@
-/* Colors personalizados Way Combat */
-:root {
-  --way-primary: #e74c3c;
-  --way-primary-dark: #c0392b;
-  --way-secondary: #2c3e50;
-  --way-accent: #f39c12;
-  --way-success: #27ae60;
-  --way-danger: #e74c3c;
-  --way-warning: #f39c12;
-  --way-info: #3498db;
-  --way-light: #ecf0f1;
-  --way-dark: #2c3e50;
-}
-
 /* Hero Section */
 .hero-section {
   background: linear-gradient(135deg, var(--way-primary) 0%, var(--way-secondary) 100%);
@@ -148,7 +134,7 @@
 }
 
 .info-icon.phone {
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: linear-gradient(135deg, var(--way-info), #2980b9);
 }
 
 .info-icon.email {

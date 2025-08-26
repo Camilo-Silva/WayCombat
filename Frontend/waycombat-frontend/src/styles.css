@@ -11,6 +11,18 @@
   --success-green: #10b981;
   --danger-red: #ef4444;
   --warning-yellow: #f59e0b;
+  
+  /* Variables Way Combat */
+  --way-primary: #e74c3c;
+  --way-primary-dark: #c0392b;
+  --way-secondary: #2c3e50;
+  --way-accent: #f39c12;
+  --way-success: #27ae60;
+  --way-danger: #e74c3c;
+  --way-warning: #f39c12;
+  --way-info: #3498db;
+  --way-light: #ecf0f1;
+  --way-dark: #2c3e50;
 }
 
 /* Reset y estilos base */

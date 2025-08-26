@@ -471,36 +471,4 @@ export class AdminDashboardComponent implements OnInit {
     // o por defecto asumir audio si no está claro
     return 'audio';
   }
-
-  // Método para crear el mix de prueba con datos reales
-  async createTestMix(): Promise<void> {
-    try {
-      this.isLoading = true;
-      
-      const response = await this.http.post(
-        'http://localhost:5166/api/InitData/create-test-mix',
-        {},
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      ).toPromise();
-
-      console.log('Mix de prueba creado:', response);
-      alert('¡Mix de prueba creado exitosamente!');
-      
-      // Refrescar la lista de mixs
-      this.loadMixs();
-    } catch (error: any) {
-      console.error('Error al crear mix de prueba:', error);
-      if (error.error?.message) {
-        alert(`Error: ${error.error.message}`);
-      } else {
-        alert('Error al crear el mix de prueba');
-      }
-    } finally {
-      this.isLoading = false;
-    }
-  }
 }
