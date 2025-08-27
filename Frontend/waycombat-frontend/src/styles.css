@@ -72,6 +72,23 @@ body {
   box-shadow: 0 2px 10px rgba(30, 58, 138, 0.3);
 }
 
+/* Botón primario en el navbar - asegurar texto blanco visible */
+.navbar .nav-link.btn-way-primary {
+  color: #ffffff !important;
+}
+
+.navbar .nav-link.btn-way-primary:hover {
+  color: #ffffff !important;
+}
+
+.navbar .nav-link.btn-way-primary:focus {
+  color: #ffffff !important;
+}
+
+.navbar .nav-link.btn-way-primary:active {
+  color: #ffffff !important;
+}
+
 .btn-way-secondary {
   background-color: transparent;
   border: 2px solid var(--primary-blue);

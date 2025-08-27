@@ -215,8 +215,8 @@
   background: linear-gradient(135deg, #e4405f, #833ab4);
 }
 
-.social-btn.twitter {
-  background: linear-gradient(135deg, #1da1f2, #0d8bd9);
+.social-btn.tiktok {
+  background: linear-gradient(135deg, #000000, #000000e3);
 }
 
 .social-btn.youtube {
@@ -360,10 +360,14 @@
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
 }
 
 .faq-question:hover {
-  background: rgba(231, 76, 60, 0.05);
+  background: rgba(30, 58, 138, 0.05);
 }
 
 .faq-question h5 {
@@ -380,14 +384,27 @@
   transition: transform 0.3s ease;
 }
 
+.faq-item.expanded .faq-toggle {
+  transform: rotate(180deg);
+}
+
 .faq-answer {
-  padding: 0 25px 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 25px;
   color: #8e9ba7;
   line-height: 1.6;
 }
 
+.faq-answer.show {
+  max-height: 500px;
+  padding: 0 25px 20px;
+}
+
 .faq-answer p {
   margin: 0;
+  padding-top: 10px;
 }
 
 /* FAQ Empty State */
@@ -435,64 +452,37 @@
 .contact-form {
   background: white;
   border-radius: 15px;
-  padding: 40px;
+  padding: 35px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.form-section {
-  margin-bottom: 40px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid #f1f3f4;
-}
-
-.form-section:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-.section-title {
-  color: #1e3a8a;
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 25px;
-  display: flex;
-  align-items: center;
-}
-
-.section-title::before {
-  content: '';
-  width: 4px;
-  height: 20px;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-  border-radius: 2px;
-  margin-right: 10px;
-}
-
 .form-group {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
-  font-weight: 500;
+  font-weight: 600;
   color: #1e3a8a;
   margin-bottom: 8px;
   display: block;
+  font-size: 15px;
 }
 
 .form-control {
   border: 2px solid #e9ecef;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 12px 15px;
   font-size: 14px;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
   width: 100%;
+  background: #f8f9fa;
 }
 
 .form-control:focus {
   border-color: #1e3a8a;
   box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
   outline: none;
+  background: white;
 }
 
 .form-control.is-invalid {
@@ -521,7 +511,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin-bottom: 30px;
+  margin: 25px 0 30px 0;
 }
 
 .form-check-input {

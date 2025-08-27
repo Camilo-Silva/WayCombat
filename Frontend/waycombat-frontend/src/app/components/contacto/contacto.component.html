@@ -103,10 +103,10 @@
             <i class="fab fa-instagram"></i>
             <span>Instagram</span>
           </button>
-          <!-- <button class="social-btn twitter" (click)="openSocialNetwork('twitter')">
-            <i class="fab fa-twitter"></i>
-            <span>Twitter</span>
-          </button> -->
+          <button class="social-btn tiktok" (click)="openSocialNetwork('tiktok')">
+            <i class="fab fa-tiktok"></i>
+            <span>TikTok</span>
+          </button>
           <button class="social-btn youtube" (click)="openSocialNetwork('youtube')">
             <i class="fab fa-youtube"></i>
             <span>YouTube</span>
@@ -159,12 +159,13 @@
           <div 
             *ngFor="let faq of getFilteredFAQs(); let i = index" 
             class="faq-item"
+            [class.expanded]="isFAQExpanded(faq)"
             [attr.data-index]="i">
-            <div class="faq-question" (click)="toggleFAQ(faq)" (keydown.enter)="toggleFAQ(faq)" tabindex="0" role="button">
+            <button class="faq-question" (click)="toggleFAQ(faq)" type="button">
               <h5>{{ faq.pregunta }}</h5>
-              <i class="fas fa-plus faq-toggle"></i>
-            </div>
-            <div class="faq-answer">
+              <i [class]="getFAQToggleIcon(faq)" class="faq-toggle"></i>
+            </button>
+            <div class="faq-answer" [class.show]="isFAQExpanded(faq)">
               <p>{{ faq.respuesta }}</p>
             </div>
           </div>
@@ -203,175 +204,155 @@
 
         <!-- Contact Form -->
         <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" *ngIf="!isSubmitted" class="contact-form">
-          <!-- Personal Information -->
-          <div class="form-section">
-            <h4 class="section-title">Información Personal</h4>
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="nombre">Nombre *</label>
-                  <input 
-                    type="text" 
-                    id="nombre"
-                    class="form-control"
-                    [class.is-invalid]="isFieldInvalid('nombre')"
-                    formControlName="nombre"
-                    placeholder="Tu nombre">
-                  <div class="invalid-feedback" *ngIf="isFieldInvalid('nombre')">
-                    {{ getFieldError('nombre') }}
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label for="apellido">Apellido *</label>
-                  <input 
-                    type="text" 
-                    id="apellido"
-                    class="form-control"
-                    [class.is-invalid]="isFieldInvalid('apellido')"
-                    formControlName="apellido"
-                    placeholder="Tu apellido">
-                  <div class="invalid-feedback" *ngIf="isFieldInvalid('apellido')">
-                    {{ getFieldError('apellido') }}
-                  </div>
+          <!-- Personal Information Row -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="nombre">Nombre *</label>
+                <input 
+                  type="text" 
+                  id="nombre"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('nombre')"
+                  formControlName="nombre"
+                  placeholder="Tu nombre">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('nombre')">
+                  {{ getFieldError('nombre') }}
                 </div>
               </div>
             </div>
-
-            <div class="row">
-              <div class="col-md-8">
-                <div class="form-group">
-                  <label for="email">Email *</label>
-                  <input 
-                    type="email" 
-                    id="email"
-                    class="form-control"
-                    [class.is-invalid]="isFieldInvalid('email')"
-                    formControlName="email"
-                    placeholder="tu@email.com">
-                  <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
-                    {{ getFieldError('email') }}
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label for="telefono">Teléfono</label>
-                  <input 
-                    type="tel" 
-                    id="telefono"
-                    class="form-control"
-                    formControlName="telefono"
-                    placeholder="+54 11 1234-5678">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="apellido">Apellido *</label>
+                <input 
+                  type="text" 
+                  id="apellido"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('apellido')"
+                  formControlName="apellido"
+                  placeholder="Tu apellido">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('apellido')">
+                  {{ getFieldError('apellido') }}
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Consultation Details -->
-          <div class="form-section">
-            <h4 class="section-title">Detalles de la Consulta</h4>
-            <div class="form-group">
-              <label for="tipoConsulta">Tipo de Consulta *</label>
-              <select 
-                id="tipoConsulta"
-                class="form-control"
-                [class.is-invalid]="isFieldInvalid('tipoConsulta')"
-                formControlName="tipoConsulta">
-                <option value="">Selecciona el tipo de consulta</option>
-                <option *ngFor="let tipo of consultaTypes" [value]="tipo">{{ tipo }}</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="isFieldInvalid('tipoConsulta')">
-                {{ getFieldError('tipoConsulta') }}
+          <!-- Contact Information Row -->
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input 
+                  type="email" 
+                  id="email"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('email')"
+                  formControlName="email"
+                  placeholder="tu@email.com">
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                  {{ getFieldError('email') }}
+                </div>
               </div>
             </div>
-
-            <div class="form-group">
-              <label for="asunto">Asunto *</label>
-              <input 
-                type="text" 
-                id="asunto"
-                class="form-control"
-                [class.is-invalid]="isFieldInvalid('asunto') || isCharacterLimitExceeded('asunto')"
-                formControlName="asunto"
-                placeholder="Describe brevemente tu consulta"
-                maxlength="100">
-              <div class="form-text">
-                <span [class.text-danger]="isCharacterLimitExceeded('asunto')">
-                  {{ getCharacterCount('asunto') }}/{{ getCharacterLimit('asunto') }} caracteres
-                </span>
-              </div>
-              <div class="invalid-feedback" *ngIf="isFieldInvalid('asunto')">
-                {{ getFieldError('asunto') }}
-              </div>
-              <div class="invalid-feedback" *ngIf="isCharacterLimitExceeded('asunto')">
-                El asunto no puede exceder los {{ getCharacterLimit('asunto') }} caracteres
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="mensaje">Mensaje *</label>
-              <textarea 
-                id="mensaje"
-                class="form-control"
-                [class.is-invalid]="isFieldInvalid('mensaje') || isCharacterLimitExceeded('mensaje')"
-                formControlName="mensaje"
-                rows="6"
-                placeholder="Describe detalladamente tu consulta o problema..."
-                maxlength="1000"></textarea>
-              <div class="form-text">
-                <span [class.text-danger]="isCharacterLimitExceeded('mensaje')">
-                  {{ getCharacterCount('mensaje') }}/{{ getCharacterLimit('mensaje') }} caracteres
-                </span>
-              </div>
-              <div class="invalid-feedback" *ngIf="isFieldInvalid('mensaje')">
-                {{ getFieldError('mensaje') }}
-              </div>
-              <div class="invalid-feedback" *ngIf="isCharacterLimitExceeded('mensaje')">
-                El mensaje no puede exceder los {{ getCharacterLimit('mensaje') }} caracteres
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input 
+                  type="tel" 
+                  id="telefono"
+                  class="form-control"
+                  formControlName="telefono"
+                  placeholder="+54 11 1234-5678">
               </div>
             </div>
           </div>
 
-          <!-- Terms and Submit -->
-          <div class="form-section">
-            <div class="form-check">
-              <input 
-                type="checkbox" 
-                class="form-check-input"
-                [class.is-invalid]="isFieldInvalid('acepta')"
-                id="acepta"
-                formControlName="acepta">
-              <label class="form-check-label" for="acepta">
-                Acepto los <a href="#" target="_blank">términos y condiciones</a> y la 
-                <a href="#" target="_blank">política de privacidad</a> *
-              </label>
-              <div class="invalid-feedback" *ngIf="isFieldInvalid('acepta')">
-                {{ getFieldError('acepta') }}
-              </div>
+          <!-- Subject Field -->
+          <div class="form-group">
+            <label for="asunto">Asunto *</label>
+            <input 
+              type="text" 
+              id="asunto"
+              class="form-control"
+              [class.is-invalid]="isFieldInvalid('asunto') || isCharacterLimitExceeded('asunto')"
+              formControlName="asunto"
+              placeholder="Describe brevemente tu consulta"
+              maxlength="100">
+            <div class="form-text">
+              <span [class.text-danger]="isCharacterLimitExceeded('asunto')">
+                {{ getCharacterCount('asunto') }}/{{ getCharacterLimit('asunto') }} caracteres
+              </span>
             </div>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('asunto')">
+              {{ getFieldError('asunto') }}
+            </div>
+            <div class="invalid-feedback" *ngIf="isCharacterLimitExceeded('asunto')">
+              El asunto no puede exceder los {{ getCharacterLimit('asunto') }} caracteres
+            </div>
+          </div>
 
-            <div class="form-actions">
-              <button 
-                type="submit" 
-                class="btn btn-way-primary btn-lg"
-                [disabled]="contactForm.invalid || isSubmitting || isCharacterLimitExceeded('asunto') || isCharacterLimitExceeded('mensaje')">
-                <span *ngIf="!isSubmitting">
-                  <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
-                </span>
-                <span *ngIf="isSubmitting">
-                  <i class="fas fa-spinner fa-spin me-2"></i>Enviando...
-                </span>
-              </button>
-              <button 
-                type="button" 
-                class="btn btn-outline-secondary btn-lg"
-                (click)="contactForm.reset()"
-                [disabled]="isSubmitting">
-                <i class="fas fa-eraser me-2"></i>Limpiar
-              </button>
+          <!-- Message Field -->
+          <div class="form-group">
+            <label for="mensaje">Mensaje *</label>
+            <textarea 
+              id="mensaje"
+              class="form-control"
+              [class.is-invalid]="isFieldInvalid('mensaje') || isCharacterLimitExceeded('mensaje')"
+              formControlName="mensaje"
+              rows="6"
+              placeholder="Describe detalladamente tu consulta o problema..."
+              maxlength="1000"></textarea>
+            <div class="form-text">
+              <span [class.text-danger]="isCharacterLimitExceeded('mensaje')">
+                {{ getCharacterCount('mensaje') }}/{{ getCharacterLimit('mensaje') }} caracteres
+              </span>
             </div>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('mensaje')">
+              {{ getFieldError('mensaje') }}
+            </div>
+            <div class="invalid-feedback" *ngIf="isCharacterLimitExceeded('mensaje')">
+              El mensaje no puede exceder los {{ getCharacterLimit('mensaje') }} caracteres
+            </div>
+          </div>
+
+          <!-- Terms Checkbox -->
+          <div class="form-check">
+            <input 
+              type="checkbox" 
+              class="form-check-input"
+              [class.is-invalid]="isFieldInvalid('acepta')"
+              id="acepta"
+              formControlName="acepta">
+            <label class="form-check-label" for="acepta">
+              Acepto los <a href="#" target="_blank">términos y condiciones</a> y la 
+              <a href="#" target="_blank">política de privacidad</a> *
+            </label>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('acepta')">
+              {{ getFieldError('acepta') }}
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button 
+              type="submit" 
+              class="btn btn-way-primary btn-lg"
+              [disabled]="contactForm.invalid || isSubmitting || isCharacterLimitExceeded('asunto') || isCharacterLimitExceeded('mensaje')">
+              <span *ngIf="!isSubmitting">
+                <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+              </span>
+              <span *ngIf="isSubmitting">
+                <i class="fas fa-spinner fa-spin me-2"></i>Enviando...
+              </span>
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary btn-lg"
+              (click)="contactForm.reset()"
+              [disabled]="isSubmitting">
+              <i class="fas fa-eraser me-2"></i>Limpiar
+            </button>
           </div>
         </form>
       </div>

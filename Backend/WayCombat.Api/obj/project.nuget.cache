@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "54jyo33Xn0o=",
+  "dgSpecHash": "Rz45sVQfmJQ=",
   "success": true,
-  "projectFilePath": "D:\\9.Proyectos\\WayCombat\\backend\\WayCombat.Api\\WayCombat.Api.csproj",
+  "projectFilePath": "D:\\9.Proyectos\\WayCombat\\Backend\\WayCombat.Api\\WayCombat.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\camil\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\camil\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",

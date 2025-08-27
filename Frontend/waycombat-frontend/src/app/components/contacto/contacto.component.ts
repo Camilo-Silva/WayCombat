@@ -2,25 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-interface ContactInfo {
-  direccion: string;
-  telefono: string;
-  email: string;
-  horarios: string;
-  redes: {
-    facebook: string;
-    instagram: string;
-    twitter: string;
-    youtube: string;
-  };
-}
-
-interface FAQ {
-  pregunta: string;
-  respuesta: string;
-  categoria: string;
-}
+import { ContactInfo, FAQ } from '../../models/contact.model';
+import { ContactService } from '../../services/contact.service';
 
 @Component({
   selector: 'app-contacto',
@@ -31,77 +14,80 @@ interface FAQ {
 })
 export class ContactoComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
+  private contactService = inject(ContactService);
 
   contactForm!: FormGroup;
   isSubmitting: boolean = false;
   isSubmitted: boolean = false;
   selectedFAQCategory: string = 'todas';
+  
+  // Para trackear qué FAQs están expandidas
+  expandedFAQs: Set<string> = new Set();
 
-  // Información de contacto
-  contactInfo: ContactInfo = {
-    direccion: 'Av. Corrientes 1234, CABA, Buenos Aires, Argentina',
-    telefono: '+54 11 4567-8900',
-    email: 'info@waycombat.com',
-    horarios: 'Lunes a Viernes: 9:00 - 21:00\nSábados: 9:00 - 18:00\nDomingos: 10:00 - 16:00',
-    redes: {
-      facebook: 'https://facebook.com/way.combat.2025',
-      instagram: 'https://instagram.com/waycombat_w.c',
-      twitter: 'https://twitter.com/waycombat',
-      youtube: 'https://youtube.com/waycombat'
-    }
-  };
+  // Información de contacto - ahora viene del servicio
+  contactInfo: ContactInfo = this.contactService.getContactInfo();
 
   // Preguntas frecuentes
   faqs: FAQ[] = [
     {
       pregunta: '¿Cómo puedo acceder a las capacitaciones?',
       respuesta: 'Para acceder a las capacitaciones, necesitas registrarte en nuestra plataforma y adquirir uno de nuestros planes. Una vez registrado, tendrás acceso a todo el contenido según el plan que hayas elegido.',
-      categoria: 'acceso'
+      categoria: 'acceso',
+      expanded: false
     },
     {
       pregunta: '¿Qué incluye el Plan Premium?',
       respuesta: 'El Plan Premium incluye acceso ilimitado a todas las capacitaciones, mixs exclusivos, descargas sin límite, soporte prioritario y acceso anticipado a nuevo contenido.',
-      categoria: 'planes'
+      categoria: 'planes',
+      expanded: false
     },
     {
       pregunta: '¿Puedo cancelar mi suscripción en cualquier momento?',
       respuesta: 'Sí, puedes cancelar tu suscripción en cualquier momento desde tu panel de usuario. La cancelación será efectiva al final del período de facturación actual.',
-      categoria: 'planes'
+      categoria: 'planes',
+      expanded: false
     },
     {
       pregunta: '¿Los instructores están certificados?',
       respuesta: 'Todos nuestros instructores son profesionales certificados con amplia experiencia en sus disciplinas. Cada instructor tiene años de experiencia tanto en competencia como en enseñanza.',
-      categoria: 'instructores'
+      categoria: 'instructores',
+      expanded: false
     },
     {
       pregunta: '¿Necesito equipamiento especial?',
       respuesta: 'El equipamiento varía según la disciplina. Para boxeo necesitarás guantes y vendas, para Muay Thai también espinilleras. Proporcionamos una lista detallada de equipamiento recomendado para cada curso.',
-      categoria: 'equipamiento'
+      categoria: 'equipamiento',
+      expanded: false
     },
     {
       pregunta: '¿Hay contenido para principiantes?',
       respuesta: 'Absolutamente. Tenemos contenido diseñado específicamente para principiantes, con progresiones graduales y explicaciones detalladas de cada técnica.',
-      categoria: 'niveles'
+      categoria: 'niveles',
+      expanded: false
     },
     {
       pregunta: '¿Cómo descargo los mixs de entrenamiento?',
       respuesta: 'Los mixs se pueden descargar directamente desde la sección de Mixs. Solo haz clic en el botón de descarga junto al mix que desees. Nota: la descarga está disponible solo para suscriptores premium.',
-      categoria: 'tecnico'
+      categoria: 'tecnico',
+      expanded: false
     },
     {
       pregunta: '¿Puedo acceder desde múltiples dispositivos?',
       respuesta: 'Sí, puedes acceder a tu cuenta desde cualquier dispositivo. Tu progreso se sincroniza automáticamente en todos tus dispositivos.',
-      categoria: 'tecnico'
+      categoria: 'tecnico',
+      expanded: false
     },
     {
       pregunta: '¿Ofrecen certificados al completar los cursos?',
       respuesta: 'Sí, al completar satisfactoriamente un curso, recibirás un certificado digital que puedes descargar e imprimir.',
-      categoria: 'certificados'
+      categoria: 'certificados',
+      expanded: false
     },
     {
       pregunta: '¿Hay alguna garantía de devolución?',
       respuesta: 'Ofrecemos una garantía de devolución de 7 días. Si no estás satisfecho con nuestro contenido, puedes solicitar un reembolso completo dentro de los primeros 7 días.',
-      categoria: 'planes'
+      categoria: 'planes',
+      expanded: false
     }
   ];
 
@@ -117,18 +103,6 @@ export class ContactoComponent implements OnInit {
     { key: 'certificados', label: 'Certificados', icon: 'fas fa-certificate' }
   ];
 
-  // Tipos de consulta
-  consultaTypes = [
-    'Información general',
-    'Soporte técnico',
-    'Problemas de acceso',
-    'Facturación y pagos',
-    'Sugerencias',
-    'Colaboraciones',
-    'Prensa',
-    'Otro'
-  ];
-
   ngOnInit(): void {
     this.initializeForm();
   }
@@ -139,7 +113,6 @@ export class ContactoComponent implements OnInit {
       apellido: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       telefono: [''],
-      tipoConsulta: ['', [Validators.required]],
       asunto: ['', [Validators.required, Validators.minLength(5)]],
       mensaje: ['', [Validators.required, Validators.minLength(20)]],
       acepta: [false, [Validators.requiredTrue]]
@@ -229,28 +202,34 @@ export class ContactoComponent implements OnInit {
     return '';
   }
 
-  // Acciones de contacto
+  // Acciones de contacto - ahora delegadas al servicio
   callPhone(): void {
-    window.location.href = `tel:${this.contactInfo.telefono}`;
+    this.contactService.callPhone();
   }
 
   sendEmail(): void {
-    window.location.href = `mailto:${this.contactInfo.email}`;
+    this.contactService.sendEmail();
   }
 
   openMap(): void {
-    const address = encodeURIComponent(this.contactInfo.direccion);
-    window.open(`https://maps.google.com/?q=${address}`, '_blank');
+    this.contactService.openMap();
   }
 
   openSocialNetwork(network: keyof ContactInfo['redes']): void {
-    window.open(this.contactInfo.redes[network], '_blank');
+    this.contactService.openSocialNetwork(network);
   }
 
   // Utilidades
   toggleFAQ(faq: FAQ): void {
-    // Esta función se podría usar para expandir/colapsar FAQs si se implementa esa funcionalidad
-    console.log('Toggle FAQ:', faq.pregunta);
+    faq.expanded = !faq.expanded;
+  }
+
+  isFAQExpanded(faq: FAQ): boolean {
+    return faq.expanded === true;
+  }
+
+  getFAQToggleIcon(faq: FAQ): string {
+    return faq.expanded ? 'fas fa-minus' : 'fas fa-plus';
   }
 
   scrollToForm(): void {

@@ -64,18 +64,32 @@
         <!-- Redes sociales -->
         <div class="social-links">
           <a 
-            href="#" 
+            [href]="contactInfo.redes.facebook" 
             target="_blank" 
             title="Síguenos en Facebook"
             class="text-decoration-none">
             <i class="fab fa-facebook-f"></i>
           </a>
           <a 
-            href="#" 
+            [href]="contactInfo.redes.instagram" 
             target="_blank" 
             title="Síguenos en Instagram"
             class="text-decoration-none">
             <i class="fab fa-instagram"></i>
+          </a>
+          <a 
+            [href]="contactInfo.redes.tiktok" 
+            target="_blank" 
+            title="Síguenos en TikTok"
+            class="text-decoration-none">
+            <i class="fab fa-tiktok"></i>
+          </a>
+          <a 
+            [href]="contactInfo.redes.youtube" 
+            target="_blank" 
+            title="Síguenos en YouTube"
+            class="text-decoration-none">
+            <i class="fab fa-youtube"></i>
           </a>
         </div>
       </div>
