@@ -1,32 +1,32 @@
 <!-- Hero Section -->
-<section class="hero-section">
+<section class="hero-section parallax-element" data-speed="0.2">
   <div class="container">
     <div class="row align-items-center">
-      <div class="col-lg-8">
-        <h1 class="display-4 fw-bold text-primary-blue mb-3">Contactanos</h1>
-        <p class="hero-subtitle text-dark">Estamos aquí para ayudarte. Contáctanos y resolveremos todas tus dudas sobre nuestras capacitaciones y servicios.</p>
-        <button class="btn btn-way-light btn-lg" (click)="scrollToForm()">
+      <div class="col-lg-8 animate-slide-left animate-gpu">
+        <h1 class="display-4 fw-bold text-primary-blue mb-3 animate-typewriter">Contactanos</h1>
+        <p class="hero-subtitle text-dark animate-stagger">Estamos aquí para ayudarte. Contáctanos y resolveremos todas tus dudas sobre nuestras capacitaciones y servicios.</p>
+        <button class="btn btn-way-light btn-lg card-hover-effect animate-stagger" (click)="scrollToForm()">
           <i class="fas fa-envelope me-2"></i>Enviar Mensaje
         </button>
       </div>
-      <div class="col-lg-4">
+      <div class="col-lg-4 animate-slide-right animate-gpu">
         <div class="contact-hero-card">
-          <div class="contact-item">
-            <i class="fas fa-phone contact-icon"></i>
+          <div class="contact-item animate-stagger">
+            <i class="fas fa-phone contact-icon animate-bounce-in"></i>
             <div>
               <h5>Teléfono</h5>
               <p class="text-dark">{{ contactInfo.telefono }}</p>
             </div>
           </div>
-          <div class="contact-item">
-            <i class="fas fa-envelope contact-icon"></i>
+          <div class="contact-item animate-stagger">
+            <i class="fas fa-envelope contact-icon animate-bounce-in"></i>
             <div>
               <h5>Email</h5>
               <p class="text-dark">{{ contactInfo.email }}</p>
             </div>
           </div>
-          <div class="contact-item">
-            <i class="fas fa-map-marker-alt contact-icon"></i>
+          <div class="contact-item animate-stagger">
+            <i class="fas fa-map-marker-alt contact-icon animate-bounce-in"></i>
             <div>
               <h5>Dirección</h5>
               <p class="text-dark">{{ contactInfo.direccion }}</p>
@@ -42,9 +42,9 @@
 <section class="contact-info-section">
   <div class="container">
     <div class="row">
-      <div class="col-lg-3 col-md-6 mb-4">
-        <div class="info-card" (click)="callPhone()" (keydown.enter)="callPhone()" tabindex="0" role="button">
-          <div class="info-icon phone">
+      <div class="col-lg-3 col-md-6 mb-4 animate-cards-up animate-gpu">
+        <div class="info-card card-hover-effect" (click)="callPhone()" (keydown.enter)="callPhone()" tabindex="0" role="button">
+          <div class="info-icon phone animate-bounce-in">
             <i class="fas fa-phone-alt"></i>
           </div>
           <h4>Llámanos</h4>
@@ -52,9 +52,9 @@
           <small>Atención telefónica</small>
         </div>
       </div>
-      <div class="col-lg-3 col-md-6 mb-4">
-        <div class="info-card" (click)="sendEmail()" (keydown.enter)="sendEmail()" tabindex="0" role="button">
-          <div class="info-icon email">
+      <div class="col-lg-3 col-md-6 mb-4 animate-cards-up animate-gpu">
+        <div class="info-card card-hover-effect" (click)="sendEmail()" (keydown.enter)="sendEmail()" tabindex="0" role="button">
+          <div class="info-icon email animate-bounce-in">
             <i class="fas fa-envelope"></i>
           </div>
           <h4>Escríbenos</h4>
@@ -62,9 +62,9 @@
           <small>Respuesta en 24hs</small>
         </div>
       </div>
-      <div class="col-lg-3 col-md-6 mb-4">
-        <div class="info-card" (click)="openMap()" (keydown.enter)="openMap()" tabindex="0" role="button">
-          <div class="info-icon location">
+      <div class="col-lg-3 col-md-6 mb-4 animate-cards-up animate-gpu">
+        <div class="info-card card-hover-effect" (click)="openMap()" (keydown.enter)="openMap()" tabindex="0" role="button">
+          <div class="info-icon location animate-bounce-in">
             <i class="fas fa-map-marker-alt"></i>
           </div>
           <h4>Visítanos</h4>
@@ -72,9 +72,9 @@
           <small>Ver en el mapa</small>
         </div>
       </div>
-      <div class="col-lg-3 col-md-6 mb-4">
-        <div class="info-card">
-          <div class="info-icon hours">
+      <div class="col-lg-3 col-md-6 mb-4 animate-cards-up animate-gpu">
+        <div class="info-card card-hover-effect">
+          <div class="info-icon hours animate-bounce-in">
             <i class="fas fa-clock"></i>
           </div>
           <h4>Horarios</h4>
@@ -91,23 +91,23 @@
 <section class="social-section">
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-lg-8 text-center">
-        <h3>Síguenos en nuestras redes sociales</h3>
-        <p>Mantente al día con las últimas noticias, entrenamientos y contenido exclusivo</p>
+      <div class="col-lg-8 text-center animate-zoom-fade animate-gpu">
+        <h3 class="animate-typewriter">Síguenos en nuestras redes sociales</h3>
+        <p class="animate-stagger">Mantente al día con las últimas noticias, entrenamientos y contenido exclusivo</p>
         <div class="social-links">
-          <button class="social-btn facebook" (click)="openSocialNetwork('facebook')">
+          <button class="social-btn facebook card-hover-effect animate-flip-in" (click)="openSocialNetwork('facebook')">
             <i class="fab fa-facebook-f"></i>
             <span>Facebook</span>
           </button>
-          <button class="social-btn instagram" (click)="openSocialNetwork('instagram')">
+          <button class="social-btn instagram card-hover-effect animate-flip-in" (click)="openSocialNetwork('instagram')">
             <i class="fab fa-instagram"></i>
             <span>Instagram</span>
           </button>
-          <button class="social-btn tiktok" (click)="openSocialNetwork('tiktok')">
+          <button class="social-btn tiktok card-hover-effect animate-flip-in" (click)="openSocialNetwork('tiktok')">
             <i class="fab fa-tiktok"></i>
             <span>TikTok</span>
           </button>
-          <button class="social-btn youtube" (click)="openSocialNetwork('youtube')">
+          <button class="social-btn youtube card-hover-effect animate-flip-in" (click)="openSocialNetwork('youtube')">
             <i class="fab fa-youtube"></i>
             <span>YouTube</span>
           </button>
@@ -120,9 +120,9 @@
 <!-- FAQ Section -->
 <section class="faq-section">
   <div class="container">
-    <div class="section-header text-center">
-      <h2>Preguntas Frecuentes</h2>
-      <p>Encuentra respuestas rápidas a las preguntas más comunes</p>
+    <div class="section-header text-center animate-zoom-fade animate-gpu">
+      <h2 class="animate-typewriter">Preguntas Frecuentes</h2>
+      <p class="animate-stagger">Encuentra respuestas rápidas a las preguntas más comunes</p>
     </div>
 
     <!-- FAQ Categories -->
@@ -130,9 +130,9 @@
       <div class="row">
         <div 
           *ngFor="let category of faqCategories" 
-          class="col-lg-3 col-md-4 col-sm-6 mb-3">
+          class="col-lg-3 col-md-4 col-sm-6 mb-3 animate-cards-up animate-gpu">
           <button 
-            class="category-btn"
+            class="category-btn card-hover-effect"
             [class.active]="selectedFAQCategory === category.key"
             (click)="filterFAQs(category.key)">
             <i [class]="category.icon"></i>
@@ -144,7 +144,7 @@
     </div>
 
     <!-- Current Category Info -->
-    <div class="current-category" *ngIf="getCurrentCategoryInfo()">
+    <div class="current-category animate-slide-left animate-gpu" *ngIf="getCurrentCategoryInfo()">
       <div class="category-header">
         <i [class]="getCurrentCategoryInfo()?.icon"></i>
         <h4>{{ getCurrentCategoryInfo()?.label }}</h4>
@@ -158,10 +158,10 @@
         <div class="col-lg-8 offset-lg-2">
           <div 
             *ngFor="let faq of getFilteredFAQs(); let i = index" 
-            class="faq-item"
+            class="faq-item animate-stagger animate-gpu"
             [class.expanded]="isFAQExpanded(faq)"
             [attr.data-index]="i">
-            <button class="faq-question" (click)="toggleFAQ(faq)" type="button">
+            <button class="faq-question card-hover-effect" (click)="toggleFAQ(faq)" type="button">
               <h5>{{ faq.pregunta }}</h5>
               <i [class]="getFAQToggleIcon(faq)" class="faq-toggle"></i>
             </button>
@@ -171,11 +171,11 @@
           </div>
 
           <!-- Empty State -->
-          <div *ngIf="getFilteredFAQs().length === 0" class="faq-empty">
+          <div *ngIf="getFilteredFAQs().length === 0" class="faq-empty animate-bounce-in animate-gpu">
             <i class="fas fa-question-circle"></i>
             <h4>No hay preguntas en esta categoría</h4>
             <p>Selecciona otra categoría o envíanos tu consulta</p>
-            <button class="btn btn-way-primary" (click)="scrollToForm()">
+            <button class="btn btn-way-primary card-hover-effect" (click)="scrollToForm()">
               <i class="fas fa-envelope me-2"></i>Hacer Consulta
             </button>
           </div>
@@ -189,24 +189,24 @@
 <section class="contact-form-section" id="contact-form">
   <div class="container">
     <div class="row">
-      <div class="col-lg-8 offset-lg-2">
+      <div class="col-lg-8 offset-lg-2 animate-zoom-fade animate-gpu">
         <div class="form-header text-center">
-          <h2>Envíanos tu consulta</h2>
-          <p>Completa el formulario y nos pondremos en contacto contigo a la brevedad</p>
+          <h2 class="animate-typewriter">Envíanos tu consulta</h2>
+          <p class="animate-stagger">Completa el formulario y nos pondremos en contacto contigo a la brevedad</p>
         </div>
 
         <!-- Success Message -->
-        <div *ngIf="isSubmitted" class="alert alert-success text-center" role="alert">
+        <div *ngIf="isSubmitted" class="alert alert-success text-center animate-bounce-in animate-gpu" role="alert">
           <i class="fas fa-check-circle fa-2x mb-3"></i>
           <h4>¡Mensaje enviado con éxito!</h4>
           <p>Gracias por contactarnos. Responderemos tu consulta dentro de las próximas 24 horas.</p>
         </div>
 
         <!-- Contact Form -->
-        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" *ngIf="!isSubmitted" class="contact-form">
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" *ngIf="!isSubmitted" class="contact-form animate-slide-up animate-gpu">
           <!-- Personal Information Row -->
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 animate-stagger">
               <div class="form-group">
                 <label for="nombre">Nombre *</label>
                 <input 
@@ -221,7 +221,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 animate-stagger">
               <div class="form-group">
                 <label for="apellido">Apellido *</label>
                 <input 
@@ -364,38 +364,38 @@
 <section class="help-section">
   <div class="container">
     <div class="row">
-      <div class="col-lg-4 mb-4">
-        <div class="help-card">
-          <div class="help-icon">
+      <div class="col-lg-4 mb-4 animate-cards-up animate-gpu">
+        <div class="help-card card-hover-effect">
+          <div class="help-icon animate-bounce-in">
             <i class="fas fa-headset"></i>
           </div>
           <h4>Soporte Técnico</h4>
           <p>¿Problemas para acceder o usar la plataforma? Nuestro equipo técnico está listo para ayudarte.</p>
-          <button class="btn btn-way-outline" (click)="sendEmail()">
+          <button class="btn btn-way-outline card-hover-effect" (click)="sendEmail()">
             <i class="fas fa-envelope me-2"></i>Contactar Soporte
           </button>
         </div>
       </div>
-      <div class="col-lg-4 mb-4">
-        <div class="help-card">
-          <div class="help-icon">
+      <div class="col-lg-4 mb-4 animate-cards-up animate-gpu">
+        <div class="help-card card-hover-effect">
+          <div class="help-icon animate-bounce-in">
             <i class="fas fa-graduation-cap"></i>
           </div>
           <h4>Asesoría Académica</h4>
           <p>¿No sabes qué curso elegir? Te ayudamos a encontrar el programa perfecto para tu nivel.</p>
-          <button class="btn btn-way-outline" (click)="scrollToForm()">
+          <button class="btn btn-way-outline card-hover-effect" (click)="scrollToForm()">
             <i class="fas fa-comments me-2"></i>Pedir Asesoría
           </button>
         </div>
       </div>
-      <div class="col-lg-4 mb-4">
-        <div class="help-card">
-          <div class="help-icon">
+      <div class="col-lg-4 mb-4 animate-cards-up animate-gpu">
+        <div class="help-card card-hover-effect">
+          <div class="help-icon animate-bounce-in">
             <i class="fas fa-handshake"></i>
           </div>
           <h4>Colaboraciones</h4>
           <p>¿Eres instructor o tienes una propuesta comercial? Conversemos sobre oportunidades de colaboración.</p>
-          <button class="btn btn-way-outline" (click)="sendEmail()">
+          <button class="btn btn-way-outline card-hover-effect" (click)="sendEmail()">
             <i class="fas fa-briefcase me-2"></i>Proponer Colaboración
           </button>
         </div>

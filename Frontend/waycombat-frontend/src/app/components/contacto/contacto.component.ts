@@ -1,9 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ContactInfo, FAQ } from '../../models/contact.model';
 import { ContactService } from '../../services/contact.service';
+import { AnimationService } from '../../services/animation.service';
 
 @Component({
   selector: 'app-contacto',
@@ -12,14 +13,15 @@ import { ContactService } from '../../services/contact.service';
   templateUrl: './contacto.component.html',
   styleUrl: './contacto.component.css'
 })
-export class ContactoComponent implements OnInit {
+export class ContactoComponent implements OnInit, OnDestroy {
   private formBuilder = inject(FormBuilder);
   private contactService = inject(ContactService);
+  private animationService = inject(AnimationService);
 
   contactForm!: FormGroup;
   isSubmitting: boolean = false;
   isSubmitted: boolean = false;
-  selectedFAQCategory: string = 'todas';
+  selectedFAQCategory: string = 'acceso';
   
   // Para trackear qué FAQs están expandidas
   expandedFAQs: Set<string> = new Set();
@@ -92,19 +94,33 @@ export class ContactoComponent implements OnInit {
   ];
 
   // Categorías de FAQs
-  faqCategories = [
-    { key: 'todas', label: 'Todas las preguntas', icon: 'fas fa-question-circle' },
+  faqCategories = [    
     { key: 'acceso', label: 'Acceso y Registro', icon: 'fas fa-sign-in-alt' },
     { key: 'planes', label: 'Planes y Pagos', icon: 'fas fa-credit-card' },
     { key: 'instructores', label: 'Instructores', icon: 'fas fa-user-tie' },
     { key: 'equipamiento', label: 'Equipamiento', icon: 'fas fa-dumbbell' },
     { key: 'niveles', label: 'Niveles', icon: 'fas fa-layer-group' },
     { key: 'tecnico', label: 'Soporte Técnico', icon: 'fas fa-tools' },
-    { key: 'certificados', label: 'Certificados', icon: 'fas fa-certificate' }
+    { key: 'certificados', label: 'Certificados', icon: 'fas fa-certificate' },
+    { key: 'todas', label: 'Todas las preguntas', icon: 'fas fa-question-circle' }
   ];
 
   ngOnInit(): void {
     this.initializeForm();
+    
+    // Inicializar animaciones
+    this.animationService.respectMotionPreference();
+    
+    setTimeout(() => {
+      if (this.animationService.isAnimationSupported()) {
+        this.animationService.initScrollAnimations();
+        this.animationService.initParallax();
+      }
+    }, 100);
+  }
+
+  ngOnDestroy(): void {
+    this.animationService.cleanup();
   }
 
   private initializeForm(): void {

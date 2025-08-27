@@ -18,8 +18,120 @@
 .btn-way-primary:hover {
   background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-  color: white;
+  box-shadow: 0 8px 15px rgba(30, 58, 138, 0.3);
+}
+
+/* ==============================================
+   ESTILOS ESPECÍFICOS PARA CAPACITACIONES CON ANIMACIONES
+   ============================================== */
+
+/* Mejorar el espacio y la disposición */
+.container-fluid {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* Mejorar las cards de tipos de cursos */
+.card.border-primary {
+  border-width: 2px !important;
+  transition: all 0.3s ease;
+}
+
+.card.border-primary:hover {
+  border-color: #0d6efd !important;
+  box-shadow: 0 8px 25px rgba(13, 110, 253, 0.15);
+}
+
+.card.border-success {
+  border-width: 2px !important;
+  transition: all 0.3s ease;
+}
+
+.card.border-success:hover {
+  border-color: #198754 !important;
+  box-shadow: 0 8px 25px rgba(25, 135, 84, 0.15);
+}
+
+.card.border-info {
+  border-width: 2px !important;
+  transition: all 0.3s ease;
+}
+
+.card.border-info:hover {
+  border-color: #0dcaf0 !important;
+  box-shadow: 0 8px 25px rgba(13, 202, 240, 0.15);
+}
+
+/* Efectos para los iconos de check */
+.fas.fa-check-circle {
+  transition: all 0.3s ease;
+}
+
+.fas.fa-check-circle:hover {
+  transform: scale(1.1);
+  color: #28a745 !important;
+}
+
+/* Mejorar el botón de WhatsApp */
+.btn.btn-success:hover {
+  background-color: #25d366 !important;
+  border-color: #25d366 !important;
+  transform: scale(1.05);
+}
+
+/* Mejorar la tipografía */
+.display-4 {
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Animación específica para las listas */
+.list-unstyled li {
+  transition: all 0.3s ease;
+  padding: 8px 0;
+  border-radius: 8px;
+}
+
+.list-unstyled li:hover {
+  background-color: rgba(30, 58, 138, 0.05);
+  padding-left: 16px;
+  margin-left: -8px;
+}
+
+/* Efecto para los headers de card */
+.card-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.card:hover .card-header::before {
+  left: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .display-4 {
+    font-size: 2.5rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem !important;
+  }
+  
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
 }
 
 .btn-way-primary.active,

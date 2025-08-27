@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AnimationService } from '../../services/animation.service';
 
 interface Benefit {
   icon: string;
@@ -22,7 +23,26 @@ interface Director {
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, OnDestroy {
+
+  constructor(private animationService: AnimationService) {}
+
+  ngOnInit(): void {
+    // Respetar preferencias de accesibilidad
+    this.animationService.respectMotionPreference();
+    
+    // Inicializar animaciones después de que la vista se haya cargado
+    setTimeout(() => {
+      if (this.animationService.isAnimationSupported()) {
+        this.animationService.initScrollAnimations();
+        this.animationService.initParallax();
+      }
+    }, 100);
+  }
+
+  ngOnDestroy(): void {
+    this.animationService.cleanup();
+  }
   benefits: Benefit[] = [
     {
       icon: 'fas fa-fist-raised',
