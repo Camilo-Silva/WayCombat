@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\9.Proyectos\\wayCombat\\backend\\waycombat.api\\WayCombat.Api.csproj": {}
+    "D:\\9.Proyectos\\WayCombat\\backend\\WayCombat.Api\\WayCombat.Api.csproj": {}
   },
   "projects": {
-    "D:\\9.Proyectos\\wayCombat\\backend\\waycombat.api\\WayCombat.Api.csproj": {
+    "D:\\9.Proyectos\\WayCombat\\backend\\WayCombat.Api\\WayCombat.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\9.Proyectos\\wayCombat\\backend\\waycombat.api\\WayCombat.Api.csproj",
+        "projectUniqueName": "D:\\9.Proyectos\\WayCombat\\backend\\WayCombat.Api\\WayCombat.Api.csproj",
         "projectName": "WayCombat.Api",
-        "projectPath": "D:\\9.Proyectos\\wayCombat\\backend\\waycombat.api\\WayCombat.Api.csproj",
+        "projectPath": "D:\\9.Proyectos\\WayCombat\\backend\\WayCombat.Api\\WayCombat.Api.csproj",
         "packagesPath": "C:\\Users\\camil\\.nuget\\packages\\",
-        "outputPath": "D:\\9.Proyectos\\wayCombat\\backend\\waycombat.api\\obj\\",
+        "outputPath": "D:\\9.Proyectos\\WayCombat\\backend\\WayCombat.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

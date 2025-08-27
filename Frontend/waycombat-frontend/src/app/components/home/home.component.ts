@@ -70,12 +70,14 @@ export class HomeComponent {
     {
       name: 'Fede Ramirez',
       position: 'Director Técnico y Fundador',
-      description: 'Con más de 15 años de experiencia en artes marciales mixtas y entrenamiento deportivo. Especialista en técnicas de combate modernas.'
-    },
-    {
-      name: 'Isa Ramirez Pujol',
-      position: 'Directora de Programas',
-      description: 'Experta en desarrollo de programas de fitness funcional. Certificada en múltiples disciplinas de combate y preparación física.'
+      description: 'Con más de 15 años de experiencia en artes marciales mixtas y entrenamiento deportivo. Especialista en técnicas de combate modernas.',
+      image: 'assets/images/8.jpg'
     }
+    // },
+    // {
+    //   name: 'Isa Ramirez Pujol',
+    //   position: 'Directora de Programas',
+    //   description: 'Experta en desarrollo de programas de fitness funcional. Certificada en múltiples disciplinas de combate y preparación física.'
+    // }
   ];
 }

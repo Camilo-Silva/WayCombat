@@ -1,45 +1,34 @@
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, var(--way-primary) 0%, var(--way-secondary) 100%);
+  background: #f8f9fa;
   padding: 80px 0;
-  color: white;
+  color: #495057;
   position: relative;
-  overflow: hidden;
-}
-
-.hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%);
-  pointer-events: none;
 }
 
 .hero-title {
   font-size: 3.5rem;
   font-weight: 800;
   margin-bottom: 1.5rem;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  color: #1e3a8a;
 }
 
 .hero-subtitle {
   font-size: 1.3rem;
   font-weight: 300;
-  opacity: 0.95;
   margin-bottom: 2rem;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+  color: #6c757d;
+}
+
+/* Way Combat specific colors - Blue theme like galeria */
+.text-primary-blue {
+  color: #1e3a8a;
 }
 
 .btn-way-light {
-  background: rgba(255,255,255,0.2);
-  border: 2px solid rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border: 2px solid #1e3a8a;
   color: white;
-  backdrop-filter: blur(10px);
   border-radius: 25px;
   padding: 12px 30px;
   font-weight: 600;
@@ -47,19 +36,20 @@
 }
 
 .btn-way-light:hover {
-  background: white;
-  color: var(--way-primary);
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  border-color: #1e40af;
+  color: white;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255,255,255,0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 /* Contact Hero Card */
 .contact-hero-card {
-  background: rgba(255,255,255,0.1);
+  background: white;
   border-radius: 15px;
   padding: 25px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
 }
 
 .contact-item {
@@ -76,23 +66,25 @@
 .contact-icon {
   width: 40px;
   height: 40px;
-  background: rgba(255,255,255,0.2);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
+  color: white;
   flex-shrink: 0;
 }
 
 .contact-item h5 {
   margin-bottom: 5px;
   font-weight: 600;
+  color: #1e3a8a;
 }
 
 .contact-item p {
   margin: 0;
-  opacity: 0.9;
+  color: #6c757d;
   font-size: 14px;
 }
 
@@ -134,23 +126,23 @@
 }
 
 .info-icon.phone {
-  background: linear-gradient(135deg, var(--way-info), #2980b9);
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
 }
 
 .info-icon.email {
-  background: linear-gradient(135deg, var(--way-primary), var(--way-primary-dark));
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
 }
 
 .info-icon.location {
-  background: linear-gradient(135deg, var(--way-success), #229954);
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
 }
 
 .info-icon.hours {
-  background: linear-gradient(135deg, var(--way-accent), #e67e22);
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
 }
 
 .info-card h4 {
-  color: var(--way-secondary);
+  color: #1e3a8a;
   font-weight: 600;
   margin-bottom: 10px;
 }
@@ -175,7 +167,7 @@
 /* Social Section */
 .social-section {
   padding: 60px 0;
-  background: var(--way-secondary);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   color: white;
 }
 
@@ -183,12 +175,14 @@
   font-size: 2rem;
   font-weight: 600;
   margin-bottom: 15px;
+  color: white;
 }
 
 .social-section p {
   font-size: 1.1rem;
   opacity: 0.9;
   margin-bottom: 40px;
+  color: white;
 }
 
 .social-links {
@@ -243,7 +237,7 @@
 
 .section-header h2 {
   font-size: 2.5rem;
-  color: var(--way-secondary);
+  color: #1e3a8a;
   font-weight: 700;
   margin-bottom: 15px;
 }
@@ -277,17 +271,17 @@
 }
 
 .category-btn:hover {
-  border-color: var(--way-primary);
-  background: rgba(231, 76, 60, 0.05);
+  border-color: #1e3a8a;
+  background: rgba(30, 58, 138, 0.05);
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.1);
+  box-shadow: 0 8px 25px rgba(30, 58, 138, 0.1);
 }
 
 .category-btn.active {
-  background: var(--way-primary);
-  border-color: var(--way-primary);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border-color: #1e3a8a;
   color: white;
-  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+  box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
 }
 
 .category-btn i {
@@ -322,17 +316,17 @@
 
 .category-header i {
   font-size: 24px;
-  color: var(--way-primary);
+  color: #1e3a8a;
 }
 
 .category-header h4 {
-  color: var(--way-secondary);
+  color: #1e3a8a;
   font-weight: 600;
   margin: 0;
 }
 
 .question-count {
-  background: var(--way-primary);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   color: white;
   padding: 5px 12px;
   border-radius: 20px;
@@ -373,7 +367,7 @@
 }
 
 .faq-question h5 {
-  color: var(--way-secondary);
+  color: #1e3a8a;
   font-weight: 600;
   margin: 0;
   flex: 1;
@@ -381,7 +375,7 @@
 }
 
 .faq-toggle {
-  color: var(--way-primary);
+  color: #1e3a8a;
   font-size: 18px;
   transition: transform 0.3s ease;
 }
@@ -410,7 +404,7 @@
 }
 
 .faq-empty h4 {
-  color: var(--way-secondary);
+  color: #1e3a8a;
   margin-bottom: 15px;
 }
 
@@ -426,7 +420,7 @@
 
 .form-header h2 {
   font-size: 2.5rem;
-  color: var(--way-secondary);
+  color: #1e3a8a;
   font-weight: 700;
   margin-bottom: 15px;
 }
@@ -458,7 +452,7 @@
 }
 
 .section-title {
-  color: var(--way-secondary);
+  color: #1e3a8a;
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 25px;
@@ -470,7 +464,7 @@
   content: '';
   width: 4px;
   height: 20px;
-  background: var(--way-primary);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   border-radius: 2px;
   margin-right: 10px;
 }
@@ -481,7 +475,7 @@
 
 .form-group label {
   font-weight: 500;
-  color: var(--way-secondary);
+  color: #1e3a8a;
   margin-bottom: 8px;
   display: block;
 }
@@ -496,8 +490,8 @@
 }
 
 .form-control:focus {
-  border-color: var(--way-primary);
-  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+  border-color: #1e3a8a;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
   outline: none;
 }
 
@@ -547,12 +541,12 @@
 }
 
 .form-check-label a {
-  color: var(--way-primary);
+  color: #1e3a8a;
   text-decoration: underline;
 }
 
 .form-check-label a:hover {
-  color: var(--way-primary-dark);
+  color: #1e40af;
 }
 
 /* Form Actions */
@@ -564,8 +558,8 @@
 }
 
 .btn-way-primary {
-  background: var(--way-primary);
-  border-color: var(--way-primary);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border: none;
   color: white;
   padding: 12px 30px;
   border-radius: 25px;
@@ -574,11 +568,10 @@
 }
 
 .btn-way-primary:hover:not(:disabled) {
-  background: var(--way-primary-dark);
-  border-color: var(--way-primary-dark);
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .btn-way-primary:disabled {
@@ -641,16 +634,16 @@
 }
 
 .help-card:hover {
-  border-color: var(--way-primary);
+  border-color: #1e3a8a;
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(231, 76, 60, 0.1);
+  box-shadow: 0 10px 30px rgba(30, 58, 138, 0.1);
 }
 
 .help-icon {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--way-primary), var(--way-accent));
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -660,7 +653,7 @@
 }
 
 .help-card h4 {
-  color: var(--way-secondary);
+  color: #1e3a8a;
   font-weight: 600;
   margin-bottom: 15px;
 }
@@ -673,8 +666,8 @@
 }
 
 .btn-way-outline {
-  border: 2px solid var(--way-primary);
-  color: var(--way-primary);
+  border: 2px solid #1e3a8a;
+  color: #1e3a8a;
   background: transparent;
   padding: 10px 25px;
   border-radius: 25px;
@@ -688,7 +681,7 @@
 }
 
 .btn-way-outline:hover {
-  background: var(--way-primary);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   color: white;
   transform: translateY(-2px);
   text-decoration: none;

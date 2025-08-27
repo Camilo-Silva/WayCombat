@@ -44,8 +44,8 @@ export class ContactoComponent implements OnInit {
     email: 'info@waycombat.com',
     horarios: 'Lunes a Viernes: 9:00 - 21:00\nSábados: 9:00 - 18:00\nDomingos: 10:00 - 16:00',
     redes: {
-      facebook: 'https://facebook.com/waycombat',
-      instagram: 'https://instagram.com/waycombat',
+      facebook: 'https://facebook.com/way.combat.2025',
+      instagram: 'https://instagram.com/waycombat_w.c',
       twitter: 'https://twitter.com/waycombat',
       youtube: 'https://youtube.com/waycombat'
     }

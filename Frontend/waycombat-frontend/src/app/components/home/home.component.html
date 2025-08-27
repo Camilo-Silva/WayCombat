@@ -126,11 +126,19 @@
         <div class="card border-0 shadow-lg text-center slide-in-left">
           <div class="card-body p-4">
             <div class="director-image mb-3">
-              <!-- Placeholder para imagen de director -->
-              <div class="director-placeholder bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" 
-                   style="width: 150px; height: 150px;">
-                <i class="fas fa-user fa-4x text-primary-blue"></i>
+              <!-- Imagen del director si está disponible, sino placeholder -->
+              <div *ngIf="director.image; else placeholder" class="director-photo">
+                <img [src]="director.image" 
+                     [alt]="director.name" 
+                     class="rounded-circle mx-auto d-block shadow-lg"
+                     style="width: 150px; height: 150px; object-fit: cover;">
               </div>
+              <ng-template #placeholder>
+                <div class="director-placeholder bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center" 
+                     style="width: 150px; height: 150px;">
+                  <i class="fas fa-user fa-4x text-primary-blue"></i>
+                </div>
+              </ng-template>
             </div>
             <h5 class="card-title text-primary-blue">{{ director.name }}</h5>
             <p class="card-text text-muted">{{ director.position }}</p>
