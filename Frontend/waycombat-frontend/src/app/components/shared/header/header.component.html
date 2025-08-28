@@ -8,47 +8,52 @@
 
     <!-- Botón para dispositivos móviles -->
     <button 
-      class="navbar-toggler" 
+      class="navbar-toggler border-0 custom-toggler" 
       type="button" 
       data-bs-toggle="collapse" 
       data-bs-target="#navbarNav"
-      [attr.aria-expanded]="isNavbarCollapsed"
+      [attr.aria-expanded]="!isNavbarCollapsed"
       (click)="toggleNavbar()">
-      <span class="navbar-toggler-icon"></span>
+      <!-- Icono hamburguesa animado personalizado -->
+      <div class="hamburger-icon" [class.active]="!isNavbarCollapsed">
+        <span class="line line1"></span>
+        <span class="line line2"></span>
+        <span class="line line3"></span>
+      </div>
     </button>
 
     <!-- Enlaces de navegación -->
     <div class="collapse navbar-collapse" id="navbarNav" [ngClass]="{'show': !isNavbarCollapsed}">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="onNavLinkClick()">
             <i class="fas fa-home me-1"></i>Inicio
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/capacitaciones" routerLinkActive="active">
+          <a class="nav-link" routerLink="/capacitaciones" routerLinkActive="active" (click)="onNavLinkClick()">
             <i class="fas fa-graduation-cap me-1"></i>Capacitaciones
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/galeria" routerLinkActive="active">
+          <a class="nav-link" routerLink="/galeria" routerLinkActive="active" (click)="onNavLinkClick()">
             <i class="fas fa-images me-1"></i>Galería
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/contacto" routerLinkActive="active">
+          <a class="nav-link" routerLink="/contacto" routerLinkActive="active" (click)="onNavLinkClick()">
             <i class="fas fa-envelope me-1"></i>Contacto
           </a>
         </li>
         <!-- Enlace Mixs - Solo visible para usuarios logueados -->
         <li class="nav-item" *ngIf="isLoggedIn">
-          <a class="nav-link" routerLink="/mixs" routerLinkActive="active">
+          <a class="nav-link" routerLink="/mixs" routerLinkActive="active" (click)="onNavLinkClick()">
             <i class="fas fa-music me-1"></i>Mis Mixs
           </a>
         </li>
         <!-- Enlace Admin Dashboard - Solo visible para administradores -->
         <li class="nav-item" *ngIf="isLoggedIn && isAdmin">
-          <a class="nav-link text-primary fw-bold" routerLink="/admin-dashboard" routerLinkActive="active">
+          <a class="nav-link text-primary fw-bold" routerLink="/admin-dashboard" routerLinkActive="active" (click)="onNavLinkClick()">
             <i class="fas fa-cog me-1"></i>Panel Admin
           </a>
         </li>
@@ -59,7 +64,7 @@
         <!-- Usuario no logueado -->
         <ng-container *ngIf="!isLoggedIn">
           <li class="nav-item">
-            <a class="nav-link btn btn-way-primary text-white px-3 me-2" routerLink="/acceso-instructores">
+            <a class="nav-link btn btn-way-primary text-white px-3 me-2" routerLink="/acceso-instructores" (click)="onNavLinkClick()">
               <i class="fas fa-sign-in-alt me-1"></i>Acceso Instructores
             </a>
           </li>

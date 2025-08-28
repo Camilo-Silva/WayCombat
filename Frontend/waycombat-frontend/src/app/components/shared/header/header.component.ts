@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { Subject, takeUntil, filter } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { Usuario } from '../../../models/auth.models';
 
@@ -20,6 +20,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAdmin = false;
   isNavbarCollapsed = true;
   isUserMenuOpen = false;
+  isMenuOpen = false; // Para el icono hamburguesa animado
 
   constructor(
     private authService: AuthService,
@@ -41,6 +42,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
         console.log('Header - Rol del usuario:', user?.rol);
         console.log('Header - Comparación de rol:', user?.rol?.toLowerCase() === 'admin');
       });
+
+    // Suscribirse a cambios de ruta para cerrar el menú móvil
+    this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.closeNavbar();
+        this.closeUserMenu();
+      });
   }
 
   ngOnDestroy(): void {
@@ -50,6 +62,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
+    this.isMenuOpen = !this.isNavbarCollapsed; // Sincronizar con el estado del icono
+  }
+
+  closeNavbar(): void {
+    this.isNavbarCollapsed = true;
+    this.isMenuOpen = false; // Resetear el estado del icono
+  }
+
+  onNavLinkClick(): void {
+    // Método específico para cerrar el menú al hacer clic en un enlace
+    this.closeNavbar();
   }
 
   toggleUserMenu(event: Event): void {

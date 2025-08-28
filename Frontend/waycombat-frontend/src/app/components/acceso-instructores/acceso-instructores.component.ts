@@ -32,7 +32,7 @@ export class AccesoInstructoresComponent implements OnInit {
     
     // Redirigir si ya está autenticado
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/mi-cuenta']);
+      this.router.navigate(['/mixs']);
     }
   }
 
@@ -126,7 +126,7 @@ export class AccesoInstructoresComponent implements OnInit {
         if (userRole === 'Admin') {
           this.router.navigate(['/admin']);
         } else {
-          this.router.navigate(['/mi-cuenta']);
+          this.router.navigate(['/mixs']);
         }
       } else {
         this.errorMessage = result.message || 'Error al iniciar sesión. Verifica tus credenciales.';
