@@ -48,7 +48,7 @@ export class AdminDashboardComponent implements OnInit {
   filterMixsAsignados: 'todos' | 'con-mixs' | 'sin-mixs' = 'todos';
   usuariosFiltrados: Usuario[] = [];
 
-  // Filtros y búsqueda para permisos (reutilizando la misma lógica)
+  // Filtros y búsqueda para matriz de permisos
   searchTextPermisos: string = '';
   filterMixsAsignadosPermisos: 'todos' | 'con-mixs' | 'sin-mixs' = 'todos';
   usuariosFiltradosPermisos: Usuario[] = [];
@@ -180,7 +180,7 @@ export class AdminDashboardComponent implements OnInit {
     
     console.log('✅ Datos sincronizados - Usuarios con mixs asignados:', this.usuarios);
     
-    // Aplicar filtros después de sincronizar (para ambas secciones)
+    // Aplicar filtros después de sincronizar
     this.applyFilters();
     this.applyFiltersPermisos();
   }
@@ -226,7 +226,7 @@ export class AdminDashboardComponent implements OnInit {
     this.applyFilters();
   }
 
-  // ====== FILTROS Y BÚSQUEDA PARA PERMISOS ======
+  // ====== FILTROS Y BÚSQUEDA PARA MATRIZ DE PERMISOS ======
   applyFiltersPermisos(): void {
     let usuariosFiltrados = [...this.usuarios];
 

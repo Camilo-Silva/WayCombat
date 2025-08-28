@@ -585,34 +585,26 @@
             </div>
             <div class="card-body">
               
-              <!-- Barra de búsqueda y filtros para permisos -->
+              <!-- Barra de búsqueda y filtros para matriz de permisos -->
               <div class="row mb-4 p-3 bg-light rounded">
-                <div class="col-md-8">
-                  <!-- Buscador -->
-                  <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0">
-                      <i class="fas fa-search text-muted"></i>
-                    </span>
-                    <input 
-                      type="text" 
-                      class="form-control border-start-0" 
-                      placeholder="Buscar por nombre o email..."
-                      [(ngModel)]="searchTextPermisos"
-                      (input)="onSearchTextPermisosChange()">
-                    <button 
-                      *ngIf="searchTextPermisos" 
-                      class="btn btn-outline-secondary" 
-                      type="button"
-                      (click)="searchTextPermisos = ''; onSearchTextPermisosChange()"
-                      title="Limpiar búsqueda">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
+                <div class="col-md-5">
+                  <label for="searchPermisos" class="form-label fw-bold">
+                    <i class="fas fa-search me-1"></i>Buscar Usuario
+                  </label>
+                  <input 
+                    type="text" 
+                    id="searchPermisos"
+                    class="form-control" 
+                    [(ngModel)]="searchTextPermisos"
+                    (input)="onSearchTextPermisosChange()"
+                    placeholder="Buscar por nombre o email...">
                 </div>
-                
-                <div class="col-md-3">
-                  <!-- Filtro por mixs asignados -->
+                <div class="col-md-4">
+                  <label for="filterMixsPermisos" class="form-label fw-bold">
+                    <i class="fas fa-filter me-1"></i>Filtrar por Mixs
+                  </label>
                   <select 
+                    id="filterMixsPermisos"
                     class="form-select"
                     [(ngModel)]="filterMixsAsignadosPermisos"
                     (change)="onFilterMixsAsignadosPermisosChange()">
@@ -621,39 +613,13 @@
                     <option value="sin-mixs">Sin mixs asignados</option>
                   </select>
                 </div>
-                
-                <div class="col-md-1">
-                  <!-- Botón limpiar filtros -->
+                <div class="col-md-3 d-flex align-items-end">
                   <button 
-                    class="btn btn-outline-secondary w-100" 
+                    class="btn btn-outline-secondary w-100"
                     (click)="clearFiltersPermisos()"
-                    title="Limpiar todos los filtros">
-                    <i class="fas fa-eraser"></i>
+                    title="Limpiar filtros">
+                    <i class="fas fa-times me-1"></i>Limpiar
                   </button>
-                </div>
-              </div>
-
-              <!-- Estadísticas rápidas para permisos -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <div class="d-flex flex-wrap gap-3">
-                    <span class="badge bg-primary fs-6">
-                      <i class="fas fa-users me-1"></i>
-                      {{ usuariosFiltradosPermisos.length }} usuarios mostrados
-                    </span>
-                    <span class="badge bg-info fs-6">
-                      <i class="fas fa-eye me-1"></i>
-                      {{ usuariosActivos }} activos
-                    </span>
-                    <span class="badge bg-success fs-6">
-                      <i class="fas fa-music me-1"></i>
-                      {{ usuariosConMixs }} con mixs
-                    </span>
-                    <span class="badge bg-warning fs-6">
-                      <i class="fas fa-ban me-1"></i>
-                      {{ usuariosSinMixs }} sin mixs
-                    </span>
-                  </div>
                 </div>
               </div>
 
@@ -747,18 +713,17 @@
                 </div>
               </div>
 
-              <!-- Empty states -->
-              
-              <!-- Estado cuando los filtros no muestran resultados -->
+              <!-- Empty state para filtros sin resultados -->
               <div *ngIf="!isLoading && usuarios.length > 0 && usuariosFiltradosPermisos.length === 0" class="text-center py-5">
                 <i class="fas fa-search fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted">No se encontraron usuarios</h5>
-                <p class="text-muted">Intenta ajustar los filtros de búsqueda</p>
+                <p class="text-muted">No hay usuarios que coincidan con los filtros aplicados</p>
                 <button class="btn btn-outline-primary" (click)="clearFiltersPermisos()">
-                  <i class="fas fa-eraser me-2"></i>Limpiar filtros
+                  <i class="fas fa-times me-2"></i>Limpiar filtros
                 </button>
               </div>
-              
+
+              <!-- Empty states -->
               <div *ngIf="!isLoading && usuarios.length === 0" class="text-center py-5">
                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted">No hay usuarios para asignar permisos</h5>
