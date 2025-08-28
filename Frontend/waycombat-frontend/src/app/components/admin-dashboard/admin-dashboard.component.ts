@@ -43,6 +43,16 @@ export class AdminDashboardComponent implements OnInit {
   usuarios: Usuario[] = [];
   permisos: UsuarioMixPermiso[] = [];
 
+  // Filtros y búsqueda de usuarios
+  searchText: string = '';
+  filterMixsAsignados: 'todos' | 'con-mixs' | 'sin-mixs' = 'todos';
+  usuariosFiltrados: Usuario[] = [];
+
+  // Filtros y búsqueda para permisos (reutilizando la misma lógica)
+  searchTextPermisos: string = '';
+  filterMixsAsignadosPermisos: 'todos' | 'con-mixs' | 'sin-mixs' = 'todos';
+  usuariosFiltradosPermisos: Usuario[] = [];
+
   // Modal de eliminación de usuario
   userToDelete: Usuario | null = null;
   deleteConfirmationText: string = '';
@@ -169,6 +179,109 @@ export class AdminDashboardComponent implements OnInit {
     });
     
     console.log('✅ Datos sincronizados - Usuarios con mixs asignados:', this.usuarios);
+    
+    // Aplicar filtros después de sincronizar (para ambas secciones)
+    this.applyFilters();
+    this.applyFiltersPermisos();
+  }
+
+  // ====== FILTROS Y BÚSQUEDA ======
+  applyFilters(): void {
+    let usuariosFiltrados = [...this.usuarios];
+
+    // Filtro por texto de búsqueda (nombre o email)
+    if (this.searchText.trim()) {
+      const searchLower = this.searchText.toLowerCase().trim();
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        usuario.nombre.toLowerCase().includes(searchLower) ||
+        usuario.email.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Filtro por mixs asignados
+    if (this.filterMixsAsignados === 'con-mixs') {
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        this.getPermisosActivosCount(usuario.id!) > 0
+      );
+    } else if (this.filterMixsAsignados === 'sin-mixs') {
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        this.getPermisosActivosCount(usuario.id!) === 0
+      );
+    }
+
+    this.usuariosFiltrados = usuariosFiltrados;
+  }
+
+  onSearchTextChange(): void {
+    this.applyFilters();
+  }
+
+  onFilterMixsAsignadosChange(): void {
+    this.applyFilters();
+  }
+
+  clearFilters(): void {
+    this.searchText = '';
+    this.filterMixsAsignados = 'todos';
+    this.applyFilters();
+  }
+
+  // ====== FILTROS Y BÚSQUEDA PARA PERMISOS ======
+  applyFiltersPermisos(): void {
+    let usuariosFiltrados = [...this.usuarios];
+
+    // Filtro por texto de búsqueda (nombre o email)
+    if (this.searchTextPermisos.trim()) {
+      const searchLower = this.searchTextPermisos.toLowerCase().trim();
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        usuario.nombre.toLowerCase().includes(searchLower) ||
+        usuario.email.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Filtro por mixs asignados
+    if (this.filterMixsAsignadosPermisos === 'con-mixs') {
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        this.getPermisosActivosCount(usuario.id!) > 0
+      );
+    } else if (this.filterMixsAsignadosPermisos === 'sin-mixs') {
+      usuariosFiltrados = usuariosFiltrados.filter(usuario =>
+        this.getPermisosActivosCount(usuario.id!) === 0
+      );
+    }
+
+    this.usuariosFiltradosPermisos = usuariosFiltrados;
+  }
+
+  onSearchTextPermisosChange(): void {
+    this.applyFiltersPermisos();
+  }
+
+  onFilterMixsAsignadosPermisosChange(): void {
+    this.applyFiltersPermisos();
+  }
+
+  clearFiltersPermisos(): void {
+    this.searchTextPermisos = '';
+    this.filterMixsAsignadosPermisos = 'todos';
+    this.applyFiltersPermisos();
+  }
+
+  // ====== MÉTODOS AUXILIARES PARA ESTADÍSTICAS ======
+  get usuariosActivos(): number {
+    return this.usuarios.filter(u => u.activo).length;
+  }
+
+  get usuariosInactivos(): number {
+    return this.usuarios.filter(u => !u.activo).length;
+  }
+
+  get usuariosConMixs(): number {
+    return this.usuarios.filter(u => this.getPermisosActivosCount(u.id!) > 0).length;
+  }
+
+  get usuariosSinMixs(): number {
+    return this.usuarios.filter(u => this.getPermisosActivosCount(u.id!) === 0).length;
   }
 
   // ====== GESTIÓN DE ARCHIVOS EN FORMULARIO ======
