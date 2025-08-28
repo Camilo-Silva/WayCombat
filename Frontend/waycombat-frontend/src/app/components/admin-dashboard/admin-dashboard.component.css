@@ -411,3 +411,63 @@
     border-radius: 0;
   }
 }
+
+/* ============================================
+   ESTILOS PARA GESTIÓN DE USUARIOS
+   ============================================ */
+
+/* Fila de usuario desactivado */
+.table-danger {
+  background-color: #ffeaa7 !important;
+  opacity: 0.7;
+}
+
+.table-danger td {
+  color: #636e72 !important;
+}
+
+/* Botones de acción para usuarios */
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Estilos para los botones de acción */
+.btn-group .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Hover effects para botones de usuario */
+.btn-warning:hover {
+  background-color: #e67e22 !important;
+  border-color: #e67e22 !important;
+}
+
+.btn-success:hover {
+  background-color: #27ae60 !important;
+  border-color: #27ae60 !important;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b !important;
+  border-color: #c0392b !important;
+}
+
+/* Animaciones suaves para cambios de estado */
+.table tr {
+  transition: all 0.3s ease;
+}
+
+.table .btn {
+  transition: all 0.2s ease;
+}
+
+/* Estilos para tooltips personalizados */
+[title]:hover {
+  cursor: help;
+}
+
+/* ============================================
+   FIN ESTILOS GESTIÓN DE USUARIOS
+   ============================================ */

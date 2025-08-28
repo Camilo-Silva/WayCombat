@@ -4,6 +4,7 @@ export interface Usuario {
   email: string;
   rol: string;
   fechaCreacion: Date;
+  activo: boolean; // Campo para desactivar/activar usuarios
 }
 
 export interface RegisterRequest {

@@ -15,6 +15,7 @@ namespace WayCombat.Api.Services
         Task<bool> ChangePasswordAsync(int userId, ChangePasswordDto changePasswordDto);
         Task<bool> DeleteAsync(int id);
         Task<bool> EmailExistsAsync(string email);
+        Task<UsuarioDto?> ToggleActivoAsync(int id);
     }
 
     public class UsuarioService : IUsuarioService
@@ -117,6 +118,19 @@ namespace WayCombat.Api.Services
             return true;
         }
 
+        public async Task<UsuarioDto?> ToggleActivoAsync(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+                return null;
+
+            usuario.Activo = !usuario.Activo;
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
+            
+            return MapToDto(usuario);
+        }
+
         public async Task<bool> EmailExistsAsync(string email)
         {
             return await _context.Usuarios
@@ -131,7 +145,8 @@ namespace WayCombat.Api.Services
                 Nombre = usuario.Nombre,
                 Email = usuario.Email,
                 Rol = usuario.Rol,
-                FechaCreacion = usuario.FechaCreacion
+                FechaCreacion = usuario.FechaCreacion,
+                Activo = usuario.Activo
             };
         }
     }

@@ -412,15 +412,17 @@
                       <th>Fecha Registro</th>
                       <th>Mixs Asignados</th>
                       <th>Estado</th>
+                      <th>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let usuario of usuarios">
+                    <tr *ngFor="let usuario of usuarios" [class.table-danger]="!usuario.activo">
                       <td>{{ usuario.id }}</td>
                       <td>
                         <div class="d-flex align-items-center">
                           <i class="fas fa-user-circle me-2 text-primary"></i>
                           <strong>{{ usuario.nombre }}</strong>
+                          <span *ngIf="!usuario.activo" class="badge bg-danger ms-2">Desactivado</span>
                         </div>
                       </td>
                       <td>{{ usuario.email }}</td>
@@ -441,7 +443,34 @@
                         </span>
                       </td>
                       <td>
-                        <span class="badge bg-success">Activo</span>
+                        <span 
+                          class="badge"
+                          [class.bg-success]="usuario.activo"
+                          [class.bg-danger]="!usuario.activo">
+                          {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                          <!-- Botón de activar/desactivar -->
+                          <button 
+                            class="btn"
+                            [class.btn-warning]="usuario.activo"
+                            [class.btn-success]="!usuario.activo"
+                            [disabled]="usuario.rol === 'admin'"
+                            (click)="toggleUsuarioActivo(usuario.id!)"
+                            [title]="usuario.activo ? 'Desactivar usuario' : 'Activar usuario'">
+                            <i class="fas" [class.fa-pause]="usuario.activo" [class.fa-play]="!usuario.activo"></i>
+                          </button>
+                          <!-- Botón de eliminar -->
+                          <button 
+                            class="btn btn-danger"
+                            [disabled]="usuario.rol === 'admin'"
+                            (click)="confirmDeleteUsuario(usuario)"
+                            title="Eliminar usuario">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   </tbody>
@@ -586,5 +615,68 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ============================================
+     MODAL DE CONFIRMACIÓN PARA ELIMINAR USUARIO
+     ============================================ -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteUserModalLabel">
+          <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-3">
+          <i class="fas fa-user-times fa-3x text-danger mb-3"></i>
+          <h6 class="fw-bold">⚠️ ADVERTENCIA: Esta acción es irreversible</h6>
+        </div>
+        
+        <div *ngIf="userToDelete" class="alert alert-warning">
+          <strong>Usuario a eliminar:</strong><br>
+          <i class="fas fa-user me-2"></i>{{ userToDelete.nombre }}<br>
+          <i class="fas fa-envelope me-2"></i>{{ userToDelete.email }}<br>
+          <i class="fas fa-tag me-2"></i>{{ userToDelete.rol }}
+        </div>
+
+        <p class="text-muted">
+          Al eliminar este usuario:
+        </p>
+        <ul class="text-muted">
+          <li>Se perderán todos sus datos permanentemente</li>
+          <li>Se eliminarán todos sus permisos de acceso a mixs</li>
+          <li>No podrá recuperar su cuenta</li>
+        </ul>
+
+        <div class="mt-3">
+          <label for="deleteConfirmationInput" class="form-label fw-bold text-danger">
+            Para confirmar, escribe <code>ELIMINAR</code> en el campo de abajo:
+          </label>
+          <input 
+            id="deleteConfirmationInput"
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="deleteConfirmationText"
+            placeholder="Escribe ELIMINAR para confirmar"
+            autocomplete="off">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cancelar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-danger"
+          [disabled]="deleteConfirmationText !== 'ELIMINAR'"
+          (click)="executeDeleteUsuario()">
+          <i class="fas fa-trash me-2"></i>Eliminar Usuario
+        </button>
+      </div>
+    </div>
   </div>
 </div>

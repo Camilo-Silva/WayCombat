@@ -96,6 +96,71 @@ namespace WayCombat.Api.Controllers
             }
         }
 
+        [HttpDelete("usuarios/{id}")]
+        public async Task<ActionResult> DeleteUsuario(int id)
+        {
+            try
+            {
+                // Verificar que no sea el último administrador
+                var usuarios = await _usuarioService.GetAllAsync();
+                var admins = usuarios.Where(u => u.Rol == "admin").ToList();
+                var usuarioAEliminar = usuarios.FirstOrDefault(u => u.Id == id);
+
+                if (usuarioAEliminar == null)
+                {
+                    return NotFound(new { message = "Usuario no encontrado" });
+                }
+
+                if (usuarioAEliminar.Rol == "admin" && admins.Count <= 1)
+                {
+                    return BadRequest(new { message = "No se puede eliminar el último administrador del sistema" });
+                }
+
+                var result = await _usuarioService.DeleteAsync(id);
+                if (!result)
+                {
+                    return BadRequest(new { message = "Error al eliminar usuario" });
+                }
+
+                return Ok(new { message = "Usuario eliminado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
+        [HttpPatch("usuarios/{id}/toggle-activo")]
+        public async Task<ActionResult<UsuarioDto>> ToggleUsuarioActivo(int id)
+        {
+            try
+            {
+                var usuario = await _usuarioService.GetByIdAsync(id);
+                if (usuario == null)
+                {
+                    return NotFound(new { message = "Usuario no encontrado" });
+                }
+
+                // No permitir desactivar administradores
+                if (usuario.Rol == "admin")
+                {
+                    return BadRequest(new { message = "No se puede desactivar usuarios administradores" });
+                }
+
+                var result = await _usuarioService.ToggleActivoAsync(id);
+                if (result == null)
+                {
+                    return BadRequest(new { message = "Error al cambiar estado del usuario" });
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
         #endregion
 
         #region Gestión de Mixes

@@ -25,6 +25,8 @@ namespace WayCombat.Api.Models
         [StringLength(50)]
         public string Rol { get; set; } = "Usuario"; // Usuario, Admin
 
+        public bool Activo { get; set; } = true; // Usuario activo por defecto
+
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
         public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;

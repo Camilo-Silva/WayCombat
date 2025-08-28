@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { FormsModule } from '@angular/forms'; // Para ngModel en el modal
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
@@ -18,7 +19,7 @@ interface UsuarioMixPermiso {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -41,6 +42,10 @@ export class AdminDashboardComponent implements OnInit {
   mixs: Mix[] = [];
   usuarios: Usuario[] = [];
   permisos: UsuarioMixPermiso[] = [];
+
+  // Modal de eliminación de usuario
+  userToDelete: Usuario | null = null;
+  deleteConfirmationText: string = '';
 
   // Formularios
   mixForm: FormGroup;
@@ -367,6 +372,106 @@ export class AdminDashboardComponent implements OnInit {
     return this.permisos.filter(p => 
       p.usuarioId === usuarioId && p.activo
     ).length;
+  }
+
+  // ====== GESTIÓN DE USUARIOS ======
+
+  async toggleUsuarioActivo(usuarioId: number): Promise<void> {
+    try {
+      const usuario = this.usuarios.find(u => u.id === usuarioId);
+      if (!usuario) {
+        console.error('Usuario no encontrado');
+        return;
+      }
+
+      // Confirmar la acción
+      const accion = usuario.activo ? 'desactivar' : 'activar';
+      const confirmacion = confirm(`¿Estás seguro de que quieres ${accion} a ${usuario.nombre}?`);
+      
+      if (!confirmacion) {
+        return;
+      }
+
+      // Llamar al servicio
+      const usuarioActualizado = await this.adminService.toggleUsuarioActivo(usuarioId);
+      
+      // Actualizar el usuario en la lista local
+      const index = this.usuarios.findIndex(u => u.id === usuarioId);
+      if (index !== -1) {
+        this.usuarios[index] = usuarioActualizado;
+      }
+
+      console.log(`Usuario ${usuario.nombre} ${usuario.activo ? 'desactivado' : 'activado'} exitosamente`);
+    } catch (error) {
+      console.error('Error toggling usuario activo:', error);
+      alert('Error al cambiar el estado del usuario. Por favor intenta de nuevo.');
+    }
+  }
+
+  confirmDeleteUsuario(usuario: Usuario): void {
+    // No permitir eliminar administradores
+    if (usuario.rol === 'admin') {
+      alert('No se pueden eliminar usuarios administradores.');
+      return;
+    }
+
+    // Configurar el modal
+    this.userToDelete = usuario;
+    this.deleteConfirmationText = '';
+    
+    // Mostrar el modal
+    const modalElement = document.getElementById('deleteUserModal');
+    if (modalElement) {
+      const bootstrap = (window as any).bootstrap;
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  executeDeleteUsuario(): void {
+    if (!this.userToDelete || this.deleteConfirmationText !== 'ELIMINAR') {
+      return;
+    }
+
+    // Cerrar el modal
+    const modalElement = document.getElementById('deleteUserModal');
+    if (modalElement) {
+      const bootstrap = (window as any).bootstrap;
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      modal?.hide();
+    }
+
+    // Ejecutar la eliminación
+    this.deleteUsuario(this.userToDelete.id!);
+    
+    // Limpiar las variables del modal
+    this.userToDelete = null;
+    this.deleteConfirmationText = '';
+  }
+
+  async deleteUsuario(usuarioId: number): Promise<void> {
+    try {
+      const usuario = this.usuarios.find(u => u.id === usuarioId);
+      if (!usuario) {
+        console.error('Usuario no encontrado');
+        return;
+      }
+
+      // Llamar al servicio
+      await this.adminService.deleteUsuario(usuarioId);
+      
+      // Remover el usuario de la lista local
+      this.usuarios = this.usuarios.filter(u => u.id !== usuarioId);
+
+      // También remover todos los permisos del usuario
+      this.permisos = this.permisos.filter(p => p.usuarioId !== usuarioId);
+
+      console.log(`Usuario ${usuario.nombre} eliminado exitosamente`);
+      alert(`Usuario ${usuario.nombre} eliminado exitosamente.`);
+    } catch (error) {
+      console.error('Error deleting usuario:', error);
+      alert('Error al eliminar el usuario. Por favor intenta de nuevo.');
+    }
   }
 
   // ====== UTILIDADES ======

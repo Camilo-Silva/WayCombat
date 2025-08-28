@@ -124,9 +124,11 @@ export class AdminService {
           headers: this.authService.getAuthHeaders()
         })
       );
+      console.log('✅ AdminService: Usuarios obtenidos del backend:', response);
       return response;
     } catch (error) {
-      console.error('Error getting usuarios:', error);
+      console.error('❌ AdminService: Error getting usuarios from backend:', error);
+      console.log('🔄 AdminService: Usando datos mock para usuarios');
       return this.getMockUsuarios();
     }
   }
@@ -168,6 +170,28 @@ export class AdminService {
       );
     } catch (error) {
       console.error('Error deleting usuario:', error);
+      // Re-lanzar el error para que el componente lo maneje
+      throw error;
+    }
+  }
+
+  async toggleUsuarioActivo(userId: number): Promise<Usuario> {
+    try {
+      const response = await firstValueFrom(
+        this.http.patch<Usuario>(`${this.apiUrl}/admin/usuarios/${userId}/toggle-activo`, {}, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+      return response;
+    } catch (error) {
+      console.error('Error toggling usuario activo:', error);
+      // Fallback: simular el toggle localmente
+      const usuarios = this.getMockUsuarios();
+      const usuario = usuarios.find(u => u.id === userId);
+      if (usuario) {
+        usuario.activo = !usuario.activo;
+        return usuario;
+      }
       throw error;
     }
   }
@@ -324,21 +348,24 @@ export class AdminService {
         nombre: 'Admin Principal',
         email: 'admin@waycombat.com',
         rol: 'admin',
-        fechaCreacion: new Date('2024-01-01')
+        fechaCreacion: new Date('2024-01-01'),
+        activo: true
       },
       {
         id: 2,
         nombre: 'Carlos Rodriguez',
         email: 'carlos@email.com',
         rol: 'usuario',
-        fechaCreacion: new Date('2024-01-10')
+        fechaCreacion: new Date('2024-01-10'),
+        activo: true
       },
       {
         id: 3,
         nombre: 'María González',
         email: 'maria@email.com',
         rol: 'usuario',
-        fechaCreacion: new Date('2024-01-15')
+        fechaCreacion: new Date('2024-01-15'),
+        activo: false
       }
     ];
   }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WayCombat.Api.Data;
 
@@ -10,9 +11,11 @@ using WayCombat.Api.Data;
 namespace WayCombat.Api.Migrations
 {
     [DbContext(typeof(WayCombatDbContext))]
-    partial class WayCombatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250828021811_AddActivoToUsuario")]
+    partial class AddActivoToUsuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.8");

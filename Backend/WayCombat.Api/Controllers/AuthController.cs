@@ -76,6 +76,12 @@ namespace WayCombat.Api.Controllers
                     return BadRequest(new { message = "Credenciales inválidas" });
                 }
 
+                // Verificar si el usuario está activo
+                if (!usuario.Activo)
+                {
+                    return BadRequest(new { message = "Tu cuenta ha sido desactivada. Contacta al administrador." });
+                }
+
                 // Verificar contraseña (necesitamos obtener el hash desde la base de datos)
                 var usuarioCompleto = await GetUsuarioCompletoAsync(loginDto.Email);
                 if (usuarioCompleto == null || !BCrypt.Net.BCrypt.Verify(loginDto.Contraseña, usuarioCompleto.ContraseñaHash))
