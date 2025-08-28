@@ -66,19 +66,22 @@ export class AdminDashboardComponent implements OnInit {
   // ====== GESTIÓN DE PESTAÑAS ======
   setActiveTab(tab: 'mixs' | 'usuarios' | 'permisos'): void {
     this.activeTab = tab;
-    if (tab === 'usuarios' && this.usuarios.length === 0) {
-      this.loadUsuarios();
-    }
-    if (tab === 'permisos' && this.permisos.length === 0) {
-      this.loadPermisos();
-    }
+    // Ya no cargamos datos condicionalmente, todo se carga al inicio
   }
 
   // ====== CARGA DE DATOS ======
   async loadData(): Promise<void> {
     this.isLoading = true;
     try {
-      await this.loadMixs();
+      // Cargar todos los datos necesarios al inicio
+      await Promise.all([
+        this.loadMixs(),
+        this.loadUsuarios(),
+        this.loadPermisos()
+      ]);
+      
+      // Sincronizar datos después de cargar todo
+      this.syncUserMixData();
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -151,6 +154,21 @@ export class AdminDashboardComponent implements OnInit {
     } catch (error) {
       console.error('Error loading permisos:', error);
     }
+  }
+
+  // ====== SINCRONIZACIÓN DE DATOS ======
+  syncUserMixData(): void {
+    // Calcular la cantidad de mixs asignados por usuario basándose en los permisos
+    this.usuarios.forEach(usuario => {
+      const mixsAsignados = this.permisos.filter(permiso => 
+        permiso.usuarioId === usuario.id && permiso.activo
+      ).length;
+      
+      // Agregar la propiedad mixsAsignados si no existe
+      (usuario as any).mixsAsignados = mixsAsignados;
+    });
+    
+    console.log('✅ Datos sincronizados - Usuarios con mixs asignados:', this.usuarios);
   }
 
   // ====== GESTIÓN DE ARCHIVOS EN FORMULARIO ======
@@ -355,6 +373,8 @@ export class AdminDashboardComponent implements OnInit {
     try {
       await this.adminService.toggleUsuarioMixPermiso(usuarioId, mixId);
       await this.loadPermisos();
+      // Sincronizar datos después de cambiar permisos
+      this.syncUserMixData();
     } catch (error) {
       console.error('Error toggling permiso:', error);
     }
@@ -400,6 +420,9 @@ export class AdminDashboardComponent implements OnInit {
       if (index !== -1) {
         this.usuarios[index] = usuarioActualizado;
       }
+
+      // Sincronizar datos después de cambiar estado del usuario
+      this.syncUserMixData();
 
       console.log(`Usuario ${usuario.nombre} ${usuario.activo ? 'desactivado' : 'activado'} exitosamente`);
     } catch (error) {
@@ -465,6 +488,9 @@ export class AdminDashboardComponent implements OnInit {
 
       // También remover todos los permisos del usuario
       this.permisos = this.permisos.filter(p => p.usuarioId !== usuarioId);
+
+      // Sincronizar datos después de eliminar usuario
+      this.syncUserMixData();
 
       console.log(`Usuario ${usuario.nombre} eliminado exitosamente`);
       alert(`Usuario ${usuario.nombre} eliminado exitosamente.`);
