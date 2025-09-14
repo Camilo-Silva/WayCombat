@@ -209,6 +209,19 @@ export class AdminService {
     }
   }
 
+  async resetUserPassword(userId: number): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.patch(`${this.apiUrl}/admin/usuarios/${userId}/reset-password`, {}, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+    } catch (error) {
+      console.error('Error resetting user password:', error);
+      throw error;
+    }
+  }
+
   // ====== GESTIÓN DE PERMISOS ======
 
   async getAccesosMixes(): Promise<AccesoMixDto[]> {

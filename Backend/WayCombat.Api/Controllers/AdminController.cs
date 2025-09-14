@@ -161,6 +161,37 @@ namespace WayCombat.Api.Controllers
             }
         }
 
+        [HttpPatch("usuarios/{id}/reset-password")]
+        public async Task<ActionResult> ResetUserPassword(int id)
+        {
+            try
+            {
+                var usuario = await _usuarioService.GetByIdAsync(id);
+                if (usuario == null)
+                {
+                    return NotFound(new { message = "Usuario no encontrado" });
+                }
+
+                // No permitir resetear contraseña de administradores
+                if (usuario.Rol == "admin")
+                {
+                    return BadRequest(new { message = "No se puede resetear contraseña de usuarios administradores" });
+                }
+
+                var result = await _usuarioService.ResetPasswordAsync(id);
+                if (!result)
+                {
+                    return BadRequest(new { message = "Error al resetear contraseña del usuario" });
+                }
+
+                return Ok(new { message = "Contraseña reseteada exitosamente a '123456'" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
         #endregion
 
         #region Gestión de Mixes

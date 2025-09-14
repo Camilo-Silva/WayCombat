@@ -561,6 +561,34 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
+  confirmResetPassword(usuario: Usuario): void {
+    // No permitir resetear contraseñas de administradores
+    if (usuario.rol === 'admin') {
+      alert('No se puede resetear la contraseña de usuarios administradores.');
+      return;
+    }
+
+    const confirmation = confirm(
+      `¿Estás seguro de que quieres resetear la contraseña de ${usuario.nombre}?\n\n` +
+      `La nueva contraseña será: 123456\n\n` +
+      `El usuario deberá usar esta contraseña para iniciar sesión.`
+    );
+
+    if (confirmation) {
+      this.resetUserPassword(usuario.id!);
+    }
+  }
+
+  async resetUserPassword(userId: number): Promise<void> {
+    try {
+      await this.adminService.resetUserPassword(userId);
+      alert('Contraseña reseteada exitosamente. La nueva contraseña es: 123456');
+    } catch (error) {
+      console.error('Error al resetear contraseña:', error);
+      alert('Error al resetear la contraseña. Por favor intenta de nuevo.');
+    }
+  }
+
   confirmDeleteUsuario(usuario: Usuario): void {
     // No permitir eliminar administradores
     if (usuario.rol === 'admin') {

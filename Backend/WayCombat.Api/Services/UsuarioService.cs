@@ -16,6 +16,7 @@ namespace WayCombat.Api.Services
         Task<bool> DeleteAsync(int id);
         Task<bool> EmailExistsAsync(string email);
         Task<UsuarioDto?> ToggleActivoAsync(int id);
+        Task<bool> ResetPasswordAsync(int id);
     }
 
     public class UsuarioService : IUsuarioService
@@ -135,6 +136,22 @@ namespace WayCombat.Api.Services
         {
             return await _context.Usuarios
                 .AnyAsync(u => u.Email == email.ToLower());
+        }
+
+        public async Task<bool> ResetPasswordAsync(int id)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null)
+                return false;
+
+            // Hashear la nueva contraseña por defecto "123456"
+            usuario.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("123456");
+            usuario.FechaActualizacion = DateTime.UtcNow;
+
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
+            
+            return true;
         }
 
         private static UsuarioDto MapToDto(Usuario usuario)
