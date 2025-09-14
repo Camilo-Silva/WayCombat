@@ -395,25 +395,25 @@ export class AdminDashboardComponent implements OnInit {
           descripcion: formValue.descripcion
         };
 
-        this.mixService.createMix(createMixData).subscribe({
-          next: (newMix) => {
-            console.log('Mix creado exitosamente:', newMix);
-            
-            // Crear archivos del mix
-            const archivos = formValue.archivos || [];
-            if (archivos.length > 0) {
-              this.createMixArchivos(newMix.id, archivos);
-            } else {
-              this.loadMixs();
-              this.cancelEdit();
-              this.isLoading = false;
-            }
-          },
-          error: (error) => {
-            console.error('Error creando mix:', error);
+        try {
+          const newMix = await this.adminService.createMix(createMixData);
+          console.log('Mix creado exitosamente:', newMix);
+          
+          // Crear archivos del mix
+          const archivos = formValue.archivos || [];
+          if (archivos.length > 0) {
+            this.createMixArchivos(newMix.id, archivos);
+          } else {
+            this.loadMixs();
+            // Actualizar permisos para mostrar la auto-asignación
+            this.loadPermisos();
+            this.cancelEdit();
             this.isLoading = false;
           }
-        });
+        } catch (error) {
+          console.error('Error creando mix:', error);
+          this.isLoading = false;
+        }
       }
     } catch (error) {
       console.error('Error saving mix:', error);
@@ -440,6 +440,8 @@ export class AdminDashboardComponent implements OnInit {
           if (completedRequests === totalRequests) {
             console.log('Todos los archivos creados exitosamente');
             this.loadMixs();
+            // Actualizar permisos para mostrar la auto-asignación
+            this.loadPermisos();
             this.cancelEdit();
             this.isLoading = false;
           }
@@ -449,6 +451,8 @@ export class AdminDashboardComponent implements OnInit {
           completedRequests++;
           if (completedRequests === totalRequests) {
             this.loadMixs();
+            // Actualizar permisos para mostrar la auto-asignación
+            this.loadPermisos();
             this.cancelEdit();
             this.isLoading = false;
           }
