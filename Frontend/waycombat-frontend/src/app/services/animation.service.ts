@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -6,12 +7,20 @@ import { Injectable } from '@angular/core';
 export class AnimationService {
   private observers: Map<string, IntersectionObserver> = new Map();
 
-  constructor() {}
+  constructor(
+    @Inject(DOCUMENT) private document: Document,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   /**
    * Inicializa el observer para animaciones en scroll
    */
   initScrollAnimations(): void {
+    // Solo ejecutar en el navegador, no en SSR
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const options: IntersectionObserverInit = {
       root: null,
       rootMargin: '0px 0px -100px 0px', // Activa cuando el elemento está 100px desde el bottom
@@ -28,7 +37,7 @@ export class AnimationService {
     }, options);
 
     // Observar todos los elementos con clases de animación
-    const animatedElements = document.querySelectorAll('[class*="animate-"]');
+    const animatedElements = this.document.querySelectorAll('[class*="animate-"]');
     animatedElements.forEach(element => {
       observer.observe(element);
     });
@@ -40,7 +49,12 @@ export class AnimationService {
    * Anima múltiples elementos con delay progresivo
    */
   animateStaggered(selector: string, delay: number = 100): void {
-    const elements = document.querySelectorAll(selector);
+    // Solo ejecutar en el navegador, no en SSR
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const elements = this.document.querySelectorAll(selector);
     elements.forEach((element, index) => {
       setTimeout(() => {
         element.classList.add('visible');
@@ -52,9 +66,14 @@ export class AnimationService {
    * Aplica efecto parallax suave a elementos
    */
   initParallax(): void {
+    // Solo ejecutar en el navegador, no en SSR
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     window.addEventListener('scroll', () => {
       const scrolled = window.pageYOffset;
-      const parallaxElements = document.querySelectorAll('.parallax-element');
+      const parallaxElements = this.document.querySelectorAll('.parallax-element');
       
       parallaxElements.forEach((element) => {
         const htmlElement = element as HTMLElement;
@@ -69,6 +88,12 @@ export class AnimationService {
    * Anima el contador de números
    */
   animateCounter(element: HTMLElement, finalValue: number, duration: number = 2000): void {
+    // Solo ejecutar en el navegador, no en SSR
+    if (!isPlatformBrowser(this.platformId)) {
+      element.textContent = finalValue.toString();
+      return;
+    }
+
     let startValue = 0;
     const startTime = performance.now();
 
@@ -94,6 +119,12 @@ export class AnimationService {
    * Efecto typewriter para textos
    */
   typewriterEffect(element: HTMLElement, text: string, speed: number = 50): void {
+    // Solo ejecutar en el navegador, no en SSR
+    if (!isPlatformBrowser(this.platformId)) {
+      element.textContent = text;
+      return;
+    }
+
     element.textContent = '';
     let i = 0;
     
@@ -112,6 +143,11 @@ export class AnimationService {
    * Revela elementos con efecto de "draw" para líneas SVG
    */
   drawLineEffect(element: SVGPathElement): void {
+    // Solo ejecutar en el navegador, no en SSR
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const length = element.getTotalLength();
     element.style.strokeDasharray = length + '';
     element.style.strokeDashoffset = length + '';
@@ -133,6 +169,11 @@ export class AnimationService {
    * Verifica si las animaciones están soportadas
    */
   isAnimationSupported(): boolean {
+    // Solo verificar en el navegador, no en SSR
+    if (!isPlatformBrowser(this.platformId)) {
+      return false;
+    }
+    
     return 'IntersectionObserver' in window && 
            'requestAnimationFrame' in window &&
            CSS.supports('transform', 'translateX(0px)');
@@ -142,8 +183,13 @@ export class AnimationService {
    * Aplica configuración de reducción de movimiento si está activada
    */
   respectMotionPreference(): void {
+    // Solo ejecutar en el navegador, no en SSR
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const style = document.createElement('style');
+      const style = this.document.createElement('style');
       style.textContent = `
         * {
           animation-duration: 0.01ms !important;
@@ -151,7 +197,7 @@ export class AnimationService {
           transition-duration: 0.01ms !important;
         }
       `;
-      document.head.appendChild(style);
+      this.document.head.appendChild(style);
     }
   }
 }

@@ -21,6 +21,7 @@ export class AccesoInstructoresComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   showForgotPasswordForm = false;
+  showContactAdminForm = false;
   forgotPasswordMessage = '';
 
   loginForm!: FormGroup;
@@ -94,6 +95,18 @@ export class AccesoInstructoresComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  showContactAdmin(event: Event): void {
+    event.preventDefault();
+    this.showContactAdminForm = true;
+    this.errorMessage = '';
+  }
+
+  hideContactAdmin(): void {
+    this.showContactAdminForm = false;
+  }
+
+  // Métodos comentados de forgot password
+  /*
   showForgotPassword(event: Event): void {
     event.preventDefault();
     this.showForgotPasswordForm = true;
@@ -106,6 +119,7 @@ export class AccesoInstructoresComponent implements OnInit {
     this.forgotPasswordForm.reset();
     this.forgotPasswordMessage = '';
   }
+  */
 
   async onLogin(): Promise<void> {
     if (this.loginForm.invalid) {
@@ -182,6 +196,7 @@ export class AccesoInstructoresComponent implements OnInit {
     }
   }
 
+  /*
   async onForgotPassword(): Promise<void> {
     if (this.forgotPasswordForm.invalid) {
       this.markFormGroupTouched(this.forgotPasswordForm);
@@ -206,6 +221,7 @@ export class AccesoInstructoresComponent implements OnInit {
       this.isLoading = false;
     }
   }
+  */
 
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {
@@ -223,6 +239,7 @@ export class AccesoInstructoresComponent implements OnInit {
     this.registerForm.reset();
     this.forgotPasswordForm.reset();
     this.showForgotPasswordForm = false;
+    this.showContactAdminForm = false;
     this.forgotPasswordMessage = '';
   }
 }

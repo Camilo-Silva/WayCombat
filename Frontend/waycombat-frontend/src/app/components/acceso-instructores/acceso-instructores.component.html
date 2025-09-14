@@ -98,12 +98,13 @@
               <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <!-- <input class="form-check-input" type="checkbox" id="rememberMe"> -->
                     <label class="form-check-label" for="rememberMe">
-                      Recordarme
+                      <!-- Recordarme -->
                     </label>
                   </div>
-                  <a href="#" class="text-primary text-decoration-none" (click)="showForgotPassword($event)">
+                  <!-- <a href="#" class="text-primary text-decoration-none" (click)="showForgotPassword($event)"> -->
+                    <a href="#" class="text-primary text-decoration-none" (click)="showContactAdmin($event)">
                     ¿Olvidaste tu contraseña?
                   </a>
                 </div>
@@ -247,6 +248,7 @@
           </div>
 
           <!-- Modal/Form de Recuperar Contraseña -->
+          <!-- 
           <div *ngIf="showForgotPasswordForm" class="tab-content fade-in">
             <div class="text-center mb-4">
               <h4 class="text-primary-blue">Recuperar Contraseña</h4>
@@ -292,6 +294,38 @@
                 </button>
               </div>
             </form>
+          </div>
+          -->
+
+          <!-- Mensaje de contacto con administrador -->
+          <div *ngIf="showContactAdminForm" class="tab-content fade-in">
+            <div class="text-center mb-4">
+              <h4 class="text-primary-blue">¿Olvidaste tu contraseña?</h4>
+              <p class="text-muted">Para recuperar tu contraseña, contacta al administrador</p>
+            </div>
+
+            <div class="alert alert-info" role="alert">
+              <div class="text-center">
+                <i class="fas fa-info-circle mb-3" style="font-size: 2rem;"></i>
+                <h5 class="mb-3">Contacta al Administrador</h5>
+                <p class="mb-4">Para restablecer tu contraseña, envía un mensaje al administrador por WhatsApp con tu información de contacto (tu nombre y email).</p>
+                
+                <div class="d-grid gap-2">
+                  <a 
+                    href="https://wa.me/5491127355020?text=Hola,%20necesito%20ayuda%20para%20recuperar%20mi%20contraseña%20de%20WayCombat" 
+                    target="_blank" 
+                    class="btn btn-success btn-lg">
+                    <i class="fab fa-whatsapp me-2"></i>Contactar por WhatsApp
+                  </a>
+                  <button 
+                    type="button" 
+                    class="btn btn-secondary"
+                    (click)="hideContactAdmin()">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Login
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

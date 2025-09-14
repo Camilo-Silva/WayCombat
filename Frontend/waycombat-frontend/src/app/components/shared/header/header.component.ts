@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { Subject, takeUntil, filter } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
@@ -24,7 +24,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    @Inject(DOCUMENT) private document: Document,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
@@ -35,12 +37,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.currentUser = user;
         this.isLoggedIn = !!user;
         this.isAdmin = this.authService.isAdmin();
-        
-        // Debug: Log del estado del usuario
-        console.log('Header - Usuario actual:', user);
-        console.log('Header - ¿Es admin?:', this.isAdmin);
-        console.log('Header - Rol del usuario:', user?.rol);
-        console.log('Header - Comparación de rol:', user?.rol?.toLowerCase() === 'admin');
       });
 
     // Suscribirse a cambios de ruta para cerrar el menú móvil
@@ -80,17 +76,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.isUserMenuOpen = !this.isUserMenuOpen;
     
-    // Cerrar el menú cuando se hace clic fuera
-    if (this.isUserMenuOpen) {
+    // Cerrar el menú cuando se hace clic fuera (solo en el navegador)
+    if (this.isUserMenuOpen && isPlatformBrowser(this.platformId)) {
       setTimeout(() => {
-        document.addEventListener('click', this.closeUserMenu.bind(this));
+        this.document.addEventListener('click', this.closeUserMenu.bind(this));
       });
     }
   }
 
   private closeUserMenu(): void {
     this.isUserMenuOpen = false;
-    document.removeEventListener('click', this.closeUserMenu.bind(this));
+    // Solo ejecutar en el navegador, no en SSR
+    if (isPlatformBrowser(this.platformId)) {
+      this.document.removeEventListener('click', this.closeUserMenu.bind(this));
+    }
   }
 
   navigateToAdmin(event: Event): void {
