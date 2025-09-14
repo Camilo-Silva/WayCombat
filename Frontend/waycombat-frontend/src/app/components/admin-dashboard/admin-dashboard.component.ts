@@ -481,6 +481,23 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
+  async toggleMixActivo(mixId: number): Promise<void> {
+    try {
+      await this.adminService.toggleMixActivo(mixId);
+      
+      // Actualizar localmente el estado del mix
+      const mix = this.mixs.find(m => m.id === mixId);
+      if (mix) {
+        mix.activo = !mix.activo;
+      }
+      
+      console.log('Estado del mix actualizado exitosamente');
+    } catch (error) {
+      console.error('Error toggling mix activo:', error);
+      alert('Error al cambiar el estado del mix. Por favor intenta de nuevo.');
+    }
+  }
+
   // ====== GESTIÓN DE PERMISOS ======
   async toggleUsuarioMixPermiso(usuarioId: number, mixId: number): Promise<void> {
     try {
@@ -555,12 +572,37 @@ export class AdminDashboardComponent implements OnInit {
     this.userToDelete = usuario;
     this.deleteConfirmationText = '';
     
-    // Mostrar el modal
+    // Mostrar el modal de forma más segura
     const modalElement = document.getElementById('deleteUserModal');
     if (modalElement) {
-      const bootstrap = (window as any).bootstrap;
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
+      try {
+        // Intentar usar Bootstrap 5
+        const bootstrap = (window as any).bootstrap;
+        if (bootstrap && bootstrap.Modal) {
+          const modal = new bootstrap.Modal(modalElement);
+          modal.show();
+        } else {
+          // Fallback: usar atributos data de Bootstrap
+          modalElement.classList.add('show');
+          modalElement.style.display = 'block';
+          modalElement.setAttribute('aria-modal', 'true');
+          modalElement.removeAttribute('aria-hidden');
+          
+          // Agregar backdrop
+          const backdrop = document.createElement('div');
+          backdrop.className = 'modal-backdrop fade show';
+          backdrop.id = 'deleteUserModal-backdrop';
+          document.body.appendChild(backdrop);
+          document.body.classList.add('modal-open');
+        }
+      } catch (error) {
+        console.error('Error showing modal:', error);
+        // Fallback simple: usar confirm
+        const confirmMessage = `¿Estás seguro de que quieres eliminar al usuario "${usuario.nombre}"?\n\nEsta acción no se puede deshacer.`;
+        if (confirm(confirmMessage)) {
+          this.deleteUsuario(usuario.id!);
+        }
+      }
     }
   }
 
@@ -569,18 +611,56 @@ export class AdminDashboardComponent implements OnInit {
       return;
     }
 
-    // Cerrar el modal
-    const modalElement = document.getElementById('deleteUserModal');
-    if (modalElement) {
-      const bootstrap = (window as any).bootstrap;
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      modal?.hide();
-    }
+    // Cerrar el modal de forma segura
+    this.hideDeleteModal();
 
     // Ejecutar la eliminación
     this.deleteUsuario(this.userToDelete.id!);
     
     // Limpiar las variables del modal
+    this.userToDelete = null;
+    this.deleteConfirmationText = '';
+  }
+
+  private hideDeleteModal(): void {
+    const modalElement = document.getElementById('deleteUserModal');
+    if (modalElement) {
+      try {
+        const bootstrap = (window as any).bootstrap;
+        if (bootstrap && bootstrap.Modal) {
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+          } else {
+            // Si no hay instancia, crear una nueva y cerrarla
+            const newModal = new bootstrap.Modal(modalElement);
+            newModal.hide();
+          }
+        } else {
+          // Fallback manual
+          modalElement.classList.remove('show');
+          modalElement.style.display = 'none';
+          modalElement.setAttribute('aria-hidden', 'true');
+          modalElement.removeAttribute('aria-modal');
+          
+          // Remover backdrop
+          const backdrop = document.getElementById('deleteUserModal-backdrop');
+          if (backdrop) {
+            backdrop.remove();
+          }
+          document.body.classList.remove('modal-open');
+        }
+      } catch (error) {
+        console.error('Error hiding modal:', error);
+        // Fallback: ocultar manualmente
+        modalElement.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      }
+    }
+  }
+
+  cancelDeleteUsuario(): void {
+    this.hideDeleteModal();
     this.userToDelete = null;
     this.deleteConfirmationText = '';
   }

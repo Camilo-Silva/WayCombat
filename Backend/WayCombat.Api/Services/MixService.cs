@@ -8,12 +8,14 @@ namespace WayCombat.Api.Services
     public interface IMixService
     {
         Task<List<MixDto>> GetAllAsync();
+        Task<List<MixDto>> GetAllForAdminAsync();
         Task<List<MixDto>> GetMixesByUsuarioAsync(int usuarioId);
         Task<MixDto?> GetByIdAsync(int id);
         Task<MixDto?> GetMixWithAccessCheckAsync(int mixId, int usuarioId);
         Task<MixDto> CreateAsync(CreateMixDto createMixDto);
         Task<bool> UpdateAsync(int id, UpdateMixDto updateMixDto);
         Task<bool> DeleteAsync(int id);
+        Task<bool> ToggleActivoAsync(int id);
         Task<ArchivoMixDto> AddArchivoAsync(int mixId, CreateArchivoMixDto createArchivoDto);
         Task<bool> DeleteArchivoAsync(int archivoId);
         Task<List<AccesoMixDto>> GetAccesosAsync();
@@ -38,6 +40,16 @@ namespace WayCombat.Api.Services
             var mixes = await _context.Mixes
                 .Include(m => m.ArchivoMixes.Where(a => a.Activo))
                 .Where(m => m.Activo)
+                .OrderByDescending(m => m.FechaCreacion)
+                .ToListAsync();
+
+            return mixes.Select(MapToDto).ToList();
+        }
+
+        public async Task<List<MixDto>> GetAllForAdminAsync()
+        {
+            var mixes = await _context.Mixes
+                .Include(m => m.ArchivoMixes) // Incluir todos los archivos para admin
                 .OrderByDescending(m => m.FechaCreacion)
                 .ToListAsync();
 
@@ -148,12 +160,22 @@ namespace WayCombat.Api.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var mix = await _context.Mixes.FindAsync(id);
+            var mix = await _context.Mixes
+                .Include(m => m.ArchivoMixes)
+                .Include(m => m.AccesoMixes)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            
             if (mix == null)
                 return false;
 
-            mix.Activo = false;
-            mix.FechaActualizacion = DateTime.UtcNow;
+            // Eliminar archivos relacionados
+            _context.ArchivoMixes.RemoveRange(mix.ArchivoMixes);
+            
+            // Eliminar accesos relacionados
+            _context.AccesoMixes.RemoveRange(mix.AccesoMixes);
+            
+            // Eliminar el mix
+            _context.Mixes.Remove(mix);
 
             await _context.SaveChangesAsync();
             return true;
@@ -384,6 +406,20 @@ namespace WayCombat.Api.Services
                 _context.AccesoMixes.Update(acceso);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<bool> ToggleActivoAsync(int id)
+        {
+            var mix = await _context.Mixes.FindAsync(id);
+            if (mix == null)
+                return false;
+
+            mix.Activo = !mix.Activo;
+            mix.FechaActualizacion = DateTime.UtcNow;
+            
+            _context.Mixes.Update(mix);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

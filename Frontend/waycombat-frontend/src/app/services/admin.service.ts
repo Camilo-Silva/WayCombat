@@ -115,6 +115,19 @@ export class AdminService {
     }
   }
 
+  async toggleMixActivo(mixId: number): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.patch(`${this.apiUrl}/admin/mixs/${mixId}/toggle-activo`, {}, {
+          headers: this.authService.getAuthHeaders()
+        })
+      );
+    } catch (error) {
+      console.error('Error toggling mix activo:', error);
+      throw error;
+    }
+  }
+
   // ====== GESTIÓN DE USUARIOS ======
 
   async getUsuarios(): Promise<Usuario[]> {

@@ -170,7 +170,7 @@ namespace WayCombat.Api.Controllers
         {
             try
             {
-                var mixs = await _mixService.GetAllAsync();
+                var mixs = await _mixService.GetAllForAdminAsync();
                 return Ok(mixs);
             }
             catch (Exception ex)
@@ -239,6 +239,25 @@ namespace WayCombat.Api.Controllers
                 }
 
                 return Ok(new { message = "Mix actualizado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
+        [HttpPatch("mixs/{id}/toggle-activo")]
+        public async Task<ActionResult> ToggleMixActivo(int id)
+        {
+            try
+            {
+                var result = await _mixService.ToggleActivoAsync(id);
+                if (!result)
+                {
+                    return NotFound(new { message = "Mix no encontrado" });
+                }
+
+                return Ok(new { message = "Estado del mix actualizado exitosamente" });
             }
             catch (Exception ex)
             {
