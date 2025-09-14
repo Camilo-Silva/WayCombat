@@ -1,0 +1,59 @@
+# Archivos de Visual Studio Code
+.vscode/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencias de Node.js
+node_modules/
+
+# Build de Angular
+dist/
+tmp/
+out-tsc/
+
+# Archivos temporales de SQLite
+*.db-wal
+*.db-shm
+*.db-journal
+
+# Archivos de compilación .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.tmp
+
+# Archivos de Entity Framework
+Migrations/*.Designer.cs
+
+# Variables de entorno
+.env
+.env.local
+.env.production
+.env.development
+
+# Archivos de IDE
+*.swp
+*.swo
+*~
+
+# Archivos de respaldo
+*.bak
+*.backup
+
+# Archivos de certificados
+*.pfx
+*.p12
+
+# Archivos de configuración local
+appsettings.Development.json.bak
