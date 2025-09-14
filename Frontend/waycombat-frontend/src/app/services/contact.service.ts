@@ -8,15 +8,15 @@ export class ContactService {
   
   // FUENTE ÚNICA DE VERDAD - Solo aquí se definen los datos de contacto
   private readonly contactData: ContactInfo = {
-    direccion: 'Av. Corrientes 1234, CABA, Buenos Aires, Argentina',
-    telefono: '+54 11 4567-8900',
-    email: 'info@waycombat.com',
+    direccion: 'Balboa 6728, Gonzalez Catan, Buenos Aires, Argentina',
+    telefono: '+54 9 11 2735-5020',
+    email: 'Federrr8787@gmail.com',
     horarios: 'Lunes a Viernes: 9:00 - 21:00\nSábados: 9:00 - 18:00\nDomingos: 10:00 - 16:00',
     redes: {
       facebook: 'https://facebook.com/way.combat.2025',
       instagram: 'https://instagram.com/waycombat_w.c',
       tiktok: 'https://www.tiktok.com/@way_combat',
-      youtube: 'https://youtube.com/waycombat'
+      youtube: 'https://www.youtube.com/@way_combat'
     }
   };
 
