@@ -469,5 +469,73 @@
 }
 
 /* ============================================
+   ESTILOS PARA MODAL DE ARCHIVOS
+   ============================================ */
+
+/* Estilos para botones extra pequeños */
+.btn-xs {
+  padding: 0.125rem 0.375rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  border-radius: 0.2rem;
+}
+
+/* Tabla compacta de archivos */
+.table-sm th, 
+.table-sm td {
+  padding: 0.5rem 0.25rem;
+  vertical-align: middle;
+  font-size: 0.85rem;
+}
+
+.table-sm .btn-xs {
+  padding: 0.125rem 0.25rem;
+  font-size: 0.7rem;
+}
+
+/* Estilos del modal */
+.modal-content {
+  border-radius: 0.5rem;
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header.bg-primary {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Animaciones para el modal */
+.modal.fade .modal-dialog {
+  transform: translate(0, -50px);
+  transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+  transform: none;
+}
+
+/* Estilos para textos truncados */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Badges más compactos en tabla */
+.table .badge {
+  font-size: 0.7rem;
+}
+
+/* Spacing para iconos */
+.fas.me-1 {
+  margin-right: 0.25rem !important;
+}
+
+/* ============================================
    FIN ESTILOS GESTIÓN DE USUARIOS
    ============================================ */

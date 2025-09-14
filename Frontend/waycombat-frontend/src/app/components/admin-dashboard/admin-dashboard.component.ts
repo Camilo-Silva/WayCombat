@@ -57,6 +57,12 @@ export class AdminDashboardComponent implements OnInit {
   userToDelete: Usuario | null = null;
   deleteConfirmationText: string = '';
 
+  // Modal de agregar archivo
+  showArchivoModal = false;
+  archivoModalForm: FormGroup;
+  editingArchivoIndex: number | null = null;
+  archivosTemporales: any[] = [];
+
   // Formularios
   mixForm: FormGroup;
   
@@ -66,6 +72,14 @@ export class AdminDashboardComponent implements OnInit {
       descripcion: ['', [Validators.required]],
       activo: [true],
       archivos: this.fb.array([])
+    });
+
+    this.archivoModalForm = this.fb.group({
+      nombre: ['', [Validators.required]],
+      url: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
+      tipo: ['audio', [Validators.required]],
+      descripcion: [''],
+      activo: [true]
     });
   }
 
@@ -306,6 +320,105 @@ export class AdminDashboardComponent implements OnInit {
     this.archivosFormArray.removeAt(index);
   }
 
+  // ====== GESTIÓN DE MODAL DE ARCHIVO ======
+  openArchivoModal(): void {
+    this.showArchivoModal = true;
+    this.editingArchivoIndex = null;
+    this.archivoModalForm.reset({
+      nombre: '',
+      url: '',
+      tipo: 'audio',
+      descripcion: '',
+      activo: true
+    });
+    this.showDriveHelp = false;
+  }
+
+  closeArchivoModal(): void {
+    this.showArchivoModal = false;
+    this.editingArchivoIndex = null;
+    this.showDriveHelp = false;
+  }
+
+  editArchivoFromTable(index: number): void {
+    const archivo = this.archivosTemporales[index];
+    this.editingArchivoIndex = index;
+    this.showArchivoModal = true;
+    this.archivoModalForm.patchValue(archivo);
+  }
+
+  saveArchivoFromModal(): void {
+    if (this.archivoModalForm.valid) {
+      const archivoData = this.archivoModalForm.value;
+      
+      if (this.editingArchivoIndex !== null) {
+        // Editar archivo existente - preservar ID si existe
+        const archivoExistente = this.archivosTemporales[this.editingArchivoIndex];
+        this.archivosTemporales[this.editingArchivoIndex] = {
+          ...archivoData,
+          id: archivoExistente.id // Preservar el ID del archivo existente
+        };
+      } else {
+        // Agregar nuevo archivo
+        this.archivosTemporales.push(archivoData);
+      }
+      
+      this.closeArchivoModal();
+    }
+  }
+
+  removeArchivoFromTable(index: number): void {
+    this.archivosTemporales.splice(index, 1);
+  }
+
+  convertDriveUrlInModal(): void {
+    const urlControl = this.archivoModalForm.get('url');
+    if (urlControl?.value) {
+      const convertedUrl = this.processUrlConversion(urlControl.value);
+      if (convertedUrl) {
+        urlControl.setValue(convertedUrl);
+      }
+    }
+  }
+
+  private processUrlConversion(currentUrl: string): string | null {
+    if (!currentUrl) {
+      alert('Por favor, ingresa primero una URL de Google Drive');
+      return null;
+    }
+
+    // Detectar si es URL de Google Drive
+    if (currentUrl.includes('drive.google.com/file/d/')) {
+      try {
+        // Extraer el ID del archivo de Google Drive
+        const match = currentUrl.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+        
+        if (match && match[1]) {
+          const fileId = match[1];
+          // Convertir a URL directa para descarga/reproducción
+          const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+          
+          // Mostrar mensaje de éxito
+          alert('✅ URL convertida exitosamente!\n\nAhora el archivo se puede reproducir directamente en la aplicación.');
+          return directUrl;
+        } else {
+          alert('❌ No se pudo extraer el ID del archivo.\n\nAsegúrate de que la URL sea del formato:\nhttps://drive.google.com/file/d/ID_DEL_ARCHIVO/view');
+          return null;
+        }
+      } catch (error) {
+        console.error('Error converting Drive URL:', error);
+        alert('❌ Error al convertir la URL. Por favor, verifica el formato.');
+        return null;
+      }
+    } else if (currentUrl.includes('youtube.com') || currentUrl.includes('youtu.be') || currentUrl.includes('music.youtube.com')) {
+      alert('✅ Esta es una URL de YouTube válida.\n\nNo necesita conversión, se reproducirá automáticamente en la aplicación.');
+      return currentUrl;
+    } else {
+      alert('❌ Esta no parece ser una URL de Google Drive o YouTube.\n\nFormatos soportados:\n• Google Drive: https://drive.google.com/file/d/...\n• YouTube: https://youtube.com/watch?v=...\n• YouTube Music: https://music.youtube.com/watch?v=...');
+      return null;
+    }
+  }
+
   // ====== GESTIÓN DE MIXS ======
   startCreatingMix(): void {
     this.isCreatingMix = true;
@@ -316,7 +429,7 @@ export class AdminDashboardComponent implements OnInit {
       activo: true
     });
     this.archivosFormArray.clear();
-    this.addArchivo(); // Agregar un archivo por defecto
+    this.archivosTemporales = []; // Limpiar archivos temporales
   }
 
   editMix(mix: Mix): void {
@@ -329,21 +442,29 @@ export class AdminDashboardComponent implements OnInit {
       activo: mix.activo
     });
 
+    // Cargar archivos en la lista temporal con sus IDs para poder editarlos
+    this.archivosTemporales = mix.archivos.map(archivo => ({
+      id: archivo.id, // Importante: preservar el ID para edición
+      nombre: archivo.nombre,
+      url: archivo.url,
+      tipo: archivo.tipo,
+      descripcion: '', // ArchivoMix no tiene descripcion, usar string vacío
+      activo: archivo.activo
+    }));
+    
     this.archivosFormArray.clear();
-    mix.archivos.forEach(archivo => {
-      const archivoGroup = this.createArchivoFormGroup();
-      archivoGroup.patchValue(archivo);
-      this.archivosFormArray.push(archivoGroup);
-    });
   }
 
   cancelEdit(): void {
     this.isCreatingMix = false;
     this.editingMixId = null;
     this.mixForm.reset();
+    this.archivosTemporales = []; // Limpiar archivos temporales
   }
 
   async saveMix(): Promise<void> {
+    console.log('saveMix() ejecutado, editingMixId:', this.editingMixId); // Debug
+    
     if (this.mixForm.invalid) {
       this.markFormGroupTouched(this.mixForm);
       return;
@@ -357,24 +478,28 @@ export class AdminDashboardComponent implements OnInit {
         // Actualizar mix existente
         const editingMix = this.mixs.find(m => m.id === this.editingMixId);
         
-        // Obtener los datos de archivos del formulario (con los cambios del usuario)
-        const archivosFromForm = formValue.archivos || [];
+        // Usar archivos temporales en lugar del FormArray
+        const archivosFromForm = this.archivosTemporales || [];
+        
+        console.log('Archivos temporales a enviar:', archivosFromForm); // Debug
         
         const updateData: UpdateMixRequest = {
           titulo: formValue.titulo,
           descripcion: formValue.descripcion,
           activo: true, // Por defecto activo al actualizar
           archivos: archivosFromForm.map((archivo: any, index: number) => ({
-            id: editingMix?.archivos[index]?.id || 0, // Usar el ID original del archivo
-            tipo: archivo.tipo, // Usar el tipo del formulario (puede haber cambiado)
+            id: archivo.id || 0, // Usar el ID del archivo si existe (archivos existentes) o 0 para nuevos
+            tipo: archivo.tipo,
             nombre: archivo.nombre,
             url: archivo.url,
-            mimeType: archivo.tipo === 'audio' ? 'audio/mpeg' : 'video/mp4', // Actualizar mimeType según el tipo
-            tamañoBytes: editingMix?.archivos[index]?.tamañoBytes,
+            mimeType: archivo.mimeType || (archivo.tipo === 'audio' ? 'audio/mpeg' : 'video/mp4'),
+            tamañoBytes: archivo.tamañoBytes || null,
             orden: index + 1,
-            activo: true
+            activo: archivo.activo !== false // Default true si no está definido
           }))
         };
+        
+        console.log('UpdateData a enviar:', updateData); // Debug
         
         this.mixService.updateMix(this.editingMixId, updateData).subscribe({
           next: () => {
@@ -399,10 +524,9 @@ export class AdminDashboardComponent implements OnInit {
           const newMix = await this.adminService.createMix(createMixData);
           console.log('Mix creado exitosamente:', newMix);
           
-          // Crear archivos del mix
-          const archivos = formValue.archivos || [];
-          if (archivos.length > 0) {
-            this.createMixArchivos(newMix.id, archivos);
+          // Crear archivos del mix usando archivos temporales
+          if (this.archivosTemporales.length > 0) {
+            this.createMixArchivos(newMix.id, this.archivosTemporales);
           } else {
             this.loadMixs();
             // Actualizar permisos para mostrar la auto-asignación

@@ -11,10 +11,12 @@ namespace WayCombat.Api.Controllers
     public class MixsController : ControllerBase
     {
         private readonly IMixService _mixService;
+        private readonly ILogger<MixsController> _logger;
 
-        public MixsController(IMixService mixService)
+        public MixsController(IMixService mixService, ILogger<MixsController> logger)
         {
             _mixService = mixService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -113,6 +115,9 @@ namespace WayCombat.Api.Controllers
         {
             try
             {
+                _logger.LogInformation("[UpdateMix] Recibida petición para mix ID: {MixId}", mixId);
+                _logger.LogInformation("[UpdateMix] Archivos recibidos: {ArchivoCount}", updateMixDto.Archivos?.Count ?? 0);
+                
                 var success = await _mixService.UpdateAsync(mixId, updateMixDto);
                 if (!success)
                 {
@@ -124,6 +129,7 @@ namespace WayCombat.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "[UpdateMix] Error actualizando mix {MixId}", mixId);
                 return StatusCode(500, new { message = "Error actualizando mix", error = ex.Message });
             }
         }

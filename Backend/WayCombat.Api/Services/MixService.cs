@@ -129,11 +129,18 @@ namespace WayCombat.Api.Services
             // Actualizar archivos si se proporcionaron
             if (updateMixDto.Archivos != null)
             {
-                foreach (var archivoDto in updateMixDto.Archivos)
+                Console.WriteLine($"Actualizando mix {mix.Id} con {updateMixDto.Archivos.Count} archivos");
+                
+                // 1. Actualizar archivos existentes
+                var archivosExistentes = updateMixDto.Archivos.Where(a => a.Id > 0).ToList();
+                Console.WriteLine($"Archivos existentes a actualizar: {archivosExistentes.Count}");
+                
+                foreach (var archivoDto in archivosExistentes)
                 {
                     var archivo = mix.ArchivoMixes.FirstOrDefault(a => a.Id == archivoDto.Id);
                     if (archivo != null)
                     {
+                        Console.WriteLine($"Actualizando archivo ID: {archivo.Id}, Nombre: {archivoDto.Nombre}");
                         archivo.Tipo = archivoDto.Tipo;
                         archivo.Nombre = archivoDto.Nombre;
                         archivo.URL = archivoDto.URL;
@@ -143,6 +150,43 @@ namespace WayCombat.Api.Services
                         archivo.Activo = archivoDto.Activo;
                         archivo.FechaActualizacion = DateTime.UtcNow;
                     }
+                }
+
+                // 2. Agregar archivos nuevos (ID = 0)
+                var archivosNuevos = updateMixDto.Archivos.Where(a => a.Id == 0).ToList();
+                Console.WriteLine($"Archivos nuevos a agregar: {archivosNuevos.Count}");
+                
+                foreach (var archivoDto in archivosNuevos)
+                {
+                    Console.WriteLine($"Agregando archivo nuevo: {archivoDto.Nombre}, Tipo: {archivoDto.Tipo}");
+                    var nuevoArchivo = new ArchivoMix
+                    {
+                        MixId = mix.Id,
+                        Mix = mix, // Establecer la relación explícitamente
+                        Tipo = archivoDto.Tipo,
+                        Nombre = archivoDto.Nombre,
+                        URL = archivoDto.URL,
+                        MimeType = archivoDto.MimeType,
+                        TamañoBytes = archivoDto.TamañoBytes,
+                        Orden = archivoDto.Orden,
+                        Activo = archivoDto.Activo,
+                        FechaCreacion = DateTime.UtcNow,
+                        FechaActualizacion = DateTime.UtcNow
+                    };
+                    // Agregar a la colección del mix para mantener la relación
+                    mix.ArchivoMixes.Add(nuevoArchivo);
+                }
+
+                // 3. Eliminar archivos que ya no están en la lista
+                // Solo considerar archivos existentes (con ID > 0) para la eliminación
+                var idsArchivosActualizados = updateMixDto.Archivos.Where(a => a.Id > 0).Select(a => a.Id).ToList();
+                var archivosAEliminar = mix.ArchivoMixes
+                    .Where(a => a.Id > 0 && !idsArchivosActualizados.Contains(a.Id))
+                    .ToList();
+                if (archivosAEliminar.Any())
+                {
+                    Console.WriteLine($"Eliminando {archivosAEliminar.Count} archivos");
+                    _context.ArchivoMixes.RemoveRange(archivosAEliminar);
                 }
                 
                 // Recalcular el tamaño total del Mix

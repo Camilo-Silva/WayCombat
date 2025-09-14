@@ -57,6 +57,7 @@ export class MixService {
   }
 
   updateMix(id: number, mix: UpdateMixRequest): Observable<any> {
+    console.log(`[MixService] Enviando PUT a /mixs/${id} con datos:`, mix); // Debug
     return this.http.put(`${this.apiUrl}/mixs/${id}`, mix, {
       headers: this.authService.getAuthHeaders()
     });

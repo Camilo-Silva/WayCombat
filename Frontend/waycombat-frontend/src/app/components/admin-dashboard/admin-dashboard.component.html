@@ -134,124 +134,74 @@
                     <button 
                       type="button" 
                       class="btn btn-outline-primary btn-sm"
-                      (click)="addArchivo()">
+                      (click)="openArchivoModal()">
                       <i class="fas fa-plus me-1"></i>Agregar Archivo
                     </button>
                   </div>
 
-                  <div formArrayName="archivos">
-                    <div 
-                      *ngFor="let archivo of archivosFormArray.controls; let i = index"
-                      [formGroupName]="i"
-                      class="card mb-3 border-secondary">
-                      <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                          <h6 class="card-title text-secondary mb-0">
-                            <i class="fas fa-file me-2"></i>Archivo {{ i + 1 }}
-                          </h6>
-                          <button 
-                            type="button" 
-                            class="btn btn-outline-danger btn-sm"
-                            (click)="removeArchivo(i)"
-                            [disabled]="archivosFormArray.length === 1">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-
-                        <div class="row">
-                          <div class="col-md-6 mb-3">
-                            <label class="form-label">Nombre del Archivo *</label>
-                            <input 
-                              type="text" 
-                              class="form-control form-control-sm"
-                              formControlName="nombre"
-                              placeholder="Ej: Mix_Principiantes.mp3">
-                          </div>
-                          <div class="col-md-3 mb-3">
-                            <label class="form-label">Tipo *</label>
-                            <select class="form-select form-select-sm" formControlName="tipo">
-                              <option value="audio">Audio (MP3)</option>
-                              <option value="video">Video (MP4)</option>
-                            </select>
-                          </div>
-                          <div class="col-md-3 mb-3">
-                            <label class="form-label">Estado</label>
-                            <div class="form-check form-switch mt-2">
-                              <input 
-                                class="form-check-input" 
-                                type="checkbox" 
-                                [checked]="true"
-                                [id]="'archivoActivo' + i">
-                              <label class="form-check-label" [for]="'archivoActivo' + i">
-                                Activo
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="row">
-                          <div class="col-12 mb-3">
-                            <label class="form-label">URL del Archivo *</label>
-                            <div class="input-group">
-                              <input 
-                                type="url" 
-                                class="form-control form-control-sm"
-                                formControlName="url"
-                                placeholder="URL de Google Drive: https://drive.google.com/file/d/[ID]/view">
+                  <!-- Tabla compacta de archivos -->
+                  <div *ngIf="archivosTemporales.length > 0" class="table-responsive">
+                    <table class="table table-sm table-striped">
+                      <thead class="table-dark">
+                        <tr>
+                          <th style="width: 5%;">#</th>
+                          <th style="width: 25%;">Nombre</th>
+                          <th style="width: 10%;">Tipo</th>
+                          <th style="width: 40%;">URL</th>
+                          <th style="width: 10%;">Estado</th>
+                          <th style="width: 10%;">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let archivo of archivosTemporales; let i = index">
+                          <td>{{ i + 1 }}</td>
+                          <td>
+                            <small>{{ archivo.nombre }}</small>
+                          </td>
+                          <td>
+                            <span class="badge" [ngClass]="archivo.tipo.toLowerCase() === 'audio' ? 'bg-info' : 'bg-warning'">
+                              <i class="fas" [ngClass]="archivo.tipo.toLowerCase() === 'audio' ? 'fa-music' : 'fa-video'"></i>
+                              {{ archivo.tipo }}
+                            </span>
+                          </td>
+                          <td>
+                            <small class="text-truncate d-block" style="max-width: 300px;" [title]="archivo.url">
+                              {{ archivo.url }}
+                            </small>
+                          </td>
+                          <td>
+                            <span class="badge" [ngClass]="archivo.activo ? 'bg-success' : 'bg-secondary'">
+                              {{ archivo.activo ? 'Activo' : 'Inactivo' }}
+                            </span>
+                          </td>
+                          <td>
+                            <div class="btn-group" role="group">
                               <button 
                                 type="button" 
-                                class="btn btn-outline-secondary btn-sm"
-                                (click)="convertDriveUrl(i)"
-                                title="Convertir URL de Drive a formato directo">
-                                <i class="fas fa-magic"></i>
+                                class="btn btn-outline-primary btn-xs"
+                                (click)="editArchivoFromTable(i)"
+                                title="Editar archivo">
+                                <i class="fas fa-edit"></i>
                               </button>
-                            </div>
-                            <div class="form-text">
-                              <i class="fas fa-info-circle me-1"></i>
-                              <strong>Google Drive:</strong> Pega la URL de compartir y haz clic en <i class="fas fa-magic"></i> para convertir |
-                              <strong>YouTube:</strong> URL completa del video
-                            </div>
-                            
-                            <!-- Ayuda visual para Google Drive -->
-                            <div class="mt-2">
                               <button 
                                 type="button" 
-                                class="btn btn-link btn-sm p-0"
-                                (click)="toggleDriveHelp()"
-                                [attr.aria-expanded]="showDriveHelp">
-                                <i class="fas fa-question-circle me-1"></i>¿Cómo obtener URLs de Google Drive?
+                                class="btn btn-outline-danger btn-xs"
+                                (click)="removeArchivoFromTable(i)"
+                                title="Eliminar archivo">
+                                <i class="fas fa-trash"></i>
                               </button>
-                              
-                              <div *ngIf="showDriveHelp" class="alert alert-info mt-2">
-                                <h6><i class="fab fa-google-drive me-2"></i>Pasos para Google Drive:</h6>
-                                <ol class="mb-2">
-                                  <li>Sube tu archivo a Google Drive</li>
-                                  <li>Haz clic derecho → "Obtener enlace"</li>
-                                  <li>Cambia a "Cualquier persona con el enlace"</li>
-                                  <li>Copia la URL completa aquí</li>
-                                  <li>Haz clic en <i class="fas fa-magic"></i> para convertir automáticamente</li>
-                                </ol>
-                                <small class="text-muted">
-                                  <i class="fas fa-lightbulb me-1"></i>
-                                  La URL se convertirá automáticamente al formato directo para reproducción
-                                </small>
-                              </div>
                             </div>
-                          </div>
-                        </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-                        <div class="row">
-                          <div class="col-12">
-                            <label class="form-label">Descripción</label>
-                            <textarea 
-                              class="form-control form-control-sm"
-                              formControlName="descripcion"
-                              rows="2"
-                              placeholder="Descripción opcional del archivo..."></textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <!-- Mensaje cuando no hay archivos -->
+                  <div *ngIf="archivosTemporales.length === 0" class="text-center py-4 text-muted">
+                    <i class="fas fa-folder-open fa-3x mb-3"></i>
+                    <p class="mb-0">No hay archivos agregados</p>
+                    <small>Haz clic en "Agregar Archivo" para comenzar</small>
                   </div>
                 </div>
 
@@ -815,3 +765,172 @@
     </div>
   </div>
 </div>
+
+<!-- ============================================
+     MODAL PARA AGREGAR/EDITAR ARCHIVO
+     ============================================ -->
+<div class="modal fade" [class.show]="showArchivoModal" [style.display]="showArchivoModal ? 'block' : 'none'" 
+     tabindex="-1" id="archivoModal" *ngIf="showArchivoModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-file-plus me-2"></i>
+          {{ editingArchivoIndex !== null ? 'Editar Archivo' : 'Agregar Nuevo Archivo' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeArchivoModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form [formGroup]="archivoModalForm" (ngSubmit)="saveArchivoFromModal()">
+          <div class="row">
+            <!-- Nombre del archivo -->
+            <div class="col-md-8 mb-3">
+              <label for="nombreArchivoModal" class="form-label fw-bold">
+                <i class="fas fa-file me-1"></i>Nombre del Archivo *
+              </label>
+              <input 
+                id="nombreArchivoModal"
+                type="text" 
+                class="form-control"
+                [class.is-invalid]="archivoModalForm.get('nombre')?.invalid && archivoModalForm.get('nombre')?.touched"
+                formControlName="nombre"
+                placeholder="Ej: Mix_Principiantes.mp3">
+              <div class="invalid-feedback" *ngIf="archivoModalForm.get('nombre')?.invalid && archivoModalForm.get('nombre')?.touched">
+                El nombre del archivo es requerido
+              </div>
+            </div>
+
+            <!-- Tipo de archivo -->
+            <div class="col-md-4 mb-3">
+              <label for="tipoArchivoModal" class="form-label fw-bold">
+                <i class="fas fa-tags me-1"></i>Tipo *
+              </label>
+              <select id="tipoArchivoModal" class="form-select" formControlName="tipo">
+                <option value="audio">
+                  <i class="fas fa-music"></i> Audio (MP3)
+                </option>
+                <option value="video">
+                  <i class="fas fa-video"></i> Video (MP4)
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- URL del archivo -->
+            <div class="col-12 mb-3">
+              <label for="urlArchivoModal" class="form-label fw-bold">
+                <i class="fas fa-link me-1"></i>URL del Archivo *
+              </label>
+              <div class="input-group">
+                <input 
+                  id="urlArchivoModal"
+                  type="url" 
+                  class="form-control"
+                  [class.is-invalid]="archivoModalForm.get('url')?.invalid && archivoModalForm.get('url')?.touched"
+                  formControlName="url"
+                  placeholder="URL de Google Drive: https://drive.google.com/file/d/[ID]/view">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary"
+                  (click)="convertDriveUrlInModal()"
+                  title="Convertir URL de Drive a formato directo">
+                  <i class="fas fa-magic me-1"></i>Convertir
+                </button>
+              </div>
+              <div class="invalid-feedback" *ngIf="archivoModalForm.get('url')?.invalid && archivoModalForm.get('url')?.touched">
+                Se requiere una URL válida (debe comenzar con http:// o https://)
+              </div>
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                <strong>Google Drive:</strong> Pega la URL de compartir y haz clic en "Convertir" |
+                <strong>YouTube:</strong> URL completa del video
+              </div>
+            </div>
+          </div>
+
+          <!-- Ayuda visual para Google Drive -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <button 
+                type="button" 
+                class="btn btn-link btn-sm p-0"
+                (click)="toggleDriveHelp()"
+                [attr.aria-expanded]="showDriveHelp">
+                <i class="fas fa-question-circle me-1"></i>¿Cómo obtener URLs de Google Drive?
+              </button>
+              
+              <div *ngIf="showDriveHelp" class="alert alert-info mt-2">
+                <h6><i class="fab fa-google-drive me-2"></i>Pasos para Google Drive:</h6>
+                <ol class="mb-2">
+                  <li>Sube tu archivo a Google Drive</li>
+                  <li>Haz clic derecho → "Obtener enlace"</li>
+                  <li>Cambia a "Cualquier persona con el enlace"</li>
+                  <li>Copia la URL completa aquí</li>
+                  <li>Haz clic en "Convertir" para transformar automáticamente</li>
+                </ol>
+                <small class="text-muted">
+                  <i class="fas fa-lightbulb me-1"></i>
+                  La URL se convertirá automáticamente al formato directo para reproducción
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- Descripción -->
+            <div class="col-md-8 mb-3">
+              <label for="descripcionArchivoModal" class="form-label">
+                <i class="fas fa-comment-alt me-1"></i>Descripción
+              </label>
+              <textarea 
+                id="descripcionArchivoModal"
+                class="form-control"
+                formControlName="descripcion"
+                rows="3"
+                placeholder="Descripción opcional del archivo..."></textarea>
+            </div>
+
+            <!-- Estado -->
+            <div class="col-md-4 mb-3">
+              <label for="estadoArchivoModal" class="form-label fw-bold">
+                <i class="fas fa-toggle-on me-1"></i>Estado
+              </label>
+              <div class="form-check form-switch mt-2">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  formControlName="activo"
+                  id="archivoActivoModal">
+                <label class="form-check-label" for="archivoActivoModal">
+                  <span class="badge" [ngClass]="archivoModalForm.get('activo')?.value ? 'bg-success' : 'bg-secondary'">
+                    {{ archivoModalForm.get('activo')?.value ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeArchivoModal()">
+          <i class="fas fa-times me-1"></i>Cancelar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary"
+          (click)="saveArchivoFromModal()"
+          [disabled]="archivoModalForm.invalid">
+          <i class="fas fa-save me-1"></i>
+          {{ editingArchivoIndex !== null ? 'Actualizar' : 'Agregar' }} Archivo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop del modal -->
+<div class="modal-backdrop fade" [class.show]="showArchivoModal" *ngIf="showArchivoModal" 
+     (click)="closeArchivoModal()" (keydown.escape)="closeArchivoModal()"></div>
