@@ -524,8 +524,8 @@
                           <!-- Botón de activar/desactivar -->
                           <button 
                             class="btn"
-                            [class.btn-warning]="usuario.activo"
-                            [class.btn-success]="!usuario.activo"
+                            [class.btn-outline-warning]="usuario.activo"
+                            [class.btn-outline-success]="!usuario.activo"
                             [disabled]="usuario.rol === 'admin'"
                             (click)="toggleUsuarioActivo(usuario.id!)"
                             [title]="usuario.activo ? 'Desactivar usuario' : 'Activar usuario'">
@@ -533,7 +533,7 @@
                           </button>
                           <!-- Botón de eliminar -->
                           <button 
-                            class="btn btn-danger"
+                            class="btn btn-outline-danger"
                             [disabled]="usuario.rol === 'admin'"
                             (click)="confirmDeleteUsuario(usuario)"
                             title="Eliminar usuario">
