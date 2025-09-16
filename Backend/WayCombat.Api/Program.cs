@@ -192,6 +192,10 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Configure URLs for Render deployment
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5165";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
