@@ -8,8 +8,8 @@ Este proyecto está configurado para funcionar con **SQLite en desarrollo** y **
 
 ```
 🔧 DESARROLLO           🚀 PRODUCCIÓN
-├── SQLite              ├── PostgreSQL (Railway)
-├── localhost:5165      ├── Railway API URL
+├── SQLite              ├── PostgreSQL (Render)
+├── localhost:5165      ├── Render API URL
 ├── localhost:4200      ├── Netlify Frontend
 └── appsettings.json    └── Variables de entorno
 ```
@@ -123,12 +123,12 @@ npm run dev:postgres
 ```bash
 # 1. Merge a main
 git checkout main
-git merge deployment/railway-postgresql
+git merge deployment/render-postgresql
 
 # 2. Push triggers auto-deployment
 git push origin main
 
-# Railway auto-detecta Dockerfile
+# Render auto-detecta Dockerfile
 # Netlify auto-detecta cambios en frontend
 ```
 
@@ -162,8 +162,8 @@ npm run migrate:postgres
 
 ### Producción
 - **Frontend**: https://waycombat.netlify.app
-- **Backend API**: https://waycombat-api.up.railway.app
-- **Database**: PostgreSQL automático en Railway
+- **Backend API**: https://waycombat-api.onrender.com
+- **Database**: PostgreSQL automático en Render
 
 ## 🔧 Troubleshooting
 
@@ -178,7 +178,7 @@ echo $env:UsePostgreSQL  # debe ser true/false según necesidad
 - Verificar que `ProductionOrigin` esté configurado correctamente
 - Verificar que las URLs de frontend y backend coincidan
 
-### Error: Variables de entorno en Railway
+### Error: Variables de entorno en Render
 - Todas las variables se configuran automáticamente
 - `DATABASE_URL` se genera automáticamente
 - `JWT_KEY` se debe configurar manualmente
@@ -192,7 +192,7 @@ echo $env:UsePostgreSQL  # debe ser true/false según necesidad
 
 ## 🎯 Próximos Pasos
 
-1. ✅ Configuración dual completada
-2. 🔄 Deploy a Railway (siguiente)
-3. 🔄 Deploy a Netlify (siguiente)
-4. 🔄 Configurar variables de producción
+2. ✅ Configuración dual completada
+3. 🔄 Deploy a Render (siguiente)
+4. 🔄 Deploy a Netlify (siguiente)
+5. 🔄 Configurar variables de producción

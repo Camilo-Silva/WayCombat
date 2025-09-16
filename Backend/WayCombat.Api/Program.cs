@@ -152,6 +152,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Health check endpoint for Render
+app.MapGet("/health", () => new { 
+    status = "healthy", 
+    timestamp = DateTime.UtcNow,
+    environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+    database = "connected"
+});
+
 // Auto migrate database on startup
 using (var scope = app.Services.CreateScope())
 {

@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://waycombat-api.up.railway.app/api',
+  apiUrl: 'https://waycombat-api.onrender.com/api',
   appName: 'WayCombat'
 };
