@@ -1,5 +1,6 @@
 import { Handler } from '@netlify/functions';
 import { neon } from '@netlify/neon';
+import * as bcrypt from 'bcryptjs';
 
 export const handler: Handler = async (event, context) => {
   // Configurar CORS
@@ -84,7 +85,6 @@ export const handler: Handler = async (event, context) => {
 
     if (adminExists.length === 0) {
       // Crear hash BCrypt para admin123
-      const bcrypt = await import('bcryptjs');
       const hashedPassword = await bcrypt.hash('admin123', 11);
       
       await sql`
