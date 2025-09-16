@@ -23,7 +23,15 @@ namespace WayCombat.Api.Services
 
         public string GenerateToken(Usuario usuario)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            // Get JWT key from environment variable or configuration
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? _configuration["Jwt:Key"];
+            
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new InvalidOperationException("JWT_KEY environment variable or Jwt:Key configuration is required.");
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
@@ -36,8 +44,8 @@ namespace WayCombat.Api.Services
             };
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: _configuration["Jwt:Issuer"] ?? "WayCombat",
+                audience: _configuration["Jwt:Audience"] ?? "WayCombat",
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(24),
                 signingCredentials: credentials
@@ -48,7 +56,15 @@ namespace WayCombat.Api.Services
 
         public ClaimsPrincipal? GetPrincipalFromToken(string token)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            // Get JWT key from environment variable or configuration
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? _configuration["Jwt:Key"];
+            
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new InvalidOperationException("JWT_KEY environment variable or Jwt:Key configuration is required.");
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var tokenHandler = new JwtSecurityTokenHandler();
 
             try
@@ -58,9 +74,9 @@ namespace WayCombat.Api.Services
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = key,
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidIssuer = _configuration["Jwt:Issuer"] ?? "WayCombat",
                     ValidateAudience = true,
-                    ValidAudience = _configuration["Jwt:Audience"],
+                    ValidAudience = _configuration["Jwt:Audience"] ?? "WayCombat",
                     ValidateLifetime = false, // No validar expiración para este caso
                     ClockSkew = TimeSpan.Zero
                 };
