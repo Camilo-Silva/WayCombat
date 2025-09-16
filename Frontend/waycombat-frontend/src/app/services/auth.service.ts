@@ -163,16 +163,21 @@ export class AuthService {
     }
 
     const token = this.getToken();
-    const expiration = localStorage.getItem('tokenExpiration');
+    const user = this.getCurrentUser();
     
-    if (!token || !expiration) {
+    // Si tenemos token y usuario, consideramos que está logueado
+    if (!token || !user) {
       return false;
     }
 
-    const expirationDate = new Date(expiration);
-    if (expirationDate <= new Date()) {
-      this.logout();
-      return false;
+    // Si hay expiración guardada, verificarla
+    const expiration = localStorage.getItem('tokenExpiration');
+    if (expiration) {
+      const expirationDate = new Date(expiration);
+      if (expirationDate <= new Date()) {
+        this.logout();
+        return false;
+      }
     }
 
     return true;
