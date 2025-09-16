@@ -168,3 +168,6 @@ D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\obj\Debug\net9.0\refint\WayCombat
 D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\obj\Debug\net9.0\WayCombat.Api.pdb
 D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\obj\Debug\net9.0\WayCombat.Api.genruntimeconfig.cache
 D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\obj\Debug\net9.0\ref\WayCombat.Api.dll
+D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\bin\Debug\net9.0\appsettings.Production.json
+D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\bin\Debug\net9.0\Npgsql.dll
+D:\9.Proyectos\WayCombat\Backend\WayCombat.Api\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll

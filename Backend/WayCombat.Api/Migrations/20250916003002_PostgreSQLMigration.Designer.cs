@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WayCombat.Api.Data;
@@ -11,9 +12,11 @@ using WayCombat.Api.Data;
 namespace WayCombat.Api.Migrations
 {
     [DbContext(typeof(WayCombatDbContext))]
-    partial class WayCombatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250916003002_PostgreSQLMigration")]
+    partial class PostgreSQLMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

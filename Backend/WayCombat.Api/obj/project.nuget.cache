@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "J5Q3qeo3SO8=",
+  "dgSpecHash": "SuJtACIQwWg=",
   "success": true,
-  "projectFilePath": "d:\\9.Proyectos\\WayCombat\\Backend\\WayCombat.Api\\WayCombat.Api.csproj",
+  "projectFilePath": "D:\\9.Proyectos\\WayCombat\\Backend\\WayCombat.Api\\WayCombat.Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\camil\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\camil\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
@@ -45,6 +45,8 @@
     "C:\\Users\\camil\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.13.1\\microsoft.identitymodel.tokens.8.13.1.nupkg.sha512",
     "C:\\Users\\camil\\.nuget\\packages\\microsoft.openapi\\1.6.23\\microsoft.openapi.1.6.23.nupkg.sha512",
     "C:\\Users\\camil\\.nuget\\packages\\mono.texttemplating\\3.0.0\\mono.texttemplating.3.0.0.nupkg.sha512",
+    "C:\\Users\\camil\\.nuget\\packages\\npgsql\\9.0.3\\npgsql.9.0.3.nupkg.sha512",
+    "C:\\Users\\camil\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\9.0.4\\npgsql.entityframeworkcore.postgresql.9.0.4.nupkg.sha512",
     "C:\\Users\\camil\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.10\\sqlitepclraw.bundle_e_sqlite3.2.1.10.nupkg.sha512",
     "C:\\Users\\camil\\.nuget\\packages\\sqlitepclraw.core\\2.1.10\\sqlitepclraw.core.2.1.10.nupkg.sha512",
     "C:\\Users\\camil\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.10\\sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",

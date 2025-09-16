@@ -1,4 +1,16 @@
 {
+  "name": "waycombat-api",
+  "version": "1.0.0",
+  "description": "WayCombat Backend API",
+  "scripts": {
+    "dev": "dotnet run --environment Development",
+    "dev:postgres": "set UsePostgreSQL=true && dotnet run --environment Development",
+    "prod": "dotnet run --environment Production",
+    "build": "dotnet build",
+    "migrate:dev": "dotnet ef database update",
+    "migrate:postgres": "set UsePostgreSQL=true && dotnet ef database update",
+    "migrate:add": "dotnet ef migrations add"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "sqlite3": "^5.1.7"

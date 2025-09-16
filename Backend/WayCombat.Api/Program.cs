@@ -15,9 +15,27 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
-// Configure Entity Framework with SQLite
+// Configure Entity Framework - Dual Database Support
+var environment = builder.Environment.EnvironmentName;
+var usePostgreSQL = builder.Configuration.GetValue<bool>("UsePostgreSQL");
+
 builder.Services.AddDbContext<WayCombatDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (usePostgreSQL || environment == "Production")
+    {
+        // PostgreSQL for Production (Railway)
+        var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection") 
+                             ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+        options.UseNpgsql(connectionString);
+        Console.WriteLine("🐘 Using PostgreSQL database");
+    }
+    else
+    {
+        // SQLite for Development
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+        Console.WriteLine("🗄️ Using SQLite database");
+    }
+});
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -38,12 +56,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Configure CORS
+// Configure CORS - Development and Production
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:4202", "http://localhost:4203", "http://localhost:4204")
+        var allowedOrigins = new List<string>
+        {
+            // Development origins
+            "http://localhost:4200", 
+            "http://localhost:4201", 
+            "http://localhost:4202", 
+            "http://localhost:4203", 
+            "http://localhost:4204"
+        };
+
+        // Add production origin if configured
+        var productionOrigin = builder.Configuration["ProductionOrigin"];
+        if (!string.IsNullOrEmpty(productionOrigin))
+        {
+            allowedOrigins.Add(productionOrigin);
+        }
+
+        policy.WithOrigins(allowedOrigins.ToArray())
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
