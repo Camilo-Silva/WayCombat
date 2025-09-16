@@ -52,9 +52,8 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
-    // Obtener ID del usuario del path
-    const pathSegments = event.path.split('/');
-    const userId = parseInt(pathSegments[pathSegments.length - 2]); // .../{id}/reset-password
+    // Obtener ID del usuario del query parameter
+    const userId = event.queryStringParameters?.id ? parseInt(event.queryStringParameters.id) : null;
     
     if (!userId || isNaN(userId)) {
       return {

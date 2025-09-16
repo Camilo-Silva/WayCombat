@@ -60,8 +60,13 @@ export const handler: Handler = async (event, context) => {
 
     // Extraer userId de la URL
     const pathParts = event.path.split('/');
-    const userIdIndex = pathParts.findIndex(part => part === 'toggle-usuario-activo') - 1;
-    const userId = parseInt(pathParts[userIdIndex]);
+    console.log('Path parts:', pathParts);
+    
+    // Buscar el índice donde está toggle-usuario-activo y tomar el siguiente
+    const toggleIndex = pathParts.findIndex(part => part === 'toggle-usuario-activo');
+    const userId = parseInt(pathParts[toggleIndex + 1]);
+
+    console.log('Extracted userId:', userId);
 
     if (!userId || isNaN(userId)) {
       return {

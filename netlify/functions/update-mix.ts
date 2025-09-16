@@ -52,9 +52,8 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
-    // Obtener ID del mix del path
-    const pathSegments = event.path.split('/');
-    const mixId = parseInt(pathSegments[pathSegments.length - 1]);
+    // Obtener ID del mix del query parameter
+    const mixId = event.queryStringParameters?.id ? parseInt(event.queryStringParameters.id) : null;
     
     if (!mixId || isNaN(mixId)) {
       return {
