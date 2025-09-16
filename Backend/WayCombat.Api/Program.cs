@@ -256,28 +256,30 @@ using (var scope = app.Services.CreateScope())
             await context.Database.EnsureCreatedAsync();
             Console.WriteLine("✅ Database schema created successfully");
             
-            // Create admin user if it doesn't exist (since EnsureCreated doesn't run seed data)
-            var usuarioService = scope.ServiceProvider.GetRequiredService<IUsuarioService>();
-            var adminUser = await usuarioService.GetByEmailAsync("admin@waycombat.com");
+            // Wait a moment for schema to be fully committed
+            await Task.Delay(1000);
             
-            if (adminUser == null)
+            // Create admin user if it doesn't exist (since EnsureCreated doesn't run seed data)
+            try 
             {
-                Console.WriteLine("👤 Creating admin user...");
-                var adminRegistration = new RegisterDto
-                {
-                    Email = "admin@waycombat.com",
-                    Nombre = "Administrador",
-                    Contraseña = "admin123"
-                };
+                Console.WriteLine("👤 Checking for admin user...");
+                var usuarioService = scope.ServiceProvider.GetRequiredService<IUsuarioService>();
+                var adminUser = await usuarioService.GetByEmailAsync("admin@waycombat.com");
                 
-                var result = await usuarioService.CreateAsync(adminRegistration);
-                if (result != null)
+                if (adminUser == null)
                 {
-                    // Update the user to admin role
-                    var createdAdmin = await usuarioService.GetByEmailAsync("admin@waycombat.com");
-                    if (createdAdmin != null)
+                    Console.WriteLine("👤 Creating admin user...");
+                    var adminRegistration = new RegisterDto
                     {
-                        // Find the actual entity to update the role
+                        Email = "admin@waycombat.com",
+                        Nombre = "Administrador",
+                        Contraseña = "admin123"
+                    };
+                    
+                    var result = await usuarioService.CreateAsync(adminRegistration);
+                    if (result != null)
+                    {
+                        // Update the user to admin role
                         var adminEntity = await context.Usuarios.FirstOrDefaultAsync(u => u.Email == "admin@waycombat.com");
                         if (adminEntity != null)
                         {
@@ -286,15 +288,20 @@ using (var scope = app.Services.CreateScope())
                             Console.WriteLine("✅ Admin user created successfully with admin role");
                         }
                     }
+                    else
+                    {
+                        Console.WriteLine("❌ Failed to create admin user");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("❌ Failed to create admin user");
+                    Console.WriteLine("👤 Admin user already exists");
                 }
             }
-            else
+            catch (Exception adminEx)
             {
-                Console.WriteLine("👤 Admin user already exists");
+                Console.WriteLine($"⚠️ Warning: Could not create admin user: {adminEx.Message}");
+                Console.WriteLine("ℹ️ You may need to create the admin user manually");
             }
         }
         else
