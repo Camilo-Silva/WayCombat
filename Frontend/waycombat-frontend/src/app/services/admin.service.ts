@@ -62,56 +62,41 @@ export class AdminService {
   async createMix(mixData: CreateMixRequest): Promise<Mix> {
     try {
       const response = await firstValueFrom(
-        this.http.post<Mix>(`${this.apiUrl}/admin/mixs`, mixData, {
+        this.http.post<Mix>(`${this.apiUrl}/create-mix`, mixData, {
           headers: this.authService.getAuthHeaders()
         })
       );
       return response;
     } catch (error) {
       console.error('Error creating mix:', error);
-      // Simular creación exitosa por ahora
-      return {
-        id: Date.now(),
-        titulo: mixData.titulo,
-        descripcion: mixData.descripcion,
-        fechaCreacion: new Date(),
-        activo: true,
-        archivos: []
-      };
+      throw error;
     }
   }
 
   async updateMix(mixId: number, mixData: CreateMixRequest): Promise<Mix> {
     try {
       const response = await firstValueFrom(
-        this.http.put<Mix>(`${this.apiUrl}/admin/mixs/${mixId}`, mixData, {
+        this.http.put<Mix>(`${this.apiUrl}/update-mix/${mixId}`, mixData, {
           headers: this.authService.getAuthHeaders()
         })
       );
       return response;
     } catch (error) {
       console.error('Error updating mix:', error);
-      // Simular actualización exitosa por ahora
-      return {
-        id: mixId,
-        titulo: mixData.titulo,
-        descripcion: mixData.descripcion,
-        fechaCreacion: new Date(),
-        activo: true,
-        archivos: []
-      };
+      throw error;
     }
   }
 
   async deleteMix(mixId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.delete(`${this.apiUrl}/admin/mixs/${mixId}`, {
+        this.http.delete(`${this.apiUrl}/delete-mix/${mixId}`, {
           headers: this.authService.getAuthHeaders()
         })
       );
     } catch (error) {
       console.error('Error deleting mix:', error);
+      throw error;
     }
   }
 
