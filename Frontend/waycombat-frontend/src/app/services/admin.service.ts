@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { MixService } from './mix.service';
 import { Usuario } from '../models/auth.models';
 import { Mix, ArchivoMix, CreateMixRequest } from '../models/mix.models';
+import { environment } from '../../environments/environment';
 
 interface UsuarioMixPermiso {
   usuarioId: number;
@@ -28,7 +29,7 @@ interface AccesoMixDto {
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:5165/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

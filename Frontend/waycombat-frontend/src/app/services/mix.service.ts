@@ -11,12 +11,13 @@ import {
   CreateAccesoMixRequest
 } from '../models/mix.models';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MixService {
-  private apiUrl = 'http://localhost:5165/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,
