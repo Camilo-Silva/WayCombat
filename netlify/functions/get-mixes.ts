@@ -1,6 +1,6 @@
 import { Handler } from '@netlify/functions';
-import { getAllMixes, initializeDatabase } from '../../utils/database';
-import { verifyToken, extractTokenFromHeader } from '../../utils/jwt';
+import { getAllMixes, initializeDatabase } from '../utils/database';
+import { verifyToken, extractTokenFromHeader } from '../utils/jwt';
 
 export const handler: Handler = async (event, context) => {
   // Configurar CORS

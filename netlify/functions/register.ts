@@ -1,8 +1,8 @@
 import { Handler } from '@netlify/functions';
-import { RegisterDto, AuthResponseDto } from '../../types';
-import { createUsuario, getUsuarioByEmail, initializeDatabase } from '../../utils/database';
-import { hashPassword } from '../../utils/bcrypt';
-import { generateToken } from '../../utils/jwt';
+import { RegisterDto, AuthResponseDto } from '../types';
+import { createUsuario, getUsuarioByEmail, initializeDatabase } from '../utils/database';
+import { hashPassword } from '../utils/bcrypt';
+import { generateToken } from '../utils/jwt';
 
 export const handler: Handler = async (event, context) => {
   // Configurar CORS

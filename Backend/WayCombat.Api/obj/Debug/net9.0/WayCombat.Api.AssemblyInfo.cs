@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WayCombat.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4790ce5a18ca47b648c887dc6257259c39c6ab2f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55f34393c6b37bdcd6a55bf132fbb76fd982ecdd")]
 [assembly: System.Reflection.AssemblyProductAttribute("WayCombat.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WayCombat.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
