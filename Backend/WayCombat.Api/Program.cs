@@ -16,7 +16,10 @@ static string ConvertRenderDatabaseUrl(string databaseUrl)
         var uri = new Uri(databaseUrl);
         var userInfo = uri.UserInfo.Split(':');
         
-        return $"Host={uri.Host};Port={uri.Port};Database={uri.LocalPath.Substring(1)};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        // Use default PostgreSQL port 5432 if no port is specified
+        var port = uri.Port > 0 ? uri.Port : 5432;
+        
+        return $"Host={uri.Host};Port={port};Database={uri.LocalPath.Substring(1)};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
     }
     catch (Exception ex)
     {
