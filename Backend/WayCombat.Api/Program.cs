@@ -234,9 +234,21 @@ using (var scope = app.Services.CreateScope())
         await context.Database.CanConnectAsync();
         Console.WriteLine("✅ Database connection successful");
         
-        // Apply migrations
-        await context.Database.MigrateAsync();
-        Console.WriteLine("✅ Database migration completed successfully");
+        // For PostgreSQL in production, use EnsureCreated instead of migrations
+        // This avoids DateTime casting issues in existing migrations
+        var currentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (currentEnvironment == "Production")
+        {
+            Console.WriteLine("🐘 Using PostgreSQL - Creating database schema...");
+            await context.Database.EnsureCreatedAsync();
+            Console.WriteLine("✅ Database schema created successfully");
+        }
+        else
+        {
+            // Use migrations for SQLite in development
+            await context.Database.MigrateAsync();
+            Console.WriteLine("✅ Database migration completed successfully");
+        }
     }
     catch (Exception ex)
     {
