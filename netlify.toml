@@ -1,11 +1,14 @@
 [build]
   base = "Frontend/waycombat-frontend"
   publish = "dist/waycombat-frontend"
-  command = "npm install --include=dev && npx ng build --configuration=production"
+  command = "npm install --include=dev && npx ng build --configuration=production && cd ../../netlify && npm install"
   functions = "../../netlify/functions"
 
 [build.environment]
   NODE_ENV = "production"
+
+[functions]
+  external_node_modules = ["@netlify/neon", "bcryptjs", "jsonwebtoken"]
 
 [[redirects]]
   from = "/api/*"
