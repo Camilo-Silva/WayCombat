@@ -1,27 +1,27 @@
 # Redirects para rutas dinámicas de API
-/api/mixs/:id/archivos /api/mixs-archivos?mixId=:id 200
-/api/mixs/:id /api/get-mix?id=:id 200
+/api/mixs/:id/archivos /.netlify/functions/mixs-archivos?mixId=:id 200
+/api/mixs/:id /.netlify/functions/get-mix?id=:id 200
 
 # Redirects para endpoints de API
-/api/create-mix /api/create-mix 200
-/api/update-mix/:id /api/update-mix?id=:id 200
-/api/delete-mix/:id /api/delete-mix?id=:id 200
-/api/toggle-mix-activo/:id /api/toggle-mix-activo?id=:id 200
-/api/get-mixes /api/get-mixes 200
-/api/get-usuarios /api/get-usuarios 200
-/api/delete-usuario/:id /api/delete-usuario?id=:id 200
-/api/toggle-usuario-activo/:id /api/toggle-usuario-activo?id=:id 200
-/api/reset-user-password/:id /api/reset-user-password?id=:id 200
-/api/get-accesos /api/get-accesos 200
-/api/toggle-acceso /api/toggle-acceso 200
-/api/login /api/login 200
-/api/register /api/register 200
+/api/create-mix /.netlify/functions/create-mix 200
+/api/update-mix/:id /.netlify/functions/update-mix?id=:id 200
+/api/delete-mix/:id /.netlify/functions/delete-mix?id=:id 200
+/api/toggle-mix-activo/:id /.netlify/functions/toggle-mix-activo?id=:id 200
+/api/get-mixes /.netlify/functions/get-mixes 200
+/api/get-usuarios /.netlify/functions/get-usuarios 200
+/api/delete-usuario/:id /.netlify/functions/delete-usuario?id=:id 200
+/api/toggle-usuario-activo/:id /.netlify/functions/toggle-usuario-activo?id=:id 200
+/api/reset-user-password/:id /.netlify/functions/reset-user-password?id=:id 200
+/api/get-accesos /.netlify/functions/get-accesos 200
+/api/toggle-acceso /.netlify/functions/toggle-acceso 200
+/api/login /.netlify/functions/login 200
+/api/register /.netlify/functions/register 200
 
 # Redirects para endpoints admin
-/api/admin/usuarios /api/admin-usuarios 200
-/api/admin/usuarios/:id /api/admin-usuarios?id=:id 200
-/api/admin/accesos /api/admin-accesos 200
-/api/admin/accesos/:usuarioId/:mixId /api/admin-accesos 200
+/api/admin/usuarios /.netlify/functions/admin-usuarios 200
+/api/admin/usuarios/:id /.netlify/functions/admin-usuarios?id=:id 200
+/api/admin/accesos /.netlify/functions/admin-accesos 200
+/api/admin/accesos/:usuarioId/:mixId /.netlify/functions/admin-accesos 200
 
 # Otras redirects necesarias
 /*    /index.html   200
