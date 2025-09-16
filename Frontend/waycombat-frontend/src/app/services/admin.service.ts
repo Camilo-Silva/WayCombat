@@ -103,7 +103,7 @@ export class AdminService {
   async toggleMixActivo(mixId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.patch(`${this.apiUrl}/toggle-mix-activo/${mixId}/toggle-activo`, {}, {
+        this.http.patch(`${this.apiUrl}/toggle-mix-activo/${mixId}`, {}, {
           headers: this.authService.getAuthHeaders()
         })
       );
@@ -197,7 +197,7 @@ export class AdminService {
   async resetUserPassword(userId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.patch(`${this.apiUrl}/reset-user-password/${userId}/reset-password`, {}, {
+        this.http.patch(`${this.apiUrl}/reset-user-password/${userId}`, {}, {
           headers: this.authService.getAuthHeaders()
         })
       );
@@ -212,7 +212,7 @@ export class AdminService {
   async getAccesosMixes(): Promise<AccesoMixDto[]> {
     try {
       const response = await firstValueFrom(
-        this.http.get<AccesoMixDto[]>(`${this.apiUrl}/admin/accesos`, {
+        this.http.get<AccesoMixDto[]>(`${this.apiUrl}/get-accesos`, {
           headers: this.authService.getAuthHeaders()
         })
       );

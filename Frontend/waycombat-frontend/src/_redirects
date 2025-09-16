@@ -1,0 +1,6 @@
+# Redirects para rutas dinámicas de API
+/api/mixs/:id/archivos /api/mixs-archivos?mixId=:id 200
+/api/mixs/:id /api/get-mix?id=:id 200
+
+# Otras redirects necesarias
+/*    /index.html   200

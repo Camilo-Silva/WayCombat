@@ -54,6 +54,9 @@ export const handler: Handler = async (event, context) => {
 
     let mixes;
 
+    // Primero verificamos qué columnas existen en la tabla mixes
+    console.log('Obteniendo mixes para usuario:', tokenPayload.email, 'rol:', tokenPayload.rol);
+
     if (tokenPayload.rol === 'Admin') {
       // Los admins ven todos los mixes
       mixes = await sql`
@@ -64,14 +67,18 @@ export const handler: Handler = async (event, context) => {
           archivo_url, 
           imagen_url, 
           duracion, 
-          tamaño_bytes, 
+          COALESCE(tamaño_bytes, 0) as tamaño_bytes,
           fecha_creacion,
-          activo
+          COALESCE(activo, true) as activo
         FROM mixes 
         ORDER BY fecha_creacion DESC
       `;
     } else {
       // Los usuarios normales solo ven mixes asignados y activos
+      // Primero verificamos si existen registros en acceso_mixes
+      const accesoCount = await sql`SELECT COUNT(*) as count FROM acceso_mixes WHERE usuario_id = ${tokenPayload.id}`;
+      console.log('Accesos para usuario', tokenPayload.id, ':', accesoCount[0].count);
+
       mixes = await sql`
         SELECT DISTINCT
           m.id, 
@@ -80,16 +87,18 @@ export const handler: Handler = async (event, context) => {
           m.archivo_url, 
           m.imagen_url, 
           m.duracion, 
-          m.tamaño_bytes, 
+          COALESCE(m.tamaño_bytes, 0) as tamaño_bytes,
           m.fecha_creacion,
-          m.activo
+          COALESCE(m.activo, true) as activo
         FROM mixes m
         INNER JOIN acceso_mixes am ON m.id = am.mix_id
         WHERE am.usuario_id = ${tokenPayload.id} 
-          AND m.activo = true
+          AND COALESCE(m.activo, true) = true
         ORDER BY m.fecha_creacion DESC
       `;
     }
+
+    console.log('Número de mixes encontrados:', mixes.length);
 
     // Formatear la respuesta
     const formattedMixes = mixes.map((mix: any) => ({
@@ -99,7 +108,7 @@ export const handler: Handler = async (event, context) => {
       archivoUrl: mix.archivo_url,
       imagenUrl: mix.imagen_url,
       duracion: mix.duracion,
-      tamañoBytes: mix.tamaño_bytes,
+      tamañoBytes: mix.tamaño_bytes || 0,
       fechaCreacion: mix.fecha_creacion,
       activo: mix.activo,
       archivos: [] // Por ahora vacío, se puede implementar después
@@ -113,10 +122,17 @@ export const handler: Handler = async (event, context) => {
 
   } catch (error) {
     console.error('Error obteniendo mixes:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+    const errorStack = error instanceof Error ? error.stack : '';
+    console.error('Stack trace:', errorStack);
+    
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ message: 'Error interno del servidor' })
+      body: JSON.stringify({ 
+        message: 'Error interno del servidor', 
+        error: process.env.NODE_ENV === 'development' ? errorMessage : undefined 
+      })
     };
   }
 };
