@@ -67,10 +67,14 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            // En producción, permitir cualquier origen (ajustar según necesidades)
-            policy.AllowAnyOrigin()
+            // En producción, usar orígenes específicos de configuración
+            var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? 
+                               new[] { "https://waycombat.netlify.app", "https://waycombat-frontend.vercel.app" };
+            
+            policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         }
     });
 });
@@ -141,6 +145,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Health check endpoint para Render
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 // Auto migrate database on startup
 using (var scope = app.Services.CreateScope())
