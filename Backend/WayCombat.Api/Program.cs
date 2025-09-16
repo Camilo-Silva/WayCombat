@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using WayCombat.Api.Data;
 using WayCombat.Api.Services;
+using WayCombat.Api.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -254,6 +255,47 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine("🐘 Using PostgreSQL - Creating database schema...");
             await context.Database.EnsureCreatedAsync();
             Console.WriteLine("✅ Database schema created successfully");
+            
+            // Create admin user if it doesn't exist (since EnsureCreated doesn't run seed data)
+            var usuarioService = scope.ServiceProvider.GetRequiredService<IUsuarioService>();
+            var adminUser = await usuarioService.GetByEmailAsync("admin@waycombat.com");
+            
+            if (adminUser == null)
+            {
+                Console.WriteLine("👤 Creating admin user...");
+                var adminRegistration = new RegisterDto
+                {
+                    Email = "admin@waycombat.com",
+                    Nombre = "Administrador",
+                    Contraseña = "admin123"
+                };
+                
+                var result = await usuarioService.CreateAsync(adminRegistration);
+                if (result != null)
+                {
+                    // Update the user to admin role
+                    var createdAdmin = await usuarioService.GetByEmailAsync("admin@waycombat.com");
+                    if (createdAdmin != null)
+                    {
+                        // Find the actual entity to update the role
+                        var adminEntity = await context.Usuarios.FirstOrDefaultAsync(u => u.Email == "admin@waycombat.com");
+                        if (adminEntity != null)
+                        {
+                            adminEntity.Rol = "admin";
+                            await context.SaveChangesAsync();
+                            Console.WriteLine("✅ Admin user created successfully with admin role");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("❌ Failed to create admin user");
+                }
+            }
+            else
+            {
+                Console.WriteLine("👤 Admin user already exists");
+            }
         }
         else
         {
