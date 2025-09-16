@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WayCombat - Test Functions</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin: 10px 0; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥋 WayCombat - Test Netlify Functions</h1>
+        
+        <div class="section">
+            <h2>1. Inicializar Base de Datos</h2>
+            <button onclick="initDatabase()">Inicializar BD</button>
+            <div id="init-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>2. Login Admin</h2>
+            <button onclick="loginAdmin()">Login Admin</button>
+            <div id="login-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>3. Obtener Mixes</h2>
+            <button onclick="getMixes()">Get Mixes</button>
+            <div id="mixes-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>4. Obtener Usuarios (Admin)</h2>
+            <button onclick="getUsuarios()">Get Usuarios</button>
+            <div id="usuarios-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>5. Registro Nuevo Usuario</h2>
+            <button onclick="registerUser()">Registrar Usuario Test</button>
+            <div id="register-result"></div>
+        </div>
+    </div>
+
+    <script>
+        let adminToken = '';
+
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                return { success: response.ok, data, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function showResult(elementId, result, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${isError ? 'error' : 'success'}">
+                <pre>${JSON.stringify(result, null, 2)}</pre>
+            </div>`;
+        }
+
+        async function initDatabase() {
+            const result = await makeRequest('/api/init-database', {
+                method: 'POST'
+            });
+            showResult('init-result', result, !result.success);
+        }
+
+        async function loginAdmin() {
+            const result = await makeRequest('/api/login', {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: 'admin@waycombat.com',
+                    contraseña: 'admin123'
+                })
+            });
+            
+            if (result.success && result.data.token) {
+                adminToken = result.data.token;
+            }
+            
+            showResult('login-result', result, !result.success);
+        }
+
+        async function getMixes() {
+            const result = await makeRequest('/api/get-mixes', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${adminToken}`
+                }
+            });
+            showResult('mixes-result', result, !result.success);
+        }
+
+        async function getUsuarios() {
+            const result = await makeRequest('/api/get-usuarios', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${adminToken}`
+                }
+            });
+            showResult('usuarios-result', result, !result.success);
+        }
+
+        async function registerUser() {
+            const result = await makeRequest('/api/register', {
+                method: 'POST',
+                body: JSON.stringify({
+                    nombre: 'Usuario Test',
+                    email: 'test@waycombat.com',
+                    contraseña: 'test123'
+                })
+            });
+            showResult('register-result', result, !result.success);
+        }
+    </script>
+</body>
+</html>

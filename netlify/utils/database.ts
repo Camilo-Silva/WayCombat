@@ -1,8 +1,8 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@netlify/neon';
 import { Usuario, Mix, AccesoMix } from '../types';
 
-// Configuración de la base de datos
-const sql = neon(process.env.NETLIFY_DATABASE_URL!);
+// Configuración de la base de datos - Netlify DB usa automáticamente NETLIFY_DATABASE_URL
+const sql = neon();
 
 // Funciones para Usuarios
 export async function createUsuario(usuario: Omit<Usuario, 'id' | 'fechaCreacion' | 'fechaActualizacion'>): Promise<Usuario> {
