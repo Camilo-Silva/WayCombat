@@ -8,7 +8,7 @@ namespace WayCombat.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -103,7 +103,7 @@ namespace WayCombat.Api.Controllers
             {
                 // Verificar que no sea el último administrador
                 var usuarios = await _usuarioService.GetAllAsync();
-                var admins = usuarios.Where(u => u.Rol == "admin").ToList();
+                var admins = usuarios.Where(u => u.Rol == "Admin").ToList();
                 var usuarioAEliminar = usuarios.FirstOrDefault(u => u.Id == id);
 
                 if (usuarioAEliminar == null)
@@ -111,7 +111,7 @@ namespace WayCombat.Api.Controllers
                     return NotFound(new { message = "Usuario no encontrado" });
                 }
 
-                if (usuarioAEliminar.Rol == "admin" && admins.Count <= 1)
+                if (usuarioAEliminar.Rol == "Admin" && admins.Count <= 1)
                 {
                     return BadRequest(new { message = "No se puede eliminar el último administrador del sistema" });
                 }
@@ -142,7 +142,7 @@ namespace WayCombat.Api.Controllers
                 }
 
                 // No permitir desactivar administradores
-                if (usuario.Rol == "admin")
+                if (usuario.Rol == "Admin")
                 {
                     return BadRequest(new { message = "No se puede desactivar usuarios administradores" });
                 }
@@ -173,7 +173,7 @@ namespace WayCombat.Api.Controllers
                 }
 
                 // No permitir resetear contraseña de administradores
-                if (usuario.Rol == "admin")
+                if (usuario.Rol == "Admin")
                 {
                     return BadRequest(new { message = "No se puede resetear contraseña de usuarios administradores" });
                 }

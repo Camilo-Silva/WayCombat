@@ -70,7 +70,8 @@ namespace WayCombat.Api.Data
                     Email = "admin@waycombat.com",
                     Nombre = "Administrador",
                     ContraseñaHash = "$2b$12$RUkztah0eZ97UsyYVqU9betRS67GhIqEGIWpuj41uiefD/rqIuIRm", // admin123
-                    Rol = "admin",
+                    Rol = "Admin", // Cambiado a mayúscula para coincidir con frontend
+                    Activo = true, // Agregado campo Activo
                     FechaCreacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                     FechaActualizacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
                 }
