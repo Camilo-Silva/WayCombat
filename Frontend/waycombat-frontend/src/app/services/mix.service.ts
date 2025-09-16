@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class MixService {
-  private apiUrl = 'http://localhost:5165/api';
+  private apiUrl = '/api';
 
   constructor(
     private http: HttpClient,
@@ -25,7 +25,7 @@ export class MixService {
 
   // Métodos públicos
   getAllMixes(): Observable<Mix[]> {
-    return this.http.get<Mix[]>(`${this.apiUrl}/mixs`);
+    return this.http.get<Mix[]>(`${this.apiUrl}/get-mixes`);
   }
 
   getMixesByUsuario(userId: number): Observable<Mix[]> {

@@ -15,7 +15,7 @@ import {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5165/api'; // URL de la API
+  private apiUrl = '/api'; // URL de las Netlify Functions
   private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private isBrowser: boolean;
@@ -49,15 +49,15 @@ export class AuthService {
 
   async register(request: RegisterRequest): Promise<{ success: boolean; message?: string; data?: AuthResponse }> {
     try {
-      // Convertir propiedades a formato esperado por el backend
-      const backendRequest = {
-        Nombre: request.nombre,
-        Email: request.email,
-        Contraseña: request.contraseña
+      // Enviar datos en formato que esperan las Netlify Functions
+      const netlifyRequest = {
+        nombre: request.nombre,
+        email: request.email,
+        contraseña: request.contraseña
       };
 
       const response = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, backendRequest)
+        this.http.post<AuthResponse>(`${this.apiUrl}/register`, netlifyRequest)
           .pipe(
             tap(response => this.handleAuthSuccess(response)),
             catchError(error => {
@@ -75,14 +75,14 @@ export class AuthService {
 
   async login(request: LoginRequest): Promise<{ success: boolean; message?: string; data?: AuthResponse }> {
     try {
-      // Convertir propiedades a formato esperado por el backend
-      const backendRequest = {
-        Email: request.email,
-        Contraseña: request.contraseña
+      // Enviar datos en formato que esperan las Netlify Functions
+      const netlifyRequest = {
+        email: request.email,
+        contraseña: request.contraseña
       };
 
       const response = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, backendRequest)
+        this.http.post<AuthResponse>(`${this.apiUrl}/login`, netlifyRequest)
           .pipe(
             tap(response => this.handleAuthSuccess(response)),
             catchError(error => {

@@ -28,7 +28,7 @@ interface AccesoMixDto {
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:5165/api';
+  private apiUrl = '/api';
 
   constructor(
     private http: HttpClient,
@@ -40,11 +40,11 @@ export class AdminService {
   
   async getMixs(): Promise<Mix[]> {
     try {
-      console.log('🔍 AdminService: Intentando obtener mixs desde:', `${this.apiUrl}/admin/mixs`);
+      console.log('🔍 AdminService: Intentando obtener mixs desde:', `${this.apiUrl}/get-mixes`);
       console.log('🔍 AdminService: Headers:', this.authService.getAuthHeaders());
       
       const response = await firstValueFrom(
-        this.http.get<Mix[]>(`${this.apiUrl}/admin/mixs`, {
+        this.http.get<Mix[]>(`${this.apiUrl}/get-mixes`, {
           headers: this.authService.getAuthHeaders()
         })
       );
@@ -133,7 +133,7 @@ export class AdminService {
   async getUsuarios(): Promise<Usuario[]> {
     try {
       const response = await firstValueFrom(
-        this.http.get<Usuario[]>(`${this.apiUrl}/admin/usuarios`, {
+        this.http.get<Usuario[]>(`${this.apiUrl}/get-usuarios`, {
           headers: this.authService.getAuthHeaders()
         })
       );
