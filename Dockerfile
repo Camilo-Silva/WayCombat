@@ -9,12 +9,12 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copiar el archivo del proyecto y restaurar dependencias
-COPY ["Backend/WayCombat.Api/WayCombat.Api.csproj", "Backend/WayCombat.Api/"]
-RUN dotnet restore "Backend/WayCombat.Api/WayCombat.Api.csproj"
+# Como el contexto Docker está en Backend/WayCombat.Api, las rutas son relativas a esa carpeta
+COPY ["WayCombat.Api.csproj", "./"]
+RUN dotnet restore "WayCombat.Api.csproj"
 
 # Copiar todo el código fuente
 COPY . .
-WORKDIR "/src/Backend/WayCombat.Api"
 
 # Compilar la aplicación
 RUN dotnet build "WayCombat.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
