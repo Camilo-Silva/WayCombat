@@ -56,11 +56,24 @@ builder.Services.AddDbContext<WayCombatDbContext>(options =>
     if (usePostgreSQL || environment == "Production")
     {
         // PostgreSQL for Production (Render)
-        var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection") 
-                             ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+        var configConnectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection");
+        var envConnectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+        
+        Console.WriteLine($"🔍 Debug DbContext Config:");
+        Console.WriteLine($"   - Config connection string: {(string.IsNullOrEmpty(configConnectionString) ? "NULL/EMPTY" : "EXISTS")}");
+        Console.WriteLine($"   - Environment DATABASE_URL: {(string.IsNullOrEmpty(envConnectionString) ? "NULL/EMPTY" : "EXISTS")}");
+        
+        var connectionString = configConnectionString ?? envConnectionString;
+        
+        Console.WriteLine($"   - Final connection string: {(string.IsNullOrEmpty(connectionString) ? "NULL/EMPTY" : "EXISTS")}");
         
         if (string.IsNullOrEmpty(connectionString))
         {
+            Console.WriteLine("❌ CONNECTION STRING IS NULL OR EMPTY!");
+            Console.WriteLine($"   - usePostgreSQL: {usePostgreSQL}");
+            Console.WriteLine($"   - environment: {environment}");
+            Console.WriteLine($"   - configConnectionString: '{configConnectionString}'");
+            Console.WriteLine($"   - envConnectionString: '{envConnectionString}'");
             throw new InvalidOperationException("DATABASE_URL environment variable is not set or PostgreSQLConnection is not configured.");
         }
         
