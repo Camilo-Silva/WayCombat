@@ -1,6 +1,6 @@
 [build]
   publish = "Frontend/waycombat-frontend/dist/waycombat-frontend/browser"
-  command = "cd Frontend/waycombat-frontend && npm ci && npx ng build --configuration=production"
+  command = "cd Frontend/waycombat-frontend && npm install && npm run build:prod"
 
 [build.environment]
   NODE_VERSION = "18"
