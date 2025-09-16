@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:prod": "ng build --configuration=production --optimization --output-hashing=all",
+    "build:netlify": "ng build --configuration=production --base-href='/' --output-hashing=all",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:waycombat-frontend": "node dist/waycombat-frontend/server/server.mjs"

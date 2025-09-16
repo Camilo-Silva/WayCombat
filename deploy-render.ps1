@@ -77,5 +77,6 @@ Write-Host "7. Agregar variables de entorno" -ForegroundColor White
 Write-Host "8. Configurar disco persistente (1GB) en /app/data" -ForegroundColor White
 Write-Host "9. Deploy!" -ForegroundColor White
 
-Write-Host "`n🚀 ¡Todo listo para desplegar en Render!" -ForegroundColor Green
-Write-Host "Dirígete a: https://dashboard.render.com" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "=== TODO LISTO PARA RENDER ===" -ForegroundColor Green
+Write-Host "Dirigete a: https://dashboard.render.com" -ForegroundColor Cyan

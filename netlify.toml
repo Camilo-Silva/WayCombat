@@ -1,0 +1,74 @@
+[build][build]
+
+  # Directorio donde se construye la aplicación  base = "Frontend/waycombat-frontend"
+
+  publish = "Frontend/waycombat-frontend/dist/waycombat-frontend"  publish = "dist/waycombat-frontend/browser"
+
+  # Comando de build para Netlify  command = "npm install --include=dev && npx ng build --configuration=production && cd ../../netlify && npm install"
+
+  command = "cd Frontend/waycombat-frontend && npm install && npm run build:netlify"  functions = "../../netlify/functions"
+
+
+
+# Variables de entorno para el build[build.environment]
+
+[build.environment]  NODE_ENV = "production"
+
+  NODE_VERSION = "18"
+
+  NPM_VERSION = "9"[functions]
+
+  external_node_modules = ["@netlify/neon", "bcryptjs", "jsonwebtoken"]
+
+# Redirects para Single Page Application (SPA)
+
+# Esto es crucial para que Angular routing funcione correctamente# Comentamos la redirección general para usar las específicas del _redirects
+
+[[redirects]]# [[redirects]]
+
+  from = "/*"#   from = "/api/*"
+
+  to = "/index.html"#   to = "/.netlify/functions/:splat"
+
+  status = 200#   status = 200
+
+
+
+# Headers de seguridad[[redirects]]
+
+[[headers]]  from = "/*"
+
+  for = "/*"  to = "/index.html"
+
+  [headers.values]  status = 200
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Headers específicos para archivos estáticos
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Headers para el archivo principal (menos cache)
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Configuración para el dominio personalizado cuando esté listo
+# [context.production]
+#   [context.production.environment]
+#     API_URL = "https://way-combat-api.onrender.com/api"
