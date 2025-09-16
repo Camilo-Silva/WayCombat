@@ -7,6 +7,22 @@ using WayCombat.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Helper method to convert Render DATABASE_URL to Npgsql connection string
+static string ConvertRenderDatabaseUrl(string databaseUrl)
+{
+    try
+    {
+        var uri = new Uri(databaseUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        
+        return $"Host={uri.Host};Port={uri.Port};Database={uri.LocalPath.Substring(1)};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    }
+    catch (Exception ex)
+    {
+        throw new InvalidOperationException($"Failed to parse DATABASE_URL: {ex.Message}");
+    }
+}
+
 // Add services to the container
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -23,11 +39,24 @@ builder.Services.AddDbContext<WayCombatDbContext>(options =>
 {
     if (usePostgreSQL || environment == "Production")
     {
-        // PostgreSQL for Production (Railway)
+        // PostgreSQL for Production (Render)
         var connectionString = builder.Configuration.GetConnectionString("PostgreSQLConnection") 
                              ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+        
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("DATABASE_URL environment variable is not set or PostgreSQLConnection is not configured.");
+        }
+        
+        // Convert Render DATABASE_URL format to Npgsql connection string
+        if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
+        {
+            connectionString = ConvertRenderDatabaseUrl(connectionString);
+        }
+        
         options.UseNpgsql(connectionString);
         Console.WriteLine("🐘 Using PostgreSQL database");
+        Console.WriteLine($"📍 Connection configured for host: {new Uri(Environment.GetEnvironmentVariable("DATABASE_URL") ?? "postgres://localhost").Host}");
     }
     else
     {
@@ -164,7 +193,36 @@ app.MapGet("/health", () => new {
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<WayCombatDbContext>();
-    await context.Database.MigrateAsync();
+    try
+    {
+        Console.WriteLine("🔄 Starting database migration...");
+        
+        // Test the connection first
+        await context.Database.CanConnectAsync();
+        Console.WriteLine("✅ Database connection successful");
+        
+        // Apply migrations
+        await context.Database.MigrateAsync();
+        Console.WriteLine("✅ Database migration completed successfully");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Database migration failed: {ex.Message}");
+        Console.WriteLine($"🔍 Stack trace: {ex.StackTrace}");
+        
+        // Check environment variables for debugging
+        Console.WriteLine("📊 Environment Variables:");
+        Console.WriteLine($"   ASPNETCORE_ENVIRONMENT: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
+        Console.WriteLine($"   DATABASE_URL exists: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DATABASE_URL"))}");
+        
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DATABASE_URL")))
+        {
+            var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            Console.WriteLine($"   DATABASE_URL format: {dbUrl?.Substring(0, Math.Min(30, dbUrl.Length))}...");
+        }
+        
+        throw; // Re-throw the exception to prevent the app from starting with a broken database
+    }
 }
 
 await app.RunAsync();
