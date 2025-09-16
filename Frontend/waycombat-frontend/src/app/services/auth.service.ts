@@ -50,7 +50,7 @@ export class AuthService {
 
   async register(request: RegisterRequest): Promise<{ success: boolean; message?: string; data?: AuthResponse }> {
     try {
-      // Convertir propiedades a formato esperado por el backend
+      // Enviar en PascalCase para coincidir con DTOs del backend
       const backendRequest = {
         Nombre: request.nombre,
         Email: request.email,
@@ -76,7 +76,7 @@ export class AuthService {
 
   async login(request: LoginRequest): Promise<{ success: boolean; message?: string; data?: AuthResponse }> {
     try {
-      // Convertir propiedades a formato esperado por el backend
+      // Enviar en PascalCase para coincidir con DTOs del backend
       const backendRequest = {
         Email: request.email,
         Contraseña: request.contraseña

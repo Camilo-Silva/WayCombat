@@ -29,12 +29,12 @@ static string ConvertRenderDatabaseUrl(string databaseUrl)
 }
 
 // Add services to the container
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        // Configurar para usar camelCase en JSON
-        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-    });
+builder.Services.AddControllers();
+    // .AddJsonOptions(options =>
+    // {
+    //     // Configurar para usar camelCase en JSON - TEMPORALMENTE DESHABILITADO PARA DEBUGGING
+    //     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    // });
 
 // Configure Entity Framework - Dual Database Support
 var environment = builder.Environment.EnvironmentName;
