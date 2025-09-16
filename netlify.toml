@@ -3,8 +3,8 @@
   base = "Frontend/waycombat-frontend"
   # Directorio donde se publica la aplicación construida
   publish = "dist/waycombat-frontend/browser"
-  # Comando de build para Netlify
-  command = "npm install && npm run build:netlify"
+  # Comando de build para Netlify - usar npx para garantizar disponibilidad de Angular CLI
+  command = "npm install --include=dev && npx ng build --configuration=production"
 
 # Variables de entorno para el build
 [build.environment]
