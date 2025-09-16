@@ -63,7 +63,8 @@ builder.Services.AddDbContext<WayCombatDbContext>(options =>
         Console.WriteLine($"   - Config connection string: {(string.IsNullOrEmpty(configConnectionString) ? "NULL/EMPTY" : "EXISTS")}");
         Console.WriteLine($"   - Environment DATABASE_URL: {(string.IsNullOrEmpty(envConnectionString) ? "NULL/EMPTY" : "EXISTS")}");
         
-        var connectionString = configConnectionString ?? envConnectionString;
+        // Use DATABASE_URL if config connection string is null or empty
+        var connectionString = !string.IsNullOrEmpty(configConnectionString) ? configConnectionString : envConnectionString;
         
         Console.WriteLine($"   - Final connection string: {(string.IsNullOrEmpty(connectionString) ? "NULL/EMPTY" : "EXISTS")}");
         
