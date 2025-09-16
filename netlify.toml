@@ -1,46 +1,28 @@
-[build][build]
+[build]
+  # Directorio base del proyecto
+  base = "Frontend/waycombat-frontend"
+  # Directorio donde se publica la aplicación construida
+  publish = "dist/waycombat-frontend/browser"
+  # Comando de build para Netlify
+  command = "npm install && npm run build:netlify"
 
-  # Directorio donde se construye la aplicación  base = "Frontend/waycombat-frontend"
-
-  publish = "Frontend/waycombat-frontend/dist/waycombat-frontend"  publish = "dist/waycombat-frontend/browser"
-
-  # Comando de build para Netlify  command = "npm install --include=dev && npx ng build --configuration=production && cd ../../netlify && npm install"
-
-  command = "cd Frontend/waycombat-frontend && npm install && npm run build:netlify"  functions = "../../netlify/functions"
-
-
-
-# Variables de entorno para el build[build.environment]
-
-[build.environment]  NODE_ENV = "production"
-
+# Variables de entorno para el build
+[build.environment]
   NODE_VERSION = "18"
-
-  NPM_VERSION = "9"[functions]
-
-  external_node_modules = ["@netlify/neon", "bcryptjs", "jsonwebtoken"]
+  NPM_VERSION = "9"
+  NODE_ENV = "production"
 
 # Redirects para Single Page Application (SPA)
+# Esto es crucial para que Angular routing funcione correctamente
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
-# Esto es crucial para que Angular routing funcione correctamente# Comentamos la redirección general para usar las específicas del _redirects
-
-[[redirects]]# [[redirects]]
-
-  from = "/*"#   from = "/api/*"
-
-  to = "/index.html"#   to = "/.netlify/functions/:splat"
-
-  status = 200#   status = 200
-
-
-
-# Headers de seguridad[[redirects]]
-
-[[headers]]  from = "/*"
-
-  for = "/*"  to = "/index.html"
-
-  [headers.values]  status = 200
+# Headers de seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
@@ -67,8 +49,3 @@
   for = "/index.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
-
-# Configuración para el dominio personalizado cuando esté listo
-# [context.production]
-#   [context.production.environment]
-#     API_URL = "https://way-combat-api.onrender.com/api"
