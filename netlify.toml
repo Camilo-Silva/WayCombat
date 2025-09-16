@@ -1,6 +1,6 @@
 [build]
   base = "Frontend/waycombat-frontend"
-  publish = "dist/waycombat-frontend"
+  publish = "dist/waycombat-frontend/browser"
   command = "npm install --include=dev && npx ng build --configuration=production && cd ../../netlify && npm install"
   functions = "../../netlify/functions"
 
