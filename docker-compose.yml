@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  waycombat-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: waycombat-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      # Volumen persistente para la base de datos SQLite
+      - ./Backend/WayCombat.Api/waycombat_dev.db:/app/data/waycombat_dev.db
+      # Volumen para logs (opcional)
+      - waycombat-logs:/app/logs
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - DATABASE_PATH=/app/data/waycombat_dev.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  waycombat-logs:
+    driver: local

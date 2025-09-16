@@ -1,0 +1,66 @@
+# Archivos de Git
+.git
+.gitignore
+.gitattributes
+
+# Documentación
+README.md
+*.md
+
+# Archivos de Visual Studio Code
+.vscode/
+
+# Archivos de Visual Studio
+.vs/
+*.user
+*.suo
+
+# Carpetas de compilación y salida
+**/bin/
+**/obj/
+**/out/
+**/target/
+
+# Archivos de caché y temporales
+**/.cache/
+**/temp/
+**/tmp/
+
+# Logs
+**/logs/
+**/*.log
+
+# Dependencias de Node.js (si las hay)
+**/node_modules/
+**/npm-debug.log*
+
+# Archivos de paquetes
+**/*.nupkg
+**/*.snupkg
+
+# Archivos de configuración local
+**/appsettings.Development.json
+**/launchSettings.json
+
+# Archivos de pruebas
+**/TestResults/
+**/*test*
+
+# Archivos de base de datos de desarrollo (excepto el principal)
+**/*.db-wal
+**/*.db-shm
+
+# Archivos de Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Archivos específicos del frontend
+Frontend/waycombat-frontend/node_modules/
+Frontend/waycombat-frontend/dist/
+Frontend/waycombat-frontend/.angular/
+
+# Archivos de sistema
+Thumbs.db
+.DS_Store
+*~

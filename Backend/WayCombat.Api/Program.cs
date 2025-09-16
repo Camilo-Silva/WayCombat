@@ -7,6 +7,10 @@ using WayCombat.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar el puerto desde variable de entorno (requerido por Render)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 // Add services to the container
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -15,9 +19,19 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
-// Configure Entity Framework with SQLite
+// Configure Entity Framework with SQLite - usar variable de entorno para la ruta
+var databasePath = Environment.GetEnvironmentVariable("DATABASE_PATH") ?? 
+                   builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+                   "Data Source=waycombat_dev.db";
+
+// Si DATABASE_PATH está definida, crear el connection string
+if (Environment.GetEnvironmentVariable("DATABASE_PATH") != null)
+{
+    databasePath = $"Data Source={Environment.GetEnvironmentVariable("DATABASE_PATH")}";
+}
+
 builder.Services.AddDbContext<WayCombatDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(databasePath));
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -41,12 +55,23 @@ builder.Services.AddAuthorization();
 // Configure CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngular", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:4202", "http://localhost:4203", "http://localhost:4204")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        if (builder.Environment.IsDevelopment())
+        {
+            // En desarrollo, permitir localhost
+            policy.WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:4202", "http://localhost:4203", "http://localhost:4204")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else
+        {
+            // En producción, permitir cualquier origen (ajustar según necesidades)
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
     });
 });
 
@@ -110,7 +135,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAngular");
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
