@@ -198,7 +198,12 @@ export class AuthService {
 
     localStorage.setItem('token', response.token);
     localStorage.setItem('currentUser', JSON.stringify(response.usuario));
-    localStorage.setItem('tokenExpiration', response.expiration.toString());
+    
+    // Solo guardar expiration si está presente
+    if (response.expiration) {
+      localStorage.setItem('tokenExpiration', response.expiration.toString());
+    }
+    
     this.currentUserSubject.next(response.usuario);
   }
 }

@@ -20,7 +20,7 @@ export interface LoginRequest {
 
 export interface AuthResponse {
   token: string;
-  expiration: Date;
+  expiration?: Date;
   usuario: Usuario;
 }
 
