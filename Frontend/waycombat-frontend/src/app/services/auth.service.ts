@@ -10,12 +10,13 @@ import {
   ChangePasswordRequest,
   ForgotPasswordRequest 
 } from '../models/auth.models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5165/api'; // URL de la API
+  private apiUrl = environment.apiUrl; // URL de la API desde environment
   private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private isBrowser: boolean;
