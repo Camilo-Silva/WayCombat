@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Collections;
 using WayCombat.Api.Data;
 using WayCombat.Api.Services;
 
@@ -34,6 +35,21 @@ builder.Services.AddControllers()
 // Configure Entity Framework - Dual Database Support
 var environment = builder.Environment.EnvironmentName;
 var usePostgreSQL = builder.Configuration.GetValue<bool>("UsePostgreSQL");
+
+Console.WriteLine($"🔧 Environment: {environment}");
+Console.WriteLine($"🔧 UsePostgreSQL: {usePostgreSQL}");
+Console.WriteLine($"🔧 DATABASE_URL exists: {!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DATABASE_URL"))}");
+
+// Log environment variables for debugging
+Console.WriteLine("🔧 Environment Variables Debug:");
+foreach (DictionaryEntry env in Environment.GetEnvironmentVariables())
+{
+    var key = env.Key?.ToString() ?? "";
+    if (key.Contains("DATABASE") || key.Contains("ASPNET") || key.Contains("JWT") || key.Contains("PORT") || key.Contains("PRODUCTION"))
+    {
+        Console.WriteLine($"   {key}: {(key.Contains("JWT") || key.Contains("DATABASE") ? "[HIDDEN]" : env.Value)}");
+    }
+}
 
 builder.Services.AddDbContext<WayCombatDbContext>(options =>
 {
