@@ -53,7 +53,7 @@ export class AuthService {
       const netlifyRequest = {
         nombre: request.nombre,
         email: request.email,
-        contraseña: request.contraseña
+        password: request.contraseña
       };
 
       const response = await firstValueFrom(
@@ -78,7 +78,7 @@ export class AuthService {
       // Enviar datos en formato que esperan las Netlify Functions
       const netlifyRequest = {
         email: request.email,
-        contraseña: request.contraseña
+        password: request.contraseña
       };
 
       const response = await firstValueFrom(
