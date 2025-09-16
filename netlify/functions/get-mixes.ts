@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { getAllMixes, initializeDatabase } from '../utils/database';
+import { neon } from '@netlify/neon';
 import { verifyToken, extractTokenFromHeader } from '../utils/jwt';
 
 export const handler: Handler = async (event, context) => {
@@ -49,20 +49,70 @@ export const handler: Handler = async (event, context) => {
       };
     }
 
-    // Inicializar base de datos si es necesario
-    await initializeDatabase();
+    // Conectar a la base de datos
+    const sql = neon(process.env.DATABASE_URL!);
 
-    // Obtener todos los mixes
-    const mixes = await getAllMixes();
+    let mixes;
+
+    if (tokenPayload.rol === 'Admin') {
+      // Los admins ven todos los mixes
+      mixes = await sql`
+        SELECT 
+          id, 
+          titulo, 
+          descripcion, 
+          archivo_url, 
+          imagen_url, 
+          duracion, 
+          tamaño_bytes, 
+          fecha_creacion,
+          activo
+        FROM mixes 
+        ORDER BY fecha_creacion DESC
+      `;
+    } else {
+      // Los usuarios normales solo ven mixes asignados y activos
+      mixes = await sql`
+        SELECT DISTINCT
+          m.id, 
+          m.titulo, 
+          m.descripcion, 
+          m.archivo_url, 
+          m.imagen_url, 
+          m.duracion, 
+          m.tamaño_bytes, 
+          m.fecha_creacion,
+          m.activo
+        FROM mixes m
+        INNER JOIN acceso_mixes am ON m.id = am.mix_id
+        WHERE am.usuario_id = ${tokenPayload.id} 
+          AND m.activo = true
+        ORDER BY m.fecha_creacion DESC
+      `;
+    }
+
+    // Formatear la respuesta
+    const formattedMixes = mixes.map((mix: any) => ({
+      id: mix.id,
+      titulo: mix.titulo,
+      descripcion: mix.descripcion,
+      archivoUrl: mix.archivo_url,
+      imagenUrl: mix.imagen_url,
+      duracion: mix.duracion,
+      tamañoBytes: mix.tamaño_bytes,
+      fechaCreacion: mix.fecha_creacion,
+      activo: mix.activo,
+      archivos: [] // Por ahora vacío, se puede implementar después
+    }));
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify(mixes)
+      body: JSON.stringify(formattedMixes)
     };
 
   } catch (error) {
-    console.error('Error en get-mixes:', error);
+    console.error('Error obteniendo mixes:', error);
     return {
       statusCode: 500,
       headers,

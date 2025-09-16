@@ -103,7 +103,7 @@ export class AdminService {
   async toggleMixActivo(mixId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.patch(`${this.apiUrl}/admin/mixs/${mixId}/toggle-activo`, {}, {
+        this.http.patch(`${this.apiUrl}/toggle-mix-activo/${mixId}/toggle-activo`, {}, {
           headers: this.authService.getAuthHeaders()
         })
       );
@@ -162,7 +162,7 @@ export class AdminService {
   async deleteUsuario(userId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.delete(`${this.apiUrl}/admin/usuarios/${userId}`, {
+        this.http.delete(`${this.apiUrl}/delete-usuario/${userId}`, {
           headers: this.authService.getAuthHeaders()
         })
       );
@@ -197,7 +197,7 @@ export class AdminService {
   async resetUserPassword(userId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.patch(`${this.apiUrl}/admin/usuarios/${userId}/reset-password`, {}, {
+        this.http.patch(`${this.apiUrl}/reset-user-password/${userId}/reset-password`, {}, {
           headers: this.authService.getAuthHeaders()
         })
       );
@@ -256,7 +256,7 @@ export class AdminService {
   async getPermisos(): Promise<any[]> {
     try {
       const response = await firstValueFrom(
-        this.http.get<any[]>(`${this.apiUrl}/admin/accesos`, {
+        this.http.get<any[]>(`${this.apiUrl}/get-accesos`, {
           headers: this.authService.getAuthHeaders()
         })
       );
@@ -270,7 +270,7 @@ export class AdminService {
   async toggleUsuarioMixPermiso(usuarioId: number, mixId: number): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post(`${this.apiUrl}/admin/accesos/toggle`, {
+        this.http.post(`${this.apiUrl}/toggle-acceso`, {
           usuarioId,
           mixId
         }, {
