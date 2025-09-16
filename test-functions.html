@@ -20,6 +20,12 @@
         <h1>🥋 WayCombat - Test Netlify Functions</h1>
         
         <div class="section">
+            <h2>0. Health Check</h2>
+            <button onclick="healthCheck()">Verificar Estado</button>
+            <div id="health-result"></div>
+        </div>
+
+        <div class="section">
             <h2>1. Inicializar Base de Datos</h2>
             <button onclick="initDatabase()">Inicializar BD</button>
             <div id="init-result"></div>
@@ -75,6 +81,13 @@
             element.innerHTML = `<div class="result ${isError ? 'error' : 'success'}">
                 <pre>${JSON.stringify(result, null, 2)}</pre>
             </div>`;
+        }
+
+        async function healthCheck() {
+            const result = await makeRequest('/api/health-check', {
+                method: 'GET'
+            });
+            showResult('health-result', result, !result.success);
         }
 
         async function initDatabase() {
