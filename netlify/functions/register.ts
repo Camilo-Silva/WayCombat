@@ -47,7 +47,7 @@ export const handler: Handler = async (event, context) => {
     const registerDto: RegisterDto = JSON.parse(event.body);
 
     // Validar datos
-    if (!registerDto.nombre || !registerDto.email || !registerDto.contraseña) {
+    if (!registerDto.nombre || !registerDto.email || !registerDto.password) {
       return {
         statusCode: 400,
         headers,
@@ -66,7 +66,7 @@ export const handler: Handler = async (event, context) => {
     }
 
     // Hash de la contraseña
-    const hashedPassword = await hashPassword(registerDto.contraseña);
+    const hashedPassword = await hashPassword(registerDto.password);
 
     // Crear usuario
     const nuevoUsuario = await createUsuario({

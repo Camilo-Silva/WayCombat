@@ -33,12 +33,12 @@ export interface AccesoMix {
 export interface RegisterDto {
   nombre: string;
   email: string;
-  contraseña: string;
+  password: string;
 }
 
 export interface LoginDto {
   email: string;
-  contraseña: string;
+  password: string;
 }
 
 export interface AuthResponseDto {

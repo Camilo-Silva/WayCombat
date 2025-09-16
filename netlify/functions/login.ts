@@ -47,7 +47,7 @@ export const handler: Handler = async (event, context) => {
     const loginDto: LoginDto = JSON.parse(event.body);
 
     // Validar datos
-    if (!loginDto.email || !loginDto.contraseña) {
+    if (!loginDto.email || !loginDto.password) {
       return {
         statusCode: 400,
         headers,
@@ -75,7 +75,7 @@ export const handler: Handler = async (event, context) => {
     }
 
     // Verificar contraseña
-    const isValidPassword = await comparePassword(loginDto.contraseña, usuario.contraseña);
+    const isValidPassword = await comparePassword(loginDto.password, usuario.contraseña);
     if (!isValidPassword) {
       return {
         statusCode: 401,
