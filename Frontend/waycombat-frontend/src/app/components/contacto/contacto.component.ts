@@ -231,6 +231,16 @@ export class ContactoComponent implements OnInit, OnDestroy {
     this.contactService.openMap();
   }
 
+  openWhatsApp(): void {
+    // Número de WhatsApp de WayCombat (puedes cambiarlo por el número real)
+    const phoneNumber = '5491127355020'; // Formato internacional sin + ni espacios
+    const message = 'Hola! Me interesa obtener asesoría académica sobre los cursos de WayCombat. ¿Podrían ayudarme a elegir el programa adecuado para mi nivel?';
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+  }
+
   openSocialNetwork(network: keyof ContactInfo['redes']): void {
     this.contactService.openSocialNetwork(network);
   }
@@ -246,13 +256,6 @@ export class ContactoComponent implements OnInit, OnDestroy {
 
   getFAQToggleIcon(faq: FAQ): string {
     return faq.expanded ? 'fas fa-minus' : 'fas fa-plus';
-  }
-
-  scrollToForm(): void {
-    document.getElementById('contact-form')?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'start'
-    });
   }
 
   getCharacterCount(fieldName: string): number {

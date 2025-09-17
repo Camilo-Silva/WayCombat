@@ -174,9 +174,9 @@
           <div *ngIf="getFilteredFAQs().length === 0" class="faq-empty animate-bounce-in animate-gpu">
             <i class="fas fa-question-circle"></i>
             <h4>No hay preguntas en esta categoría</h4>
-            <p>Selecciona otra categoría o envíanos tu consulta</p>
-            <button class="btn btn-way-primary card-hover-effect" (click)="scrollToForm()">
-              <i class="fas fa-envelope me-2"></i>Hacer Consulta
+            <p>Selecciona otra categoría o consulta por WhatsApp</p>
+            <button class="btn btn-way-primary card-hover-effect" (click)="openWhatsApp()">
+              <i class="fab fa-whatsapp me-2"></i>Consultar por WhatsApp
             </button>
           </div>
         </div>
@@ -185,7 +185,8 @@
   </div>
 </section>
 
-<!-- Contact Form Section -->
+<!-- Contact Form Section - TEMPORALMENTE COMENTADO -->
+<!--
 <section class="contact-form-section" id="contact-form">
   <div class="container">
     <div class="row">
@@ -195,16 +196,13 @@
           <p class="animate-stagger">Completa el formulario y nos pondremos en contacto contigo a la brevedad</p>
         </div>
 
-        <!-- Success Message -->
         <div *ngIf="isSubmitted" class="alert alert-success text-center animate-bounce-in animate-gpu" role="alert">
           <i class="fas fa-check-circle fa-2x mb-3"></i>
           <h4>¡Mensaje enviado con éxito!</h4>
           <p>Gracias por contactarnos. Responderemos tu consulta dentro de las próximas 24 horas.</p>
         </div>
 
-        <!-- Contact Form -->
         <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" *ngIf="!isSubmitted" class="contact-form animate-slide-up animate-gpu">
-          <!-- Personal Information Row -->
           <div class="row">
             <div class="col-md-6 animate-stagger">
               <div class="form-group">
@@ -238,7 +236,6 @@
             </div>
           </div>
 
-          <!-- Contact Information Row -->
           <div class="row">
             <div class="col-md-8">
               <div class="form-group">
@@ -268,7 +265,6 @@
             </div>
           </div>
 
-          <!-- Subject Field -->
           <div class="form-group">
             <label for="asunto">Asunto *</label>
             <input 
@@ -292,7 +288,6 @@
             </div>
           </div>
 
-          <!-- Message Field -->
           <div class="form-group">
             <label for="mensaje">Mensaje *</label>
             <textarea 
@@ -316,7 +311,6 @@
             </div>
           </div>
 
-          <!-- Terms Checkbox -->
           <div class="form-check">
             <input 
               type="checkbox" 
@@ -333,7 +327,6 @@
             </div>
           </div>
 
-          <!-- Form Actions -->
           <div class="form-actions">
             <button 
               type="submit" 
@@ -359,6 +352,7 @@
     </div>
   </div>
 </section>
+-->
 
 <!-- Additional Help Section -->
 <section class="help-section">
@@ -383,8 +377,8 @@
           </div>
           <h4>Asesoría Académica</h4>
           <p>¿No sabes qué curso elegir? Te ayudamos a encontrar el programa perfecto para tu nivel.</p>
-          <button class="btn btn-way-outline card-hover-effect" (click)="scrollToForm()">
-            <i class="fas fa-comments me-2"></i>Pedir Asesoría
+          <button class="btn btn-way-outline card-hover-effect" (click)="openWhatsApp()">
+            <i class="fab fa-whatsapp me-2"></i>Consultar por WhatsApp
           </button>
         </div>
       </div>
