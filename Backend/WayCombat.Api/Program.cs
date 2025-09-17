@@ -83,6 +83,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IMixService, MixService>();
+builder.Services.AddScoped<DataSeederService>();
 
 // Configure Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -149,11 +150,17 @@ app.MapControllers();
 // Health check endpoint para Render
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
-// Auto migrate database on startup
+// Auto migrate database on startup (pero sin resetear datos)
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<WayCombatDbContext>();
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeederService>();
+    
+    // Aplicar migraciones pendientes
     await context.Database.MigrateAsync();
+    
+    // Seed data solo si es necesario (BD vacía)
+    await seeder.SeedAsync();
 }
 
 await app.RunAsync();

@@ -62,75 +62,8 @@ namespace WayCombat.Api.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Seed Data - Usuario Admin por defecto
-            modelBuilder.Entity<Usuario>().HasData(
-                new Usuario
-                {
-                    Id = 1,
-                    Email = "admin@waycombat.com",
-                    Nombre = "Administrador",
-                    ContraseñaHash = "$2b$12$RUkztah0eZ97UsyYVqU9betRS67GhIqEGIWpuj41uiefD/rqIuIRm", // admin123
-                    Rol = "admin",
-                    FechaCreacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                    FechaActualizacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                }
-            );
-
-            // Seed Data - Mixes básicos
-            modelBuilder.Entity<Mix>().HasData(
-                new Mix
-                {
-                    Id = 1,
-                    Titulo = "Mix de Entrenamiento Básico",
-                    Descripcion = "Rutinas fundamentales de Way Combat para principiantes",
-                    Activo = true,
-                    FechaCreacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                    FechaActualizacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                },
-                new Mix
-                {
-                    Id = 2,
-                    Titulo = "Mix Avanzado - Competencia", 
-                    Descripcion = "Técnicas avanzadas y estrategias para competencias",
-                    Activo = true,
-                    FechaCreacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                    FechaActualizacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                },
-                new Mix
-                {
-                    Id = 3,
-                    Titulo = "Mix de Acondicionamiento",
-                    Descripcion = "Ejercicios de fortalecimiento y acondicionamiento físico",
-                    Activo = true,
-                    FechaCreacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                    FechaActualizacion = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                }
-            );
-
-            // Accesos del admin a todos los mixes
-            modelBuilder.Entity<AccesoMix>().HasData(
-                new AccesoMix { 
-                    Id = 1, 
-                    UsuarioId = 1, 
-                    MixId = 1,
-                    FechaAcceso = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                    Activo = true
-                },
-                new AccesoMix { 
-                    Id = 2, 
-                    UsuarioId = 1, 
-                    MixId = 2,
-                    FechaAcceso = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                    Activo = true
-                },
-                new AccesoMix { 
-                    Id = 3, 
-                    UsuarioId = 1, 
-                    MixId = 3,
-                    FechaAcceso = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-                    Activo = true
-                }
-            );
+            // NO MÁS SEED DATA AQUÍ - Se movió a un DataSeeder separado
+            // para evitar que resetee la BD en cada migración
         }
     }
 }
