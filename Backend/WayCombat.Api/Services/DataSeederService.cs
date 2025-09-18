@@ -42,6 +42,7 @@ namespace WayCombat.Api.Services
 
             // No crear mixes mock - que los usuarios creen su contenido real
             // Versión 2024-09-18: DataSeeder solo crea usuario admin
+            // Prueba persistencia BD - no debería borrar datos existentes
         }
     }
 }
