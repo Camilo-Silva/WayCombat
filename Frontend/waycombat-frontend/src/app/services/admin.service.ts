@@ -54,9 +54,8 @@ export class AdminService {
       return response;
     } catch (error) {
       console.error('❌ AdminService: Error getting mixs:', error);
-      console.error('❌ AdminService: Cayendo a datos mock');
-      // Retornar datos de ejemplo por ahora
-      return this.getMockMixs();
+      // Retornar array vacío en lugar de datos mock para ver errores reales
+      return [];
     }
   }
 
@@ -142,8 +141,8 @@ export class AdminService {
       return response;
     } catch (error) {
       console.error('❌ AdminService: Error getting usuarios from backend:', error);
-      console.log('🔄 AdminService: Usando datos mock para usuarios');
-      return this.getMockUsuarios();
+      // Retornar array vacío en lugar de datos mock para ver errores reales
+      return [];
     }
   }
 
@@ -199,13 +198,6 @@ export class AdminService {
       return response;
     } catch (error) {
       console.error('Error toggling usuario activo:', error);
-      // Fallback: simular el toggle localmente
-      const usuarios = this.getMockUsuarios();
-      const usuario = usuarios.find(u => u.id === userId);
-      if (usuario) {
-        usuario.activo = !usuario.activo;
-        return usuario;
-      }
       throw error;
     }
   }
@@ -235,7 +227,8 @@ export class AdminService {
       return response;
     } catch (error) {
       console.error('Error getting accesos:', error);
-      return this.getMockAccesos();
+      // Retornar array vacío en lugar de datos mock
+      return [];
     }
   }
 
@@ -299,137 +292,6 @@ export class AdminService {
     }
   }
 
-  // ====== DATOS MOCK ======
-
-  private getMockMixs(): Mix[] {
-    return [
-      {
-        id: 1,
-        titulo: 'Mix Combat Básico',
-        descripcion: 'Entrenamiento básico de combate con técnicas fundamentales',
-        fechaCreacion: new Date('2024-01-15'),
-        activo: true,
-        archivos: [
-          {
-            id: 1,
-            mixId: 1,
-            nombre: 'Mix_Basico_Audio.mp3',
-            url: 'https://drive.google.com/file/d/1abc123def456/view',
-            tipo: 'Audio',
-            mimeType: 'audio/mpeg',
-            orden: 1,
-            activo: true,
-            fechaCreacion: new Date('2024-01-15')
-          },
-          {
-            id: 2,
-            mixId: 1,
-            nombre: 'Tutorial_Movimientos_Basicos.mp4',
-            url: 'https://drive.google.com/file/d/2def456ghi789/view',
-            tipo: 'Video',
-            mimeType: 'video/mp4',
-            orden: 2,
-            activo: true,
-            fechaCreacion: new Date('2024-01-15')
-          }
-        ]
-      },
-      {
-        id: 2,
-        titulo: 'Mix Combat Avanzado',
-        descripcion: 'Entrenamiento avanzado con técnicas de combate especializado',
-        fechaCreacion: new Date('2024-02-10'),
-        activo: true,
-        archivos: [
-          {
-            id: 3,
-            mixId: 2,
-            nombre: 'Mix_Avanzado_Audio.mp3',
-            url: 'https://drive.google.com/file/d/3ghi789jkl012/view',
-            tipo: 'Audio',
-            mimeType: 'audio/mpeg',
-            orden: 1,
-            activo: true,
-            fechaCreacion: new Date('2024-02-10')
-          },
-          {
-            id: 4,
-            mixId: 2,
-            nombre: 'Coreografia_Avanzada.mp4',
-            url: 'https://drive.google.com/file/d/4jkl012mno345/view',
-            tipo: 'Video',
-            mimeType: 'video/mp4',
-            orden: 2,
-            activo: true,
-            fechaCreacion: new Date('2024-02-10')
-          }
-        ]
-      }
-    ];
-  }
-
-  private getMockUsuarios(): Usuario[] {
-    return [
-      {
-        id: 1,
-        nombre: 'Admin Principal',
-        email: 'admin@waycombat.com',
-        rol: 'admin',
-        fechaCreacion: new Date('2024-01-01'),
-        activo: true
-      },
-      {
-        id: 2,
-        nombre: 'Carlos Rodriguez',
-        email: 'carlos@email.com',
-        rol: 'usuario',
-        fechaCreacion: new Date('2024-01-10'),
-        activo: true
-      },
-      {
-        id: 3,
-        nombre: 'María González',
-        email: 'maria@email.com',
-        rol: 'usuario',
-        fechaCreacion: new Date('2024-01-15'),
-        activo: false
-      }
-    ];
-  }
-
-  private getMockAccesos(): AccesoMixDto[] {
-    return [
-      {
-        id: 1,
-        usuarioId: 2,
-        mixId: 1,
-        nombreUsuario: 'Carlos Rodriguez',
-        emailUsuario: 'carlos@email.com',
-        tituloMix: 'Mix Combat Básico',
-        fechaAcceso: new Date('2024-01-20'),
-        activo: true
-      },
-      {
-        id: 2,
-        usuarioId: 3,
-        mixId: 1,
-        nombreUsuario: 'María González',
-        emailUsuario: 'maria@email.com',
-        tituloMix: 'Mix Combat Básico',
-        fechaAcceso: new Date('2024-01-22'),
-        fechaExpiracion: new Date('2024-03-22'),
-        activo: true
-      },
-      {
-        id: 3,
-        usuarioId: 2,
-        mixId: 2,
-        nombreUsuario: 'Carlos Rodriguez',
-        emailUsuario: 'carlos@email.com',
-        tituloMix: 'Mix Combat Avanzado',
-        fechaAcceso: new Date('2024-02-15'),
-        activo: true
-      }
-    ];
-  }
+  // ====== DATOS MOCK - ELIMINADOS ======
+  // Mock data removed to force real backend connection
 }
