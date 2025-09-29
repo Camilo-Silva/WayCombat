@@ -24,8 +24,8 @@
     <div class="col-12">
       <ul class="nav nav-tabs nav-fill" role="tablist">
         <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link" 
+          <button
+            class="nav-link"
             [class.active]="activeTab === 'mixs'"
             (click)="setActiveTab('mixs')"
             type="button">
@@ -33,8 +33,8 @@
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link" 
+          <button
+            class="nav-link"
             [class.active]="activeTab === 'usuarios'"
             (click)="setActiveTab('usuarios')"
             type="button">
@@ -42,8 +42,8 @@
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button 
-            class="nav-link" 
+          <button
+            class="nav-link"
             [class.active]="activeTab === 'permisos'"
             (click)="setActiveTab('permisos')"
             type="button">
@@ -56,14 +56,14 @@
 
   <!-- Contenido de las pestañas -->
   <div class="tab-content">
-    
+
     <!-- ========== PESTAÑA: GESTIÓN DE MIXS ========== -->
     <div *ngIf="activeTab === 'mixs'" class="tab-pane fade show active">
-      
+
       <!-- Botón para crear nuevo mix -->
       <div class="row mb-4">
         <div class="col-12">
-          <button 
+          <button
             class="btn btn-way-primary btn-lg"
             (click)="startCreatingMix()"
             *ngIf="!isCreatingMix">
@@ -77,20 +77,20 @@
         <div class="col-12">
           <div class="card shadow-sm">
             <div class="card-header bg-primary-blue text-white">
-              <h5 class="mb-0">
+              <h5 class="mb-0 text-white">
                 <i class="fas fa-edit me-2"></i>
                 {{ editingMixId ? 'Editar Mix' : 'Crear Nuevo Mix' }}
               </h5>
             </div>
             <div class="card-body">
               <form [formGroup]="mixForm" (ngSubmit)="saveMix()">
-                
+
                 <!-- Información básica del mix -->
                 <div class="row mb-3">
                   <div class="col-md-8">
                     <label class="form-label fw-bold">Título del Mix *</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       class="form-control"
                       [class.is-invalid]="isFieldInvalid('titulo')"
                       formControlName="titulo"
@@ -100,9 +100,9 @@
                   <div class="col-md-4">
                     <label class="form-label fw-bold">Estado</label>
                     <div class="form-check form-switch">
-                      <input 
-                        class="form-check-input" 
-                        type="checkbox" 
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
                         formControlName="activo"
                         id="mixActivo">
                       <label class="form-check-label" for="mixActivo">
@@ -115,7 +115,7 @@
                 <div class="row mb-4">
                   <div class="col-12">
                     <label class="form-label fw-bold">Descripción *</label>
-                    <textarea 
+                    <textarea
                       class="form-control"
                       [class.is-invalid]="isFieldInvalid('descripcion')"
                       formControlName="descripcion"
@@ -131,8 +131,8 @@
                     <h6 class="text-primary-blue mb-0">
                       <i class="fas fa-folder-open me-2"></i>Archivos del Mix
                     </h6>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       class="btn btn-outline-primary btn-sm"
                       (click)="openArchivoModal()">
                       <i class="fas fa-plus me-1"></i>Agregar Archivo
@@ -176,15 +176,15 @@
                           </td>
                           <td>
                             <div class="btn-group" role="group">
-                              <button 
-                                type="button" 
+                              <button
+                                type="button"
                                 class="btn btn-outline-primary btn-xs"
                                 (click)="editArchivoFromTable(i)"
                                 title="Editar archivo">
                                 <i class="fas fa-edit"></i>
                               </button>
-                              <button 
-                                type="button" 
+                              <button
+                                type="button"
                                 class="btn btn-outline-danger btn-xs"
                                 (click)="removeArchivoFromTable(i)"
                                 title="Eliminar archivo">
@@ -207,16 +207,16 @@
 
                 <!-- Botones de acción -->
                 <div class="d-flex gap-2">
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     class="btn btn-success"
                     [disabled]="isLoading">
                     <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
                     <i class="fas fa-save me-2" *ngIf="!isLoading"></i>
                     {{ editingMixId ? 'Actualizar Mix' : 'Crear Mix' }}
                   </button>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     class="btn btn-secondary"
                     (click)="cancelEdit()">
                     <i class="fas fa-times me-2"></i>Cancelar
@@ -239,7 +239,7 @@
               <span class="badge bg-light text-primary">Total: {{ mixs.length }}</span>
             </div>
             <div class="card-body p-0">
-              
+
               <!-- Loading state -->
               <div *ngIf="isLoading" class="text-center py-5">
                 <div class="spinner-border text-primary" role="status">
@@ -276,9 +276,9 @@
                       </td>
                       <td>
                         <div class="form-check form-switch">
-                          <input 
-                            class="form-check-input" 
-                            type="checkbox" 
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
                             [checked]="mix.activo"
                             (change)="toggleMixActivo(mix.id!)"
                             [id]="'switch' + mix.id">
@@ -294,14 +294,14 @@
                       </td>
                       <td>
                         <div class="btn-group btn-group-sm">
-                          <button 
-                            class="btn btn-outline-primary" 
+                          <button
+                            class="btn btn-outline-primary"
                             (click)="editMix(mix)"
                             title="Editar mix">
                             <i class="fas fa-edit"></i>
                           </button>
-                          <button 
-                            class="btn btn-outline-danger" 
+                          <button
+                            class="btn btn-outline-danger"
                             (click)="deleteMix(mix.id!)"
                             title="Eliminar mix">
                             <i class="fas fa-trash"></i>
@@ -349,9 +349,9 @@
                   <label for="searchInput" class="form-label fw-bold">
                     <i class="fas fa-search me-1"></i>Buscar usuario
                   </label>
-                  <input 
+                  <input
                     id="searchInput"
-                    type="text" 
+                    type="text"
                     class="form-control"
                     [(ngModel)]="searchText"
                     (input)="onSearchTextChange()"
@@ -363,7 +363,7 @@
                   <label for="filterSelect" class="form-label fw-bold">
                     <i class="fas fa-filter me-1"></i>Mixs asignados
                   </label>
-                  <select 
+                  <select
                     id="filterSelect"
                     class="form-select"
                     [(ngModel)]="filterMixsAsignados"
@@ -376,7 +376,7 @@
 
                 <!-- Botón limpiar filtros -->
                 <div class="col-md-2">
-                  <button 
+                  <button
                     class="btn btn-outline-secondary w-100"
                     (click)="clearFilters()"
                     [disabled]="!searchText && filterMixsAsignados === 'todos'">
@@ -410,7 +410,7 @@
             </div>
 
             <div class="card-body p-0">
-              
+
               <!-- Loading state -->
               <div *ngIf="isLoading" class="text-center py-5">
                 <div class="spinner-border text-primary" role="status">
@@ -446,7 +446,7 @@
                       </td>
                       <td>{{ usuario.email }}</td>
                       <td>
-                        <span 
+                        <span
                           class="badge"
                           [class.bg-warning]="usuario.rol === 'admin'"
                           [class.bg-primary]="usuario.rol === 'Usuario'">
@@ -462,7 +462,7 @@
                         </span>
                       </td>
                       <td>
-                        <span 
+                        <span
                           class="badge"
                           [class.bg-success]="usuario.activo"
                           [class.bg-danger]="!usuario.activo">
@@ -472,7 +472,7 @@
                       <td>
                         <div class="btn-group btn-group-sm" role="group">
                           <!-- Botón de activar/desactivar -->
-                          <button 
+                          <button
                             class="btn"
                             [class.btn-outline-warning]="usuario.activo"
                             [class.btn-outline-success]="!usuario.activo"
@@ -482,7 +482,7 @@
                             <i class="fas" [class.fa-pause]="usuario.activo" [class.fa-play]="!usuario.activo"></i>
                           </button>
                           <!-- Botón de resetear contraseña -->
-                          <button 
+                          <button
                             class="btn btn-outline-info"
                             [disabled]="usuario.rol === 'admin'"
                             (click)="confirmResetPassword(usuario)"
@@ -490,7 +490,7 @@
                             <i class="fas fa-key"></i>
                           </button>
                           <!-- Botón de eliminar -->
-                          <button 
+                          <button
                             class="btn btn-outline-danger"
                             [disabled]="usuario.rol === 'admin'"
                             (click)="confirmDeleteUsuario(usuario)"
@@ -542,17 +542,17 @@
               </small>
             </div>
             <div class="card-body">
-              
+
               <!-- Barra de búsqueda y filtros para matriz de permisos -->
               <div class="row mb-4 p-3 bg-light rounded">
                 <div class="col-md-5">
                   <label for="searchPermisos" class="form-label fw-bold">
                     <i class="fas fa-search me-1"></i>Buscar Usuario
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     id="searchPermisos"
-                    class="form-control" 
+                    class="form-control"
                     [(ngModel)]="searchTextPermisos"
                     (input)="onSearchTextPermisosChange()"
                     placeholder="Buscar por nombre o email...">
@@ -561,7 +561,7 @@
                   <label for="filterMixsPermisos" class="form-label fw-bold">
                     <i class="fas fa-filter me-1"></i>Filtrar por Mixs
                   </label>
-                  <select 
+                  <select
                     id="filterMixsPermisos"
                     class="form-select"
                     [(ngModel)]="filterMixsAsignadosPermisos"
@@ -572,7 +572,7 @@
                   </select>
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
-                  <button 
+                  <button
                     class="btn btn-outline-secondary w-100"
                     (click)="clearFiltersPermisos()"
                     title="Limpiar filtros">
@@ -618,20 +618,20 @@
                         <div class="permission-cell">
                           <!-- Indicador visual del estado -->
                           <div class="permission-indicator" [class.active]="hasPermiso(usuario.id!, mix.id!)">
-                            <i class="fas" [class.fa-check-circle]="hasPermiso(usuario.id!, mix.id!)" 
+                            <i class="fas" [class.fa-check-circle]="hasPermiso(usuario.id!, mix.id!)"
                                [class.fa-times-circle]="!hasPermiso(usuario.id!, mix.id!)"></i>
                           </div>
                           <!-- Switch de control -->
                           <div class="form-check form-switch d-flex justify-content-center">
-                            <input 
-                              class="form-check-input" 
+                            <input
+                              class="form-check-input"
                               type="checkbox"
                               [checked]="hasPermiso(usuario.id!, mix.id!)"
                               (change)="toggleUsuarioMixPermiso(usuario.id!, mix.id!)"
                               [id]="'permiso_' + usuario.id + '_' + mix.id"
                               [title]="hasPermiso(usuario.id!, mix.id!) ? 'Clic para QUITAR acceso' : 'Clic para OTORGAR acceso'">
-                            <label 
-                              class="form-check-label visually-hidden" 
+                            <label
+                              class="form-check-label visually-hidden"
                               [for]="'permiso_' + usuario.id + '_' + mix.id">
                               {{ hasPermiso(usuario.id!, mix.id!) ? 'Quitar acceso' : 'Otorgar acceso' }} a {{ mix.titulo }} para {{ usuario.nombre }}
                             </label>
@@ -641,7 +641,7 @@
                     </tr>
                   </tbody>
                 </table>
-                
+
                 <!-- Leyenda explicativa -->
                 <div class="mt-3 p-3 bg-light rounded">
                   <div class="row align-items-center">
@@ -720,7 +720,7 @@
           <i class="fas fa-user-times fa-3x text-danger mb-3"></i>
           <h6 class="fw-bold">⚠️ ADVERTENCIA: Esta acción es irreversible</h6>
         </div>
-        
+
         <div *ngIf="userToDelete" class="alert alert-warning">
           <strong>Usuario a eliminar:</strong><br>
           <i class="fas fa-user me-2"></i>{{ userToDelete.nombre }}<br>
@@ -741,10 +741,10 @@
           <label for="deleteConfirmationInput" class="form-label fw-bold text-danger">
             Para confirmar, escribe <code>ELIMINAR</code> en el campo de abajo:
           </label>
-          <input 
+          <input
             id="deleteConfirmationInput"
-            type="text" 
-            class="form-control" 
+            type="text"
+            class="form-control"
             [(ngModel)]="deleteConfirmationText"
             placeholder="Escribe ELIMINAR para confirmar"
             autocomplete="off">
@@ -754,8 +754,8 @@
         <button type="button" class="btn btn-secondary" (click)="cancelDeleteUsuario()">
           <i class="fas fa-times me-2"></i>Cancelar
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="btn btn-danger"
           [disabled]="deleteConfirmationText !== 'ELIMINAR'"
           (click)="executeDeleteUsuario()">
@@ -769,18 +769,18 @@
 <!-- ============================================
      MODAL PARA AGREGAR/EDITAR ARCHIVO
      ============================================ -->
-<div class="modal fade" [class.show]="showArchivoModal" [style.display]="showArchivoModal ? 'block' : 'none'" 
+<div class="modal fade" [class.show]="showArchivoModal" [style.display]="showArchivoModal ? 'block' : 'none'"
      tabindex="-1" id="archivoModal" *ngIf="showArchivoModal">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">
+        <h5 class="modal-title text-white">
           <i class="fas fa-file-plus me-2"></i>
           {{ editingArchivoIndex !== null ? 'Editar Archivo' : 'Agregar Nuevo Archivo' }}
         </h5>
         <button type="button" class="btn-close btn-close-white" (click)="closeArchivoModal()"></button>
       </div>
-      
+
       <div class="modal-body">
         <form [formGroup]="archivoModalForm" (ngSubmit)="saveArchivoFromModal()">
           <div class="row">
@@ -789,13 +789,13 @@
               <label for="nombreArchivoModal" class="form-label fw-bold">
                 <i class="fas fa-file me-1"></i>Nombre del Archivo *
               </label>
-              <input 
+              <input
                 id="nombreArchivoModal"
-                type="text" 
+                type="text"
                 class="form-control"
                 [class.is-invalid]="archivoModalForm.get('nombre')?.invalid && archivoModalForm.get('nombre')?.touched"
                 formControlName="nombre"
-                placeholder="Ej: Mix_Principiantes.mp3">
+                placeholder="Ej: 01-Federetion">
               <div class="invalid-feedback" *ngIf="archivoModalForm.get('nombre')?.invalid && archivoModalForm.get('nombre')?.touched">
                 El nombre del archivo es requerido
               </div>
@@ -824,28 +824,29 @@
                 <i class="fas fa-link me-1"></i>URL del Archivo *
               </label>
               <div class="input-group">
-                <input 
+                <input
                   id="urlArchivoModal"
-                  type="url" 
+                  type="url"
                   class="form-control"
                   [class.is-invalid]="archivoModalForm.get('url')?.invalid && archivoModalForm.get('url')?.touched"
                   formControlName="url"
-                  placeholder="URL de Google Drive: https://drive.google.com/file/d/[ID]/view">
-                <button 
-                  type="button" 
+                  placeholder="URL de Google Drive">
+                <!-- Botón Convertir comentado - Las URLs de Drive funcionan directamente -->
+                <!-- <button
+                  type="button"
                   class="btn btn-outline-secondary"
                   (click)="convertDriveUrlInModal()"
                   title="Convertir URL de Drive a formato directo">
                   <i class="fas fa-magic me-1"></i>Convertir
-                </button>
+                </button> -->
               </div>
               <div class="invalid-feedback" *ngIf="archivoModalForm.get('url')?.invalid && archivoModalForm.get('url')?.touched">
                 Se requiere una URL válida (debe comenzar con http:// o https://)
               </div>
               <div class="form-text">
                 <i class="fas fa-info-circle me-1"></i>
-                <strong>Google Drive:</strong> Pega la URL de compartir y haz clic en "Convertir" |
-                <strong>YouTube:</strong> URL completa del video
+                <strong>Google Drive:</strong> Pega la URL de compartir directamente
+                <!-- <strong>YouTube:</strong> URL completa del video -->
               </div>
             </div>
           </div>
@@ -853,54 +854,40 @@
           <!-- Ayuda visual para Google Drive -->
           <div class="row mb-3">
             <div class="col-12">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 class="btn btn-link btn-sm p-0"
                 (click)="toggleDriveHelp()"
                 [attr.aria-expanded]="showDriveHelp">
                 <i class="fas fa-question-circle me-1"></i>¿Cómo obtener URLs de Google Drive?
               </button>
-              
+
               <div *ngIf="showDriveHelp" class="alert alert-info mt-2">
                 <h6><i class="fab fa-google-drive me-2"></i>Pasos para Google Drive:</h6>
                 <ol class="mb-2">
                   <li>Sube tu archivo a Google Drive</li>
                   <li>Haz clic derecho → "Obtener enlace"</li>
                   <li>Cambia a "Cualquier persona con el enlace"</li>
-                  <li>Copia la URL completa aquí</li>
-                  <li>Haz clic en "Convertir" para transformar automáticamente</li>
+                  <li>Copia la URL completa y pégala directamente</li>
                 </ol>
                 <small class="text-muted">
                   <i class="fas fa-lightbulb me-1"></i>
-                  La URL se convertirá automáticamente al formato directo para reproducción
+                  Las URLs de Google Drive funcionan directamente sin necesidad de conversión
                 </small>
               </div>
             </div>
           </div>
 
           <div class="row">
-            <!-- Descripción -->
-            <div class="col-md-8 mb-3">
-              <label for="descripcionArchivoModal" class="form-label">
-                <i class="fas fa-comment-alt me-1"></i>Descripción
-              </label>
-              <textarea 
-                id="descripcionArchivoModal"
-                class="form-control"
-                formControlName="descripcion"
-                rows="3"
-                placeholder="Descripción opcional del archivo..."></textarea>
-            </div>
-
             <!-- Estado -->
-            <div class="col-md-4 mb-3">
+            <div class="col-md-12 mb-3">
               <label for="estadoArchivoModal" class="form-label fw-bold">
                 <i class="fas fa-toggle-on me-1"></i>Estado
               </label>
               <div class="form-check form-switch mt-2">
-                <input 
-                  class="form-check-input" 
-                  type="checkbox" 
+                <input
+                  class="form-check-input"
+                  type="checkbox"
                   formControlName="activo"
                   id="archivoActivoModal">
                 <label class="form-check-label" for="archivoActivoModal">
@@ -913,13 +900,13 @@
           </div>
         </form>
       </div>
-      
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeArchivoModal()">
           <i class="fas fa-times me-1"></i>Cancelar
         </button>
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="btn btn-primary"
           (click)="saveArchivoFromModal()"
           [disabled]="archivoModalForm.invalid">
@@ -932,5 +919,5 @@
 </div>
 
 <!-- Backdrop del modal -->
-<div class="modal-backdrop fade" [class.show]="showArchivoModal" *ngIf="showArchivoModal" 
+<div class="modal-backdrop fade" [class.show]="showArchivoModal" *ngIf="showArchivoModal"
      (click)="closeArchivoModal()" (keydown.escape)="closeArchivoModal()"></div>

@@ -65,7 +65,7 @@ export class AdminDashboardComponent implements OnInit {
 
   // Formularios
   mixForm: FormGroup;
-  
+
   constructor() {
     this.mixForm = this.fb.group({
       titulo: ['', [Validators.required, Validators.minLength(3)]],
@@ -78,7 +78,6 @@ export class AdminDashboardComponent implements OnInit {
       nombre: ['', [Validators.required]],
       url: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       tipo: ['audio', [Validators.required]],
-      descripcion: [''],
       activo: [true]
     });
   }
@@ -103,7 +102,7 @@ export class AdminDashboardComponent implements OnInit {
         this.loadUsuarios(),
         this.loadPermisos()
       ]);
-      
+
       // Sincronizar datos después de cargar todo
       this.syncUserMixData();
     } catch (error) {
@@ -184,16 +183,16 @@ export class AdminDashboardComponent implements OnInit {
   syncUserMixData(): void {
     // Calcular la cantidad de mixs asignados por usuario basándose en los permisos
     this.usuarios.forEach(usuario => {
-      const mixsAsignados = this.permisos.filter(permiso => 
+      const mixsAsignados = this.permisos.filter(permiso =>
         permiso.usuarioId === usuario.id && permiso.activo
       ).length;
-      
+
       // Agregar la propiedad mixsAsignados si no existe
       (usuario as any).mixsAsignados = mixsAsignados;
     });
-    
+
     console.log('✅ Datos sincronizados - Usuarios con mixs asignados:', this.usuarios);
-    
+
     // Aplicar filtros después de sincronizar
     this.applyFilters();
     this.applyFiltersPermisos();
@@ -307,8 +306,7 @@ export class AdminDashboardComponent implements OnInit {
     return this.fb.group({
       nombre: ['', [Validators.required]],
       url: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
-      tipo: ['audio', [Validators.required]],
-      descripcion: ['']
+      tipo: ['audio', [Validators.required]]
     });
   }
 
@@ -328,7 +326,6 @@ export class AdminDashboardComponent implements OnInit {
       nombre: '',
       url: '',
       tipo: 'audio',
-      descripcion: '',
       activo: true
     });
     this.showDriveHelp = false;
@@ -350,7 +347,7 @@ export class AdminDashboardComponent implements OnInit {
   saveArchivoFromModal(): void {
     if (this.archivoModalForm.valid) {
       const archivoData = this.archivoModalForm.value;
-      
+
       if (this.editingArchivoIndex !== null) {
         // Editar archivo existente - preservar ID si existe
         const archivoExistente = this.archivosTemporales[this.editingArchivoIndex];
@@ -362,7 +359,7 @@ export class AdminDashboardComponent implements OnInit {
         // Agregar nuevo archivo
         this.archivosTemporales.push(archivoData);
       }
-      
+
       this.closeArchivoModal();
     }
   }
@@ -392,12 +389,12 @@ export class AdminDashboardComponent implements OnInit {
       try {
         // Extraer el ID del archivo de Google Drive
         const match = currentUrl.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
-        
+
         if (match && match[1]) {
           const fileId = match[1];
           // Convertir a URL directa para descarga/reproducción
           const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-          
+
           // Mostrar mensaje de éxito
           alert('✅ URL convertida exitosamente!\n\nAhora el archivo se puede reproducir directamente en la aplicación.');
           return directUrl;
@@ -435,7 +432,7 @@ export class AdminDashboardComponent implements OnInit {
   editMix(mix: Mix): void {
     this.isCreatingMix = true;
     this.editingMixId = mix.id || null;
-    
+
     this.mixForm.patchValue({
       titulo: mix.titulo,
       descripcion: mix.descripcion,
@@ -448,10 +445,9 @@ export class AdminDashboardComponent implements OnInit {
       nombre: archivo.nombre,
       url: archivo.url,
       tipo: archivo.tipo,
-      descripcion: '', // ArchivoMix no tiene descripcion, usar string vacío
       activo: archivo.activo
     }));
-    
+
     this.archivosFormArray.clear();
   }
 
@@ -464,7 +460,7 @@ export class AdminDashboardComponent implements OnInit {
 
   async saveMix(): Promise<void> {
     console.log('saveMix() ejecutado, editingMixId:', this.editingMixId); // Debug
-    
+
     if (this.mixForm.invalid) {
       this.markFormGroupTouched(this.mixForm);
       return;
@@ -473,16 +469,16 @@ export class AdminDashboardComponent implements OnInit {
     this.isLoading = true;
     try {
       const formValue = this.mixForm.value;
-      
+
       if (this.editingMixId) {
         // Actualizar mix existente
         const editingMix = this.mixs.find(m => m.id === this.editingMixId);
-        
+
         // Usar archivos temporales en lugar del FormArray
         const archivosFromForm = this.archivosTemporales || [];
-        
+
         console.log('Archivos temporales a enviar:', archivosFromForm); // Debug
-        
+
         const updateData: UpdateMixRequest = {
           titulo: formValue.titulo,
           descripcion: formValue.descripcion,
@@ -498,9 +494,9 @@ export class AdminDashboardComponent implements OnInit {
             activo: archivo.activo !== false // Default true si no está definido
           }))
         };
-        
+
         console.log('UpdateData a enviar:', updateData); // Debug
-        
+
         this.mixService.updateMix(this.editingMixId, updateData).subscribe({
           next: () => {
             console.log('Mix actualizado exitosamente');
@@ -523,7 +519,7 @@ export class AdminDashboardComponent implements OnInit {
         try {
           const newMix = await this.adminService.createMix(createMixData);
           console.log('Mix creado exitosamente:', newMix);
-          
+
           // Crear archivos del mix usando archivos temporales
           if (this.archivosTemporales.length > 0) {
             this.createMixArchivos(newMix.id, this.archivosTemporales);
@@ -612,13 +608,13 @@ export class AdminDashboardComponent implements OnInit {
   async toggleMixActivo(mixId: number): Promise<void> {
     try {
       await this.adminService.toggleMixActivo(mixId);
-      
+
       // Actualizar localmente el estado del mix
       const mix = this.mixs.find(m => m.id === mixId);
       if (mix) {
         mix.activo = !mix.activo;
       }
-      
+
       console.log('Estado del mix actualizado exitosamente');
     } catch (error) {
       console.error('Error toggling mix activo:', error);
@@ -639,15 +635,15 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   hasPermiso(usuarioId: number, mixId: number): boolean {
-    return this.permisos.some(p => 
-      p.usuarioId === usuarioId && 
-      p.mixId === mixId && 
+    return this.permisos.some(p =>
+      p.usuarioId === usuarioId &&
+      p.mixId === mixId &&
       p.activo
     );
   }
 
   getPermisosActivosCount(usuarioId: number): number {
-    return this.permisos.filter(p => 
+    return this.permisos.filter(p =>
       p.usuarioId === usuarioId && p.activo
     ).length;
   }
@@ -665,14 +661,14 @@ export class AdminDashboardComponent implements OnInit {
       // Confirmar la acción
       const accion = usuario.activo ? 'desactivar' : 'activar';
       const confirmacion = confirm(`¿Estás seguro de que quieres ${accion} a ${usuario.nombre}?`);
-      
+
       if (!confirmacion) {
         return;
       }
 
       // Llamar al servicio
       const usuarioActualizado = await this.adminService.toggleUsuarioActivo(usuarioId);
-      
+
       // Actualizar el usuario en la lista local
       const index = this.usuarios.findIndex(u => u.id === usuarioId);
       if (index !== -1) {
@@ -727,7 +723,7 @@ export class AdminDashboardComponent implements OnInit {
     // Configurar el modal
     this.userToDelete = usuario;
     this.deleteConfirmationText = '';
-    
+
     // Mostrar el modal de forma más segura
     const modalElement = document.getElementById('deleteUserModal');
     if (modalElement) {
@@ -743,7 +739,7 @@ export class AdminDashboardComponent implements OnInit {
           modalElement.style.display = 'block';
           modalElement.setAttribute('aria-modal', 'true');
           modalElement.removeAttribute('aria-hidden');
-          
+
           // Agregar backdrop
           const backdrop = document.createElement('div');
           backdrop.className = 'modal-backdrop fade show';
@@ -772,7 +768,7 @@ export class AdminDashboardComponent implements OnInit {
 
     // Ejecutar la eliminación
     this.deleteUsuario(this.userToDelete.id!);
-    
+
     // Limpiar las variables del modal
     this.userToDelete = null;
     this.deleteConfirmationText = '';
@@ -798,7 +794,7 @@ export class AdminDashboardComponent implements OnInit {
           modalElement.style.display = 'none';
           modalElement.setAttribute('aria-hidden', 'true');
           modalElement.removeAttribute('aria-modal');
-          
+
           // Remover backdrop
           const backdrop = document.getElementById('deleteUserModal-backdrop');
           if (backdrop) {
@@ -831,7 +827,7 @@ export class AdminDashboardComponent implements OnInit {
 
       // Llamar al servicio
       await this.adminService.deleteUsuario(usuarioId);
-      
+
       // Remover el usuario de la lista local
       this.usuarios = this.usuarios.filter(u => u.id !== usuarioId);
 
@@ -881,12 +877,12 @@ export class AdminDashboardComponent implements OnInit {
     if (field.errors['required']) return 'Este campo es requerido';
     if (field.errors['minlength']) return `Mínimo ${field.errors['minlength'].requiredLength} caracteres`;
     if (field.errors['pattern']) return 'URL inválida (debe comenzar con http:// o https://)';
-    
+
     return 'Campo inválido';
   }
 
-  // ====== FUNCIONES PARA GOOGLE DRIVE Y YOUTUBE ======
-  
+  // ====== FUNCIONES PARA GOOGLE DRIVE======
+
   toggleDriveHelp(): void {
     this.showDriveHelp = !this.showDriveHelp;
   }
@@ -894,11 +890,11 @@ export class AdminDashboardComponent implements OnInit {
   convertDriveUrl(index: number): void {
     const archivoFormGroup = this.archivosFormArray.at(index) as FormGroup;
     const urlControl = archivoFormGroup.get('url');
-    
+
     if (!urlControl) return;
-    
+
     const currentUrl = urlControl.value;
-    
+
     if (!currentUrl) {
       alert('Por favor, ingresa primero una URL de Google Drive');
       return;
@@ -909,14 +905,14 @@ export class AdminDashboardComponent implements OnInit {
       try {
         // Extraer el ID del archivo de Google Drive
         const match = currentUrl.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
-        
+
         if (match && match[1]) {
           const fileId = match[1];
           // Convertir a URL directa para descarga/reproducción
           const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-          
+
           urlControl.setValue(directUrl);
-          
+
           // Mostrar mensaje de éxito
           alert('✅ URL convertida exitosamente!\n\nAhora el archivo se puede reproducir directamente en la aplicación.');
         } else {
@@ -935,9 +931,9 @@ export class AdminDashboardComponent implements OnInit {
 
   // Función auxiliar para validar URLs de archivos multimedia
   isValidMediaUrl(url: string): boolean {
-    return url.includes('drive.google.com') || 
-           url.includes('youtube.com') || 
-           url.includes('youtu.be') || 
+    return url.includes('drive.google.com') ||
+           url.includes('youtube.com') ||
+           url.includes('youtu.be') ||
            url.includes('music.youtube.com');
   }
 
@@ -946,7 +942,7 @@ export class AdminDashboardComponent implements OnInit {
     if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('music.youtube.com')) {
       return 'video';
     }
-    
+
     // Para Google Drive, podríamos inferir por el nombre del archivo
     // o por defecto asumir audio si no está claro
     return 'audio';
