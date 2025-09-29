@@ -72,9 +72,14 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            // En producción, usar orígenes específicos de configuración
+            // En producción, permitir los dominios actuales de la aplicación
             var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? 
-                               new[] { "https://waycombat.netlify.app", "https://waycombat-frontend.vercel.app" };
+                               new[] { 
+                                   "https://way-combat.netlify.app", 
+                                   "https://waycombat.netlify.app", 
+                                   "https://waycombat-frontend.vercel.app",
+                                   "https://way-combat-frontend.vercel.app"
+                               };
             
             policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()

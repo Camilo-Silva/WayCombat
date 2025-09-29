@@ -69,23 +69,41 @@ namespace WayCombat.Api.Controllers
         {
             try
             {
+                Console.WriteLine($"Login attempt - Email: {loginDto.Email}, Password length: {loginDto.Contraseña?.Length}");
+                
                 // Buscar usuario
                 var usuario = await _usuarioService.GetByEmailAsync(loginDto.Email);
                 if (usuario == null)
                 {
+                    Console.WriteLine($"Usuario no encontrado para email: {loginDto.Email}");
                     return BadRequest(new { message = "Credenciales inválidas" });
                 }
+
+                Console.WriteLine($"Usuario encontrado - ID: {usuario.Id}, Email: {usuario.Email}, Activo: {usuario.Activo}");
 
                 // Verificar si el usuario está activo
                 if (!usuario.Activo)
                 {
+                    Console.WriteLine("Usuario inactivo");
                     return BadRequest(new { message = "Tu cuenta ha sido desactivada. Contacta al administrador." });
                 }
 
                 // Verificar contraseña (necesitamos obtener el hash desde la base de datos)
                 var usuarioCompleto = await GetUsuarioCompletoAsync(loginDto.Email);
-                if (usuarioCompleto == null || !BCrypt.Net.BCrypt.Verify(loginDto.Contraseña, usuarioCompleto.ContraseñaHash))
+                if (usuarioCompleto == null)
                 {
+                    Console.WriteLine("Usuario completo no encontrado");
+                    return BadRequest(new { message = "Credenciales inválidas" });
+                }
+
+                Console.WriteLine($"Hash almacenado: {usuarioCompleto.ContraseñaHash?.Substring(0, 20)}...");
+                
+                var passwordVerified = BCrypt.Net.BCrypt.Verify(loginDto.Contraseña, usuarioCompleto.ContraseñaHash);
+                Console.WriteLine($"Password verification result: {passwordVerified}");
+                
+                if (!passwordVerified)
+                {
+                    Console.WriteLine("Contraseña incorrecta");
                     return BadRequest(new { message = "Credenciales inválidas" });
                 }
 
@@ -99,6 +117,7 @@ namespace WayCombat.Api.Controllers
                     Usuario = usuario
                 };
 
+                Console.WriteLine("Login exitoso");
                 return Ok(response);
             }
             catch (Exception ex)
@@ -127,6 +146,32 @@ namespace WayCombat.Api.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Error interno del servidor", error = ex.Message });
+            }
+        }
+
+        [HttpGet("debug/users")]
+        public async Task<ActionResult> GetUsers()
+        {
+            try
+            {
+                using var scope = HttpContext.RequestServices.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<WayCombat.Api.Data.WayCombatDbContext>();
+                var users = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync(context.Usuarios);
+                
+                var userInfo = users.Select(u => new {
+                    u.Id,
+                    u.Email,
+                    u.Nombre,
+                    u.Rol,
+                    u.Activo,
+                    HashedPassword = u.ContraseñaHash?.Substring(0, 20) + "..." // Solo mostrar inicio del hash
+                });
+                
+                return Ok(userInfo);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error", error = ex.Message });
             }
         }
 

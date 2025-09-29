@@ -15,21 +15,47 @@ namespace WayCombat.Api.Services
 
         public async Task SeedAsync()
         {
-            // Solo seed si la BD está vacía para evitar resetear datos existentes
-            if (await _context.Usuarios.AnyAsync())
+            const string adminEmail = "admin@waycombat.com";
+            const string adminPassword = "admin123";
+            
+            // Buscar admin existente
+            var adminExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == adminEmail);
+            
+            if (adminExistente != null)
             {
-                // Ya hay datos, no hacer nada
+                // Actualizar el hash si existe
+                var correctHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, 11);
+                adminExistente.ContraseñaHash = correctHash;
+                adminExistente.FechaActualizacion = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
                 return;
             }
 
-            // Crear usuario admin solo si no existe
-            if (!await _context.Usuarios.AnyAsync(u => u.Email == "admin@waycombat.com"))
+            // Si no existe, crear usuario admin con ID 1
+            var existeId1 = await _context.Usuarios.AnyAsync(u => u.Id == 1);
+            
+            if (!existeId1)
             {
+                // Generar hash correcto para admin123
+                var correctHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, 11);
+                
+                // Insertar directamente con ID 1 usando SQL raw
+                await _context.Database.ExecuteSqlRawAsync(
+                    "INSERT INTO Usuarios (Id, Email, Nombre, ContraseñaHash, Rol, Activo, FechaCreacion, FechaActualizacion) VALUES (1, @email, @nombre, @hash, @rol, 1, datetime('now'), datetime('now'))",
+                    new Microsoft.Data.Sqlite.SqliteParameter("@email", adminEmail),
+                    new Microsoft.Data.Sqlite.SqliteParameter("@nombre", "Administrador"),
+                    new Microsoft.Data.Sqlite.SqliteParameter("@hash", correctHash),
+                    new Microsoft.Data.Sqlite.SqliteParameter("@rol", "admin")
+                );
+            }
+            else
+            {
+                // Si ID 1 está ocupado, crear con autoincrement normal
                 var admin = new Usuario
                 {
-                    Email = "admin@waycombat.com",
+                    Email = adminEmail,
                     Nombre = "Administrador",
-                    ContraseñaHash = "$2b$12$RUkztah0eZ97UsyYVqU9betRS67GhIqEGIWpuj41uiefD/rqIuIRm", // admin123
+                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(adminPassword, 11),
                     Rol = "admin",
                     Activo = true,
                     FechaCreacion = DateTime.UtcNow,
@@ -41,8 +67,7 @@ namespace WayCombat.Api.Services
             }
 
             // No crear mixes mock - que los usuarios creen su contenido real
-            // Versión 2024-09-18: DataSeeder solo crea usuario admin
-            // Prueba persistencia BD - no debería borrar datos existentes
+            // Versión actualizada: Admin preferentemente con ID 1
         }
     }
 }
