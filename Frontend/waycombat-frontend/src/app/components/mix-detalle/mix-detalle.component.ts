@@ -79,130 +79,6 @@ export class MixDetalleComponent implements OnInit, OnDestroy {
     return this.getTotalFiles();
   }
 
-  // Datos de ejemplo actualizados con contenido real
-  private mockMixes: Mix[] = [
-    {
-      id: 1,
-      titulo: 'MIX 1',
-      descripcion: 'Primer mix de entrenamiento Way Combat',
-      fechaCreacion: new Date(),
-      activo: true,
-      archivos: [
-        { 
-          id: 1, 
-          mixId: 1,
-          nombre: 'Way_Combat_Track1.mp3', 
-          url: 'https://drive.google.com/uc?export=download&id=TU_ID_REAL_AQUI',
-          tipo: 'Audio',
-          mimeType: 'audio/mpeg',
-          tamañoBytes: 8388608,
-          orden: 1,
-          activo: true,
-          fechaCreacion: new Date()
-        },
-        { 
-          id: 2, 
-          mixId: 1,
-          nombre: 'Way_Combat_Track2.mp3', 
-          url: 'https://drive.google.com/uc?export=download&id=TU_ID_REAL_AQUI_2',
-          tipo: 'Audio',
-          mimeType: 'audio/mpeg',
-          tamañoBytes: 7340032,
-          orden: 2,
-          activo: true,
-          fechaCreacion: new Date()
-        }
-      ]
-    },
-    {
-      id: 2,
-      titulo: 'MIX 2',
-      descripcion: 'Segundo mix con técnicas avanzadas',
-      fechaCreacion: new Date(),
-      activo: true,
-      archivos: [
-        { 
-          id: 3, 
-          mixId: 2,
-          nombre: 'Advanced_Training.mp3', 
-          url: 'https://drive.google.com/uc?export=download&id=TU_ID_REAL_AQUI_3',
-          tipo: 'Audio',
-          mimeType: 'audio/mpeg',
-          tamañoBytes: 9437184,
-          orden: 1,
-          activo: true,
-          fechaCreacion: new Date()
-        }
-      ]
-    },
-    {
-      id: 3,
-      titulo: 'MIX 3',
-      descripcion: 'Mix de calentamiento y estiramiento',
-      fechaCreacion: new Date(),
-      activo: true,
-      archivos: [
-        { 
-          id: 4, 
-          mixId: 3,
-          nombre: 'Warmup_Session.mp3', 
-          url: 'https://drive.google.com/uc?export=download&id=TU_ID_REAL_AQUI_4',
-          tipo: 'Audio',
-          mimeType: 'audio/mpeg',
-          tamañoBytes: 6291456,
-          orden: 1,
-          activo: true,
-          fechaCreacion: new Date()
-        },
-        { 
-          id: 5, 
-          mixId: 3,
-          nombre: 'Stretching_Guide.mp4', 
-          url: 'https://drive.google.com/uc?export=download&id=TU_ID_REAL_AQUI_5',
-          tipo: 'Video',
-          mimeType: 'video/mp4',
-          tamañoBytes: 104857600,
-          orden: 2,
-          activo: true,
-          fechaCreacion: new Date()
-        }
-      ]
-    },
-    {
-      id: 4,
-      titulo: 'MIX 4',
-      descripcion: 'Mix completo con archivos de audio y video de entrenamiento',
-      fechaCreacion: new Date(),
-      activo: true,
-      archivos: [
-        { 
-          id: 9, 
-          mixId: 4,
-          nombre: 'Way_Combat_Track1.mp3', 
-          url: 'https://drive.google.com/uc?export=download&id=TU_ID_REAL_AQUI',
-          tipo: 'Audio',
-          mimeType: 'audio/mpeg',
-          tamañoBytes: 8388608,
-          orden: 1,
-          activo: true,
-          fechaCreacion: new Date()
-        },
-        { 
-          id: 10, 
-          mixId: 4,
-          nombre: 'Way_Combat_Video.mp4', 
-          url: 'https://drive.google.com/file/d/1L3nPL5dTTmTIsVPHqPTcg_hToCTD0Eyv/view?usp=drive_link',
-          tipo: 'Video',
-          mimeType: 'video/mp4',
-          tamañoBytes: 104857600,
-          orden: 2,
-          activo: true,
-          fechaCreacion: new Date()
-        }
-      ]
-    }
-  ];
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -238,8 +114,8 @@ export class MixDetalleComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error cargando mix:', error);
-        // Fallback a datos mock si hay error
-        this.mix = this.mockMixes.find(m => m.id === id) || null;
+        // En caso de error, mostrar que no se encontró el mix
+        this.mix = null;
         this.isLoading = false;
       }
     });

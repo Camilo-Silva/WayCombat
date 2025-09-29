@@ -51,62 +51,11 @@ export class MixsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error cargando mixs:', error);
-        // Fallback a datos mock si hay error
-        this.loadMockData();
+        // En caso de error, mostrar array vacío
+        this.userMixs = [];
         this.isLoading = false;
       }
     });
-  }
-
-  private loadMockData(): void {
-    // Datos de prueba con URLs reales de Google Drive
-    this.userMixs = [
-      {
-        id: 1,
-        titulo: 'MIX 1 - Test Real',
-        descripcion: 'Mix de prueba con archivos reales de Google Drive y YouTube Music',
-        fechaCreacion: new Date(),
-        activo: true,
-        archivos: [
-          { 
-            id: 1, 
-            mixId: 1,
-            nombre: 'track1.mp3', 
-            url: 'https://drive.google.com/file/d/1HmRJahcntpMR_HPTQW6uXphWQ6nNVaM_/view?usp=drive_link',
-            tipo: 'Audio',
-            mimeType: 'audio/mpeg',
-            tamañoBytes: 5242880,
-            orden: 1,
-            activo: true,
-            fechaCreacion: new Date()
-          },
-          { 
-            id: 2, 
-            mixId: 1,
-            nombre: 'track1.mp4', 
-            url: 'https://drive.google.com/file/d/1L3nPL5dTTmTIsVPHqPTcg_hToCTD0Eyv/view?usp=drive_link',
-            tipo: 'Video',
-            mimeType: 'video/mp4',
-            tamañoBytes: 104857600,
-            orden: 2,
-            activo: true,
-            fechaCreacion: new Date()
-          },
-          { 
-            id: 3, 
-            mixId: 1,
-            nombre: 'Técnicas_Way_Combat_YouTube', 
-            url: 'https://music.youtube.com/watch?v=-grPV-Fae6I&list=OLAK5uy_ljWDekJVUfMOYniqd1mZ8l45Q2nAwk4ds',
-            tipo: 'Video',
-            mimeType: 'video/youtube',
-            tamañoBytes: 0,
-            orden: 3,
-            activo: true,
-            fechaCreacion: new Date()
-          }
-        ]
-      }
-    ];
   }
 
   getFileCount(mix: Mix): number {
