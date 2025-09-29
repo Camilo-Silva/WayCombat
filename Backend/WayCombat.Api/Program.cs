@@ -5,11 +5,16 @@ using System.Text;
 using WayCombat.Api.Data;
 using WayCombat.Api.Services;
 
+const string BearerSchemeName = "Bearer";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configurar el puerto desde variable de entorno (requerido por Render)
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+var renderPort = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(renderPort))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{renderPort}");
+}
 
 // Add services to the container
 builder.Services.AddControllers()
@@ -97,13 +102,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 
     // Configure JWT authentication in Swagger
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    c.AddSecurityDefinition(BearerSchemeName, new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Description = "JWT Authorization header usando el esquema Bearer. Ejemplo: \"Authorization: Bearer {token}\"",
         Name = "Authorization",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Scheme = BearerSchemeName
     });
 
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
@@ -114,10 +119,10 @@ builder.Services.AddSwaggerGen(c =>
                 Reference = new Microsoft.OpenApi.Models.OpenApiReference
                 {
                     Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Id = BearerSchemeName
                 },
                 Scheme = "oauth2",
-                Name = "Bearer",
+                Name = BearerSchemeName,
                 In = Microsoft.OpenApi.Models.ParameterLocation.Header,
             },
             new List<string>()

@@ -5,7 +5,7 @@ import { ContactInfo } from '../models/contact.model';
   providedIn: 'root'
 })
 export class ContactService {
-  
+
   // FUENTE ÚNICA DE VERDAD - Solo aquí se definen los datos de contacto
   private readonly contactData: ContactInfo = {
     direccion: 'Balboa 6728, Gonzalez Catan, Buenos Aires, Argentina',
@@ -14,7 +14,7 @@ export class ContactService {
     horarios: 'Lunes a Viernes: 9:00 - 21:00\nSábados: 9:00 - 18:00\nDomingos: 10:00 - 16:00',
     redes: {
       facebook: 'https://facebook.com/way.combat.2025',
-      instagram: 'https://instagram.com/waycombat_w.c',
+      instagram: 'https://www.instagram.com/way_combat?igsh=NXN2c3V3bmt1N3p6',
       tiktok: 'https://www.tiktok.com/@way_combat',
       youtube: 'https://www.youtube.com/@way_combat'
     }

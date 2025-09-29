@@ -1,8 +1,8 @@
 <!-- Hero Section -->
-<section class="hero-section parallax-element" data-speed="0.3" style="background-image: url('assets/images/24.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 60vh; position: relative;">
+<section class="hero-section parallax-element" data-speed="0.3" style="background-image: url('assets/images/Portada.png'); background-size: cover; background-position: center 15%; background-repeat: no-repeat; min-height: 60vh; position: relative;">
   <!-- Overlay para mejorar legibilidad del texto -->
   <div class="hero-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5);"></div>
-  
+
   <div class="container" style="position: relative; z-index: 2;">
     <div class="row align-items-center" style="min-height: 60vh;">
       <div class="col-lg-6">
@@ -10,7 +10,7 @@
           <h1 class="hero-title text-white">WAY COMBAT</h1>
           <p class="hero-subtitle text-white">Programa de Fitness de combate</p>
           <p class="lead mb-4 text-white">
-            Descubre una nueva forma de entrenar. Únete a nuestra comunidad y transforma tu cuerpo con 
+            Descubre una nueva forma de entrenar. Únete a nuestra comunidad y transforma tu cuerpo con
             técnicas de combate profesionales.
           </p>
           <a class="btn btn-way-primary btn-lg text-white card-hover-effect" routerLink="/acceso-instructores">
@@ -34,8 +34,8 @@
       <div class="col-lg-6 animate-slide-left animate-gpu">
         <div class="about-image text-center mb-4 mb-lg-0">
           <!-- Imagen sobre nosotros -->
-          <img src="assets/images/5.jpg" 
-               alt="Sobre Nosotros Way Combat" 
+          <img src="assets/images/5.jpg"
+               alt="Sobre Nosotros Way Combat"
                class="img-fluid rounded-3 shadow-lg card-hover-effect"
                style="max-height: 400px; object-fit: cover;">
         </div>
@@ -44,15 +44,15 @@
         <div class="about-content ps-lg-4">
           <h2 class="text-primary-blue mb-4 animate-typewriter">Sobre Nosotros</h2>
           <p class="lead mb-3 animate-stagger">
-            Way Combat nació de la pasión por las artes marciales y el deseo de crear una experiencia 
+            Way Combat nació de la pasión por las artes marciales y el deseo de crear una experiencia
             de entrenamiento única y accesible para todos.
           </p>
           <p class="mb-3 animate-stagger">
-            Nuestro equipo de expertos ha desarrollado un sistema de entrenamiento revolucionario que 
+            Nuestro equipo de expertos ha desarrollado un sistema de entrenamiento revolucionario que
             combina técnicas tradicionales de combate con métodos modernos de fitness.
           </p>
           <p class="mb-4 animate-stagger">
-            Creemos que cada persona tiene el potencial de convertirse en su mejor versión, y estamos 
+            Creemos que cada persona tiene el potencial de convertirse en su mejor versión, y estamos
             aquí para guiarte en ese camino.
           </p>
           <a class="btn btn-way-primary card-hover-effect animate-stagger" routerLink="/capacitaciones">
@@ -71,7 +71,7 @@
       <h2 class="text-primary-blue mb-3">Beneficios del Entrenamiento</h2>
       <p class="lead">Descubre todos los beneficios que Way Combat puede ofrecerte</p>
     </div>
-    
+
     <div class="row g-4">
       <div class="col-lg-3 col-md-6 animate-cards-up animate-gpu" *ngFor="let benefit of benefits">
         <div class="card h-100 border-0 shadow-sm text-center card-hover-effect">
@@ -96,12 +96,12 @@
         <div class="mission-content pe-lg-4">
           <h2 class="text-primary-blue mb-4">Nuestra Misión</h2>
           <p class="lead mb-3 animate-stagger">
-            Transformar vidas a través del arte del combate, creando una comunidad global de individuos 
+            Transformar vidas a través del arte del combate, creando una comunidad global de individuos
             fuertes, disciplinados y confiados.
           </p>
           <p class="mb-4 animate-stagger">
-            En Way Combat, no solo enseñamos técnicas de pelea; cultivamos el carácter, fortalecemos 
-            el cuerpo y liberamos el potencial mental de cada estudiante. Nuestra misión es hacer 
+            En Way Combat, no solo enseñamos técnicas de pelea; cultivamos el carácter, fortalecemos
+            el cuerpo y liberamos el potencial mental de cada estudiante. Nuestra misión es hacer
             accesible el entrenamiento de combate de élite para personas de todos los niveles.
           </p>
           <blockquote class="blockquote animate-stagger">
@@ -114,8 +114,8 @@
       <div class="col-lg-6 animate-zoom-fade-reverse animate-gpu">
         <div class="mission-image text-center mb-4 mb-lg-0">
           <!-- Imagen de misión -->
-          <img src="assets/images/44.jpg" 
-               alt="Nuestra Misión Way Combat" 
+          <img src="assets/images/imgfooter.png"
+               alt="Nuestra Misión Way Combat"
                class="img-fluid rounded-3 shadow-lg card-hover-effect animate-float"
                style="max-height: 500px; object-fit: cover;">
         </div>
@@ -131,7 +131,7 @@
       <h2 class="mb-3 text-white">Conócenos</h2>
       <p class="lead">Conoce a los expertos que guiarán tu entrenamiento</p>
     </div>
-    
+
     <div class="row justify-content-center g-4">
       <div class="col-lg-4 col-md-6 animate-flip-in animate-gpu" *ngFor="let director of directors">
         <div class="card border-0 shadow-lg text-center card-hover-effect">
@@ -139,13 +139,13 @@
             <div class="director-image mb-3">
               <!-- Imagen del director si está disponible, sino placeholder -->
               <div *ngIf="director.image; else placeholder" class="director-photo">
-                <img [src]="director.image" 
-                     [alt]="director.name" 
+                <img [src]="director.image"
+                     [alt]="director.name"
                      class="rounded-circle mx-auto d-block shadow-lg animate-bounce-in"
                      style="width: 150px; height: 150px; object-fit: cover;">
               </div>
               <ng-template #placeholder>
-                <div class="director-placeholder bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center animate-bounce-in" 
+                <div class="director-placeholder bg-light rounded-circle mx-auto d-flex align-items-center justify-content-center animate-bounce-in"
                      style="width: 150px; height: 150px;">
                   <i class="fas fa-user fa-4x text-primary-blue"></i>
                 </div>

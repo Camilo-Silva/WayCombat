@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Respetar preferencias de accesibilidad
     this.animationService.respectMotionPreference();
-    
+
     // Inicializar animaciones después de que la vista se haya cargado
     setTimeout(() => {
       if (this.animationService.isAnimationSupported()) {
@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       name: 'Fede Ramirez',
       position: 'Director y Fundador',
       description: 'Con más de 15 años de experiencia en artes marciales mixtas y entrenamiento deportivo. Especialista en técnicas de combate modernas.',
-      image: 'assets/images/F8.jpg'
+      image: 'assets/images/F8.png'
     }
     // },
     // {
