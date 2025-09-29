@@ -1,6 +1,6 @@
 <!-- DETALLE DEL MIX -->
 <div class="container-fluid py-4">
-  
+
   <!-- Header del mix -->
   <div class="row mb-4">
     <div class="col-12">
@@ -12,7 +12,7 @@
           <p class="text-muted mb-0">{{ mix?.descripcion || 'Contenido multimedia disponible' }}</p>
         </div>
         <div>
-          <button 
+          <button
             class="btn btn-outline-secondary"
             routerLink="/mixs">
             <i class="fas fa-arrow-left me-2"></i>Volver
@@ -35,7 +35,7 @@
   <!-- Contenido del mix -->
   <div *ngIf="!isLoading && mix" class="row">
     <div class="col-12">
-      
+
       <!-- Estadísticas del mix -->
       <!-- <div class="row mb-4">
         <div class="col-md-4">
@@ -72,8 +72,8 @@
         <div class="card-header p-0">
           <ul class="nav nav-tabs nav-fill" role="tablist">
             <li class="nav-item" role="presentation">
-              <button 
-                class="nav-link" 
+              <button
+                class="nav-link"
                 [class.active]="activeTab === 'audios'"
                 (click)="setActiveTab('audios')"
                 type="button">
@@ -81,8 +81,8 @@
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button 
-                class="nav-link" 
+              <button
+                class="nav-link"
                 [class.active]="activeTab === 'videos'"
                 (click)="setActiveTab('videos')"
                 type="button">
@@ -90,8 +90,8 @@
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button 
-                class="nav-link" 
+              <button
+                class="nav-link"
                 [class.active]="activeTab === 'descarga'"
                 (click)="setActiveTab('descarga')"
                 type="button">
@@ -104,7 +104,7 @@
         <div class="card-body">
           <!-- Contenido de las pestañas -->
           <div class="tab-content">
-            
+
             <!-- ========== PESTAÑA: AUDIOS ========== -->
             <div *ngIf="activeTab === 'audios'" class="tab-pane fade show active">
               <div *ngIf="audioFiles.length === 0" class="text-center py-5">
@@ -114,7 +114,7 @@
               </div>
 
               <div *ngIf="audioFiles.length > 0" class="row">
-                <div class="col-lg-6 col-md-6 mb-4" *ngFor="let audio of audioFiles">
+                <div class="col-lg-6 col-md-6 mb-4" *ngFor="let audio of audioFiles; trackBy: trackByArchivoId">
                   <div class="card border-success">
                     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                       <h6 class="mb-0">
@@ -122,17 +122,21 @@
                       </h6>
                     </div>
                     <div class="card-body">
-                      
+
                       <!-- Reproductor de audio -->
                       <div class="mb-3">
                         <div *ngIf="isGoogleDriveUrl(audio.url)" class="google-drive-audio-player">
-                          <iframe 
-                            [src]="getGoogleDriveEmbedUrl(audio)" 
-                            width="100%" 
+                          <iframe
+                            [id]="getIframeId(audio)"
+                            [src]="getGoogleDriveEmbedUrl(audio)"
+                            width="100%"
                             height="166"
                             title="Reproductor de Audio Google Drive"
                             allowfullscreen
                             allow="autoplay"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                             style="border: none;">
                           </iframe>
                         </div>
@@ -154,12 +158,12 @@
 
                       <!-- Botones de acción -->
                       <div class="d-flex gap-1">
-                        <button 
+                        <button
                           class="btn btn-success btn-sm flex-fill"
                           (click)="downloadFile(audio)">
                           <i class="fas fa-download me-1"></i>Descargar
                         </button>
-                        <!-- <button 
+                        <!-- <button
                           class="btn btn-outline-success btn-sm"
                           (click)="openFile(audio)"
                           title="Abrir en nueva pestaña">
@@ -181,7 +185,7 @@
               </div>
 
               <div *ngIf="videoFiles.length > 0" class="row">
-                <div class="col-lg-6 col-md-6 mb-4" *ngFor="let video of videoFiles">
+                <div class="col-lg-6 col-md-6 mb-4" *ngFor="let video of videoFiles; trackBy: trackByArchivoId">
                   <div class="card border-primary">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                       <h6 class="mb-0">
@@ -189,15 +193,19 @@
                       </h6>
                     </div>
                     <div class="card-body">
-                      
+
                       <!-- Vista previa del video -->
                       <div class="mb-3">
                         <div *ngIf="isGoogleDriveUrl(video.url)" class="ratio ratio-16x9 google-drive-video-player">
-                          <iframe 
+                          <iframe
+                            [id]="getIframeId(video)"
                             [src]="getGoogleDriveEmbedUrl(video)"
                             title="Reproductor de Video Google Drive"
                             allowfullscreen
                             allow="autoplay"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                             style="border: none;">
                           </iframe>
                         </div>
@@ -219,12 +227,12 @@
 
                       <!-- Botones de acción -->
                       <div class="d-flex gap-1">
-                        <button 
+                        <button
                           class="btn btn-primary btn-sm flex-fill"
                           (click)="downloadFile(video)">
                           <i class="fas fa-download me-1"></i>Descargar
                         </button>
-                        <!-- <button 
+                        <!-- <button
                           class="btn btn-outline-primary btn-sm"
                           (click)="openFile(video)"
                           title="Abrir en nueva pestaña">
@@ -248,11 +256,11 @@
                       <p class="lead mb-4">
                         Descarga todos los archivos de audio y video de este mix
                       </p>
-                      
+
                       <div class="row mb-4">
                         <div class="col-md-6">
                           <div class="d-grid">
-                            <button 
+                            <button
                               class="btn btn-success btn-lg"
                               (click)="downloadAllAudios()"
                               [disabled]="audioFiles.length === 0">
@@ -263,7 +271,7 @@
                         </div>
                         <div class="col-md-6">
                           <div class="d-grid">
-                            <button 
+                            <button
                               class="btn btn-primary btn-lg"
                               (click)="downloadAllVideos()"
                               [disabled]="videoFiles.length === 0">
@@ -275,7 +283,7 @@
                       </div>
 
                       <div class="d-grid">
-                        <button 
+                        <button
                           class="btn btn-info btn-lg"
                           (click)="downloadAllFiles()"
                           [disabled]="totalFiles === 0">

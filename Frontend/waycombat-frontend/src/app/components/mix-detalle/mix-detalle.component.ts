@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MixService } from '../../services/mix.service';
 import { Mix, ArchivoMix } from '../../models/mix.models';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-mix-detalle',
@@ -12,11 +13,15 @@ import { Mix, ArchivoMix } from '../../models/mix.models';
   templateUrl: './mix-detalle.component.html',
   styleUrl: './mix-detalle.component.css'
 })
-export class MixDetalleComponent implements OnInit {
+export class MixDetalleComponent implements OnInit, OnDestroy {
   
   mix: Mix | null = null;
   isLoading = true;
   activeTab = 'audios';
+  
+  // Cache para URLs sanitizadas - ESTO PREVIENE RE-RENDERIZADO
+  private urlCache = new Map<string, SafeResourceUrl>();
+  private subscription: Subscription = new Subscription();
 
   // Función para convertir URLs de Google Drive de vista a descarga directa
   private convertGoogleDriveUrl(url: string): string {
@@ -43,10 +48,22 @@ export class MixDetalleComponent implements OnInit {
     return url;
   }
 
-  // Método para obtener URL embed de Google Drive
+  // Método para obtener URL embed de Google Drive CON CACHE
   getGoogleDriveEmbedUrl(archivo: ArchivoMix): SafeResourceUrl {
+    // Usar cache para evitar re-renderizado de iframes
+    const cacheKey = `embed_${archivo.id}_${archivo.url}`;
+    
+    if (this.urlCache.has(cacheKey)) {
+      return this.urlCache.get(cacheKey)!;
+    }
+    
     const embedUrl = this.convertGoogleDriveToEmbed(archivo.url);
-    return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+    const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+    
+    // Guardar en cache
+    this.urlCache.set(cacheKey, safeUrl);
+    
+    return safeUrl;
   }
 
   // Propiedades computadas para el template
@@ -190,14 +207,24 @@ export class MixDetalleComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private mixService: MixService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const mixId = parseInt(params['id']);
-      this.loadMix(mixId);
-    });
+    // Suscribirse a cambios de parámetros con cache
+    this.subscription.add(
+      this.route.params.subscribe(params => {
+        const mixId = parseInt(params['id']);
+        this.loadMix(mixId);
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    // Limpiar suscripciones y cache
+    this.subscription.unsubscribe();
+    this.urlCache.clear();
   }
 
   loadMix(id: number): void {
@@ -318,6 +345,16 @@ export class MixDetalleComponent implements OnInit {
 
   isGoogleDriveUrl(url: string): boolean {
     return url.includes('drive.google.com/file/d/');
+  }
+
+  // TrackBy function para prevenir re-renderizado de iframes
+  trackByArchivoId(index: number, archivo: ArchivoMix): number {
+    return archivo.id;
+  }
+
+  // Método para generar un ID único y estable para cada iframe
+  getIframeId(archivo: ArchivoMix): string {
+    return `iframe-${archivo.tipo?.toLowerCase()}-${archivo.id}`;
   }
 
   goBack(): void {
