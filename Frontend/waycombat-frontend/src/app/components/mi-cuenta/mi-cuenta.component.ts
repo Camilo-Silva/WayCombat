@@ -48,7 +48,11 @@ export class MiCuentaComponent implements OnInit {
   toastType: 'success' | 'error' = 'success';
 
   ngOnInit(): void {
-    this.isAuthenticated = this.authService.isLoggedIn();
+    this.checkAuthAndLoadProfile();
+  }
+
+  private async checkAuthAndLoadProfile(): Promise<void> {
+    this.isAuthenticated = await this.authService.isLoggedIn();
     if (this.isAuthenticated) {
       this.currentUser = this.authService.getCurrentUser();
       // Inicializar el nombre editable con el nombre actual
@@ -81,19 +85,23 @@ export class MiCuentaComponent implements OnInit {
     this.isChangingPassword = true;
 
     try {
-      // Mapear datos del formulario al formato esperado por el backend
+      // Mapear datos del formulario al formato esperado
       const request = {
         contraseñaActual: this.passwordData.currentPassword,
         nuevaContraseña: this.passwordData.newPassword
       };
 
-      await this.authService.changePassword(request).toPromise();
+      const result = await this.authService.changePassword(request);
       
-      this.showToastMessage('Contraseña cambiada exitosamente', 'success');
-      this.resetPasswordForm();
+      if (result.success) {
+        this.showToastMessage('Contraseña cambiada exitosamente', 'success');
+        this.resetPasswordForm();
+      } else {
+        this.showToastMessage(result.message || 'Error al cambiar la contraseña', 'error');
+      }
       
     } catch (error: any) {
-      const message = error?.error?.message || 'Error al cambiar la contraseña';
+      const message = error?.message || 'Error al cambiar la contraseña';
       this.showToastMessage(message, 'error');
       console.error('Error changing password:', error);
     } finally {
@@ -143,16 +151,23 @@ export class MiCuentaComponent implements OnInit {
         nombre: this.editedUserName.trim()
       };
 
-      await this.authService.updateProfile(updatedUser).toPromise();
+      const result = await this.authService.updateProfile(updatedUser);
       
-      // Actualizar el usuario local
-      this.currentUser = updatedUser;
-      this.editingProfile = false;
-      
-      this.showToastMessage('Perfil actualizado exitosamente', 'success');
+      if (result.success && result.data) {
+        // Actualizar el usuario local
+        this.currentUser = result.data;
+        this.editingProfile = false;
+        this.showToastMessage('Perfil actualizado exitosamente', 'success');
+      } else {
+        this.showToastMessage(result.message || 'Error al actualizar el perfil', 'error');
+        // Restaurar valor original en caso de error
+        if (this.currentUser) {
+          this.editedUserName = this.currentUser.nombre;
+        }
+      }
       
     } catch (error: any) {
-      const message = error?.error?.message || 'Error al actualizar el perfil';
+      const message = error?.message || 'Error al actualizar el perfil';
       this.showToastMessage(message, 'error');
       console.error('Error updating profile:', error);
       

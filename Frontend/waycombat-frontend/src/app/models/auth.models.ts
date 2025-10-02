@@ -1,5 +1,5 @@
 export interface Usuario {
-  id: number;
+  id: string; // UUID de Supabase
   nombre: string;
   email: string;
   rol: string;
@@ -18,9 +18,9 @@ export interface LoginRequest {
   contraseña: string;
 }
 
+// AuthResponse ya no es necesario con Supabase Auth
+// La sesión se maneja automáticamente por Supabase
 export interface AuthResponse {
-  token: string;
-  expiration: Date;
   usuario: Usuario;
 }
 

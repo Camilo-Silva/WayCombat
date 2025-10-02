@@ -1,156 +1,285 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, firstValueFrom, catchError, of } from 'rxjs';
-import { 
-  AuthResponse, 
-  LoginRequest, 
-  RegisterRequest, 
-  Usuario, 
+import { BehaviorSubject } from 'rxjs';
+import {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  Usuario,
   ChangePasswordRequest,
-  ForgotPasswordRequest 
+  ForgotPasswordRequest
 } from '../models/auth.models';
-import { environment } from '../../environments/environment';
+import { SupabaseService } from './supabase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = environment.apiUrl; // URL de la API desde environment
   private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private isBrowser: boolean;
 
   constructor(
-    private http: HttpClient,
+    private supabase: SupabaseService,
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
-    // Verificar si hay un usuario logueado al iniciar
-    this.loadStoredUser();
+
+    // Inicializar usuario desde Supabase Auth
+    if (this.isBrowser) {
+      this.initializeUser();
+    }
   }
 
-  private loadStoredUser(): void {
-    if (!this.isBrowser) {
-      return; // No ejecutar en el servidor
-    }
+  private async initializeUser(): Promise<void> {
+    try {
+      const { data: { user } } = await this.supabase.client.auth.getUser();
 
-    const token = localStorage.getItem('token');
-    const userStr = localStorage.getItem('currentUser');
-    
-    if (token && userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        this.currentUserSubject.next(user);
-      } catch (error) {
-        this.logout();
+      if (user) {
+        await this.loadUserProfile(user.id);
       }
+    } catch (error) {
+      console.error('Error initializing user:', error);
+    }
+  }
+
+  private async loadUserProfile(userId: string): Promise<void> {
+    try {
+      const { data, error } = await this.supabase.client
+        .from('usuarios')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error loading user profile:', error);
+        return;
+      }
+
+      if (data) {
+        const usuario: Usuario = {
+          id: data.id,
+          nombre: data.nombre,
+          email: data.email,
+          rol: data.rol,
+          fechaCreacion: new Date(data.fecha_creacion),
+          activo: data.activo
+        };
+        this.currentUserSubject.next(usuario);
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error);
     }
   }
 
   async register(request: RegisterRequest): Promise<{ success: boolean; message?: string; data?: AuthResponse }> {
     try {
-      // Convertir propiedades a formato esperado por el backend
-      const backendRequest = {
-        Nombre: request.nombre,
-        Email: request.email,
-        Contraseña: request.contraseña
+      // 1. Crear usuario en Supabase Auth
+      const { data: authData, error: authError } = await this.supabase.client.auth.signUp({
+        email: request.email,
+        password: request.contraseña,
+        options: {
+          data: {
+            nombre: request.nombre
+          }
+        }
+      });
+
+      if (authError) {
+        return { success: false, message: authError.message };
+      }
+
+      if (!authData.user) {
+        return { success: false, message: 'Error al crear usuario' };
+      }
+
+      // 2. Crear perfil en tabla usuarios
+      const { data: profileData, error: profileError } = await this.supabase.client
+        .from('usuarios')
+        .insert({
+          id: authData.user.id,
+          nombre: request.nombre,
+          email: request.email,
+          rol: 'Usuario',
+          activo: true,
+          fecha_creacion: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        return { success: false, message: 'Error al crear perfil de usuario' };
+      }
+
+      const usuario: Usuario = {
+        id: profileData.id,
+        nombre: profileData.nombre,
+        email: profileData.email,
+        rol: profileData.rol,
+        fechaCreacion: new Date(profileData.fecha_creacion),
+        activo: profileData.activo
       };
 
-      const response = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, backendRequest)
-          .pipe(
-            tap(response => this.handleAuthSuccess(response)),
-            catchError(error => {
-              console.error('Register error:', error);
-              throw error;
-            })
-          )
-      );
-      return { success: true, data: response };
+      this.currentUserSubject.next(usuario);
+      return { success: true, data: { usuario } };
     } catch (error: any) {
-      const message = error?.error?.message || error?.error || 'Error al registrar usuario';
-      return { success: false, message };
+      return { success: false, message: error?.message || 'Error al registrar usuario' };
     }
   }
 
   async login(request: LoginRequest): Promise<{ success: boolean; message?: string; data?: AuthResponse }> {
     try {
-      // Convertir propiedades a formato esperado por el backend
-      const backendRequest = {
-        Email: request.email,
-        Contraseña: request.contraseña
-      };
+      const { data, error } = await this.supabase.client.auth.signInWithPassword({
+        email: request.email,
+        password: request.contraseña
+      });
 
-      const response = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, backendRequest)
-          .pipe(
-            tap(response => this.handleAuthSuccess(response)),
-            catchError(error => {
-              console.error('Login error:', error);
-              throw error;
-            })
-          )
-      );
-      return { success: true, data: response };
+      if (error) {
+        return { success: false, message: error.message };
+      }
+
+      if (!data.user) {
+        return { success: false, message: 'Credenciales inválidas' };
+      }
+
+      // Cargar perfil del usuario
+      await this.loadUserProfile(data.user.id);
+      const usuario = this.currentUserSubject.value;
+
+      if (!usuario) {
+        return { success: false, message: 'Error al cargar perfil de usuario' };
+      }
+
+      // Verificar si el usuario está activo
+      if (!usuario.activo) {
+        await this.logout();
+        return { success: false, message: 'Usuario desactivado. Contacte al administrador.' };
+      }
+
+      return { success: true, data: { usuario } };
     } catch (error: any) {
-      const message = error?.error?.message || error?.error || 'Credenciales inválidas';
-      return { success: false, message };
+      return { success: false, message: error?.message || 'Error al iniciar sesión' };
     }
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
     if (!this.isBrowser) {
-      return; // No ejecutar en el servidor
+      return;
     }
 
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('tokenExpiration');
-    this.currentUserSubject.next(null);
+    try {
+      await this.supabase.client.auth.signOut();
+      this.currentUserSubject.next(null);
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   }
 
   async forgotPassword(request: ForgotPasswordRequest): Promise<{ success: boolean; message?: string }> {
     try {
-      await firstValueFrom(
-        this.http.post(`${this.apiUrl}/auth/forgot-password`, request)
-      );
+      const { error } = await this.supabase.client.auth.resetPasswordForEmail(request.email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+
+      if (error) {
+        return { success: false, message: error.message };
+      }
+
       return { success: true, message: 'Email enviado correctamente' };
     } catch (error: any) {
-      const message = error?.error?.message || 'Error al enviar email de recuperación';
+      const message = error?.message || 'Error al enviar email de recuperación';
       return { success: false, message };
     }
   }
 
-  changePassword(request: ChangePasswordRequest): Observable<any> {
-    return this.http.put(`${this.apiUrl}/usuario/cambiar-contraseña`, request, {
-      headers: this.getAuthHeaders()
-    });
+  async changePassword(request: ChangePasswordRequest): Promise<{ success: boolean; message?: string }> {
+    try {
+      // Primero verificar la contraseña actual intentando re-autenticar
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return { success: false, message: 'Usuario no autenticado' };
+      }
+
+      // Verificar contraseña actual
+      const { error: signInError } = await this.supabase.client.auth.signInWithPassword({
+        email: currentUser.email,
+        password: request.contraseñaActual
+      });
+
+      if (signInError) {
+        return { success: false, message: 'Contraseña actual incorrecta' };
+      }
+
+      // Cambiar a la nueva contraseña
+      const { error: updateError } = await this.supabase.client.auth.updateUser({
+        password: request.nuevaContraseña
+      });
+
+      if (updateError) {
+        return { success: false, message: updateError.message };
+      }
+
+      return { success: true, message: 'Contraseña actualizada correctamente' };
+    } catch (error: any) {
+      return { success: false, message: error?.message || 'Error al cambiar contraseña' };
+    }
   }
 
-  updateProfile(usuario: Usuario): Observable<any> {
-    return this.http.put(`${this.apiUrl}/usuario/actualizar-perfil`, usuario, {
-      headers: this.getAuthHeaders()
-    }).pipe(
-      tap(() => {
-        // Actualizar el usuario en el localStorage y BehaviorSubject
-        if (this.isBrowser) {
-          localStorage.setItem('currentUser', JSON.stringify(usuario));
-          this.currentUserSubject.next(usuario);
+  async updateProfile(usuario: Usuario): Promise<{ success: boolean; message?: string; data?: Usuario }> {
+    try {
+      const { data, error } = await this.supabase.client
+        .from('usuarios')
+        .update({
+          nombre: usuario.nombre,
+          email: usuario.email
+        })
+        .eq('id', usuario.id)
+        .select()
+        .single();
+
+      if (error) {
+        return { success: false, message: error.message };
+      }
+
+      // Si el email cambió, actualizar también en Supabase Auth
+      if (data.email !== usuario.email) {
+        const { error: authError } = await this.supabase.client.auth.updateUser({
+          email: usuario.email
+        });
+
+        if (authError) {
+          return { success: false, message: 'Error al actualizar email en autenticación' };
         }
-      })
-    );
+      }
+
+      const updatedUsuario: Usuario = {
+        id: data.id,
+        nombre: data.nombre,
+        email: data.email,
+        rol: data.rol,
+        fechaCreacion: new Date(data.fecha_creacion),
+        activo: data.activo
+      };
+
+      this.currentUserSubject.next(updatedUsuario);
+      return { success: true, data: updatedUsuario };
+    } catch (error: any) {
+      return { success: false, message: error?.message || 'Error al actualizar perfil' };
+    }
   }
 
   getCurrentUser(): Usuario | null {
     return this.currentUserSubject.value;
   }
 
-  getToken(): string | null {
+  async getToken(): Promise<string | null> {
     if (!this.isBrowser) {
-      return null; // No hay token en el servidor
+      return null;
     }
-    return localStorage.getItem('token');
+
+    const { data: { session } } = await this.supabase.client.auth.getSession();
+    return session?.access_token || null;
   }
 
   getUserRole(): string | null {
@@ -158,48 +287,17 @@ export class AuthService {
     return user?.rol || null;
   }
 
-  isLoggedIn(): boolean {
+  async isLoggedIn(): Promise<boolean> {
     if (!this.isBrowser) {
-      return false; // No está logueado en el servidor
-    }
-
-    const token = this.getToken();
-    const expiration = localStorage.getItem('tokenExpiration');
-    
-    if (!token || !expiration) {
       return false;
     }
 
-    const expirationDate = new Date(expiration);
-    if (expirationDate <= new Date()) {
-      this.logout();
-      return false;
-    }
-
-    return true;
+    const { data: { session } } = await this.supabase.client.auth.getSession();
+    return !!session;
   }
 
   isAdmin(): boolean {
     const user = this.getCurrentUser();
     return user?.rol?.toLowerCase() === 'admin';
-  }
-
-  getAuthHeaders(): HttpHeaders {
-    const token = this.getToken();
-    return new HttpHeaders({
-      'Authorization': token ? `Bearer ${token}` : '',
-      'Content-Type': 'application/json'
-    });
-  }
-
-  private handleAuthSuccess(response: AuthResponse): void {
-    if (!this.isBrowser) {
-      return; // No guardar en localStorage en el servidor
-    }
-
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('currentUser', JSON.stringify(response.usuario));
-    localStorage.setItem('tokenExpiration', response.expiration.toString());
-    this.currentUserSubject.next(response.usuario);
   }
 }

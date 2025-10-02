@@ -23,8 +23,12 @@ export class MixsComponent implements OnInit {
   currentFile: ArchivoMix | null = null;
 
   ngOnInit(): void {
-    this.isAuthenticated = this.authService.isLoggedIn();
-    
+    this.checkAuthAndLoadMixs();
+  }
+
+  private async checkAuthAndLoadMixs(): Promise<void> {
+    this.isAuthenticated = await this.authService.isLoggedIn();
+
     if (this.isAuthenticated) {
       this.loadUserMixs();
     }
@@ -32,7 +36,7 @@ export class MixsComponent implements OnInit {
 
   private loadUserMixs(): void {
     this.isLoading = true;
-    
+
     // Cargar solo los mixs del usuario autenticado
     this.mixService.getMisMixes().subscribe({
       next: (mixs) => {
@@ -110,7 +114,7 @@ export class MixsComponent implements OnInit {
 
   isVideo(fileName: string): boolean {
     const videoExtensions = ['.mp4', '.webm', '.mov', '.avi'];
-    return videoExtensions.some(ext => fileName.toLowerCase().includes(ext)) || 
+    return videoExtensions.some(ext => fileName.toLowerCase().includes(ext)) ||
            fileName.toLowerCase().includes('youtube');
   }
 
@@ -120,7 +124,7 @@ export class MixsComponent implements OnInit {
     console.log('Tipo de mixId:', typeof mixId);
     console.log('mixId válido?', mixId && mixId > 0);
     console.log('Ruta a navegar:', `/mixs/${mixId}`);
-    
+
     if (mixId && mixId > 0) {
       console.log('Navegando a:', ['/mixs', mixId]);
       this.router.navigate(['/mixs', mixId]).then(

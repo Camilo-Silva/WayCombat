@@ -18,18 +18,21 @@ export class CapacitacionesComponent implements OnInit, OnDestroy {
   isAuthenticated: boolean = false;
 
   ngOnInit(): void {
-    // Verificar si el usuario está autenticado
-    this.isAuthenticated = this.authService.isLoggedIn();
-    
+    this.checkAuthenticationStatus();
+
     // Inicializar animaciones
     this.animationService.respectMotionPreference();
-    
+
     setTimeout(() => {
       if (this.animationService.isAnimationSupported()) {
         this.animationService.initScrollAnimations();
         this.animationService.initParallax();
       }
     }, 100);
+  }
+
+  private async checkAuthenticationStatus(): Promise<void> {
+    this.isAuthenticated = await this.authService.isLoggedIn();
   }
 
   ngOnDestroy(): void {

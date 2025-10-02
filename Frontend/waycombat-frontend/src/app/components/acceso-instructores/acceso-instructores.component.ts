@@ -32,7 +32,12 @@ export class AccesoInstructoresComponent implements OnInit {
     this.initializeForms();
     
     // Redirigir si ya está autenticado
-    if (this.authService.isLoggedIn()) {
+    this.checkAuthenticationStatus();
+  }
+
+  private async checkAuthenticationStatus(): Promise<void> {
+    const isLoggedIn = await this.authService.isLoggedIn();
+    if (isLoggedIn) {
       this.router.navigate(['/mixs']);
     }
   }
