@@ -34,32 +34,31 @@ export class MixsComponent implements OnInit {
     }
   }
 
-  private loadUserMixs(): void {
+  private async loadUserMixs(): Promise<void> {
     this.isLoading = true;
 
-    // Cargar solo los mixs del usuario autenticado
-    this.mixService.getMisMixes().subscribe({
-      next: (mixs) => {
-        console.log('=== DEBUG CARGA MIXS DEL USUARIO ===');
-        console.log('Mixs del usuario recibidos del backend:', mixs);
-        console.log('Cantidad de mixs del usuario:', mixs.length);
-        mixs.forEach((mix, index) => {
-          console.log(`Mix ${index}:`, {
-            id: mix.id,
-            titulo: mix.titulo,
-            tipoId: typeof mix.id
-          });
+    try {
+      // Cargar solo los mixs del usuario autenticado
+      const mixs = await this.mixService.getMisMixes();
+
+      console.log('=== DEBUG CARGA MIXS DEL USUARIO ===');
+      console.log('Mixs del usuario recibidos del backend:', mixs);
+      console.log('Cantidad de mixs del usuario:', mixs.length);
+      mixs.forEach((mix, index) => {
+        console.log(`Mix ${index}:`, {
+          id: mix.id,
+          titulo: mix.titulo,
+          tipoId: typeof mix.id
         });
-        this.userMixs = mixs;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error cargando mixs:', error);
-        // En caso de error, mostrar array vacío
-        this.userMixs = [];
-        this.isLoading = false;
-      }
-    });
+      });
+
+      this.userMixs = mixs;
+    } catch (error) {
+      console.error('Error cargando mixs:', error);
+      this.userMixs = [];
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   getFileCount(mix: Mix): number {

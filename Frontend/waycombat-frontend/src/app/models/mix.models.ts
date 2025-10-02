@@ -1,5 +1,5 @@
 export interface Mix {
-  id: number;
+  id: string; // UUID
   titulo: string;
   descripcion?: string;
   fechaCreacion: Date;
@@ -8,8 +8,8 @@ export interface Mix {
 }
 
 export interface ArchivoMix {
-  id: number;
-  mixId: number;
+  id: string; // UUID
+  mixId: string; // UUID
   tipo: string; // "Audio", "Video", "Imagen"
   nombre: string;
   url: string;
@@ -33,7 +33,7 @@ export interface UpdateMixRequest {
 }
 
 export interface UpdateArchivoMixRequest {
-  id: number;
+  id: string; // UUID
   tipo: string;
   nombre: string;
   url: string;
@@ -53,9 +53,9 @@ export interface CreateArchivoMixRequest {
 }
 
 export interface AccesoMix {
-  id: number;
-  usuarioId: number;
-  mixId: number;
+  id: string; // UUID
+  usuarioId: string; // UUID
+  mixId: string; // UUID
   nombreUsuario: string;
   emailUsuario: string;
   tituloMix: string;
@@ -65,7 +65,7 @@ export interface AccesoMix {
 }
 
 export interface CreateAccesoMixRequest {
-  usuarioId: number;
-  mixId: number;
+  usuarioId: string; // UUID
+  mixId: string; // UUID
   fechaExpiracion?: Date;
 }

@@ -1,22 +1,20 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { MixService } from './mix.service';
+import { SupabaseService } from './supabase.service';
 import { Usuario } from '../models/auth.models';
 import { Mix, ArchivoMix, CreateMixRequest } from '../models/mix.models';
-import { environment } from '../../environments/environment';
 
 interface UsuarioMixPermiso {
-  usuarioId: number;
-  mixId: number;
+  usuarioId: string; // UUID
+  mixId: string; // UUID
   activo: boolean;
 }
 
 interface AccesoMixDto {
-  id: number;
-  usuarioId: number;
-  mixId: number;
+  id: string; // UUID
+  usuarioId: string; // UUID
+  mixId: string; // UUID
   nombreUsuario: string;
   emailUsuario: string;
   tituloMix: string;
@@ -29,10 +27,8 @@ interface AccesoMixDto {
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = environment.apiUrl;
-
   constructor(
-    private http: HttpClient,
+    private supabase: SupabaseService,
     private authService: AuthService,
     private mixService: MixService
   ) { }
@@ -41,87 +37,126 @@ export class AdminService {
   
   async getMixs(): Promise<Mix[]> {
     try {
-      console.log('🔍 AdminService: Intentando obtener mixs desde:', `${this.apiUrl}/admin/mixs`);
-      console.log('🔍 AdminService: Headers:', this.authService.getAuthHeaders());
+      console.log('🔍 AdminService: Obteniendo todos los mixs');
       
-      const response = await firstValueFrom(
-        this.http.get<Mix[]>(`${this.apiUrl}/admin/mixs`, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
-      
-      console.log('✅ AdminService: Mixs obtenidos exitosamente:', response);
-      return response;
+      const { data, error } = await this.supabase.client
+        .from('mixes')
+        .select(`
+          *,
+          archivos:archivo_mixes(*)
+        `)
+        .order('fecha_creacion', { ascending: false });
+
+      if (error) {
+        console.error('❌ AdminService: Error getting mixs:', error);
+        return [];
+      }
+
+      console.log('✅ AdminService: Mixs obtenidos exitosamente:', data);
+      return this.mapMixes(data || []);
     } catch (error) {
       console.error('❌ AdminService: Error getting mixs:', error);
-      // Retornar array vacío en lugar de datos mock para ver errores reales
       return [];
     }
   }
 
-  async createMix(mixData: CreateMixRequest): Promise<Mix> {
+  async createMix(mixData: CreateMixRequest): Promise<Mix | null> {
     try {
-      const response = await firstValueFrom(
-        this.http.post<Mix>(`${this.apiUrl}/admin/mixs`, mixData, {
-          headers: this.authService.getAuthHeaders()
+      const { data, error } = await this.supabase.client
+        .from('mixes')
+        .insert({
+          titulo: mixData.titulo,
+          descripcion: mixData.descripcion,
+          activo: true,
+          fecha_creacion: new Date().toISOString()
         })
-      );
-      return response;
+        .select(`
+          *,
+          archivos:archivo_mixes(*)
+        `)
+        .single();
+
+      if (error) {
+        console.error('Error creating mix:', error);
+        throw error;
+      }
+
+      return this.mapMix(data);
     } catch (error) {
       console.error('Error creating mix:', error);
-      // Simular creación exitosa por ahora
-      return {
-        id: Date.now(),
-        titulo: mixData.titulo,
-        descripcion: mixData.descripcion,
-        fechaCreacion: new Date(),
-        activo: true,
-        archivos: []
-      };
+      return null;
     }
   }
 
-  async updateMix(mixId: number, mixData: CreateMixRequest): Promise<Mix> {
+  async updateMix(mixId: string, mixData: CreateMixRequest): Promise<Mix | null> {
     try {
-      const response = await firstValueFrom(
-        this.http.put<Mix>(`${this.apiUrl}/admin/mixs/${mixId}`, mixData, {
-          headers: this.authService.getAuthHeaders()
+      const { data, error } = await this.supabase.client
+        .from('mixes')
+        .update({
+          titulo: mixData.titulo,
+          descripcion: mixData.descripcion
         })
-      );
-      return response;
+        .eq('id', mixId)
+        .select(`
+          *,
+          archivos:archivo_mixes(*)
+        `)
+        .single();
+
+      if (error) {
+        console.error('Error updating mix:', error);
+        throw error;
+      }
+
+      return this.mapMix(data);
     } catch (error) {
       console.error('Error updating mix:', error);
-      // Simular actualización exitosa por ahora
-      return {
-        id: mixId,
-        titulo: mixData.titulo,
-        descripcion: mixData.descripcion,
-        fechaCreacion: new Date(),
-        activo: true,
-        archivos: []
-      };
+      return null;
     }
   }
 
-  async deleteMix(mixId: number): Promise<void> {
+  async deleteMix(mixId: string): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.delete(`${this.apiUrl}/admin/mixs/${mixId}`, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
+      // Hard delete (el RLS policy se encarga de la seguridad)
+      const { error } = await this.supabase.client
+        .from('mixes')
+        .delete()
+        .eq('id', mixId);
+
+      if (error) {
+        console.error('Error deleting mix:', error);
+        throw error;
+      }
     } catch (error) {
       console.error('Error deleting mix:', error);
+      throw error;
     }
   }
 
-  async toggleMixActivo(mixId: number): Promise<void> {
+  async toggleMixActivo(mixId: string): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.patch(`${this.apiUrl}/admin/mixs/${mixId}/toggle-activo`, {}, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
+      // Primero obtener el estado actual
+      const { data: currentMix, error: fetchError } = await this.supabase.client
+        .from('mixes')
+        .select('activo')
+        .eq('id', mixId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching mix:', fetchError);
+        throw fetchError;
+      }
+
+      // Cambiar el estado
+      const { error: updateError } = await this.supabase.client
+        .from('mixes')
+        .update({ activo: !currentMix.activo })
+        .eq('id', mixId);
+
+      if (updateError) {
+        console.error('Error toggling mix activo:', updateError);
+        throw updateError;
+      }
     } catch (error) {
       console.error('Error toggling mix activo:', error);
       throw error;
@@ -132,83 +167,210 @@ export class AdminService {
 
   async getUsuarios(): Promise<Usuario[]> {
     try {
-      const response = await firstValueFrom(
-        this.http.get<Usuario[]>(`${this.apiUrl}/admin/usuarios`, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
-      console.log('✅ AdminService: Usuarios obtenidos del backend:', response);
-      return response;
+      const { data, error } = await this.supabase.client
+        .from('usuarios')
+        .select('*')
+        .order('fecha_creacion', { ascending: false });
+
+      if (error) {
+        console.error('❌ AdminService: Error getting usuarios:', error);
+        return [];
+      }
+
+      console.log('✅ AdminService: Usuarios obtenidos del backend:', data);
+      return (data || []).map(item => ({
+        id: item.id,
+        nombre: item.nombre,
+        email: item.email,
+        rol: item.rol,
+        fechaCreacion: new Date(item.fecha_creacion),
+        activo: item.activo
+      }));
     } catch (error) {
       console.error('❌ AdminService: Error getting usuarios from backend:', error);
-      // Retornar array vacío en lugar de datos mock para ver errores reales
       return [];
     }
   }
 
-  async createUsuario(userData: any): Promise<Usuario> {
+  async createUsuario(userData: { nombre: string; email: string; password: string; rol?: string }): Promise<Usuario | null> {
     try {
-      const response = await firstValueFrom(
-        this.http.post<Usuario>(`${this.apiUrl}/admin/usuarios`, userData, {
-          headers: this.authService.getAuthHeaders()
+      // 1. Crear usuario en Supabase Auth
+      const { data: authData, error: authError } = await this.supabase.client.auth.admin.createUser({
+        email: userData.email,
+        password: userData.password,
+        email_confirm: true,
+        user_metadata: {
+          nombre: userData.nombre
+        }
+      });
+
+      if (authError) {
+        console.error('Error creating auth user:', authError);
+        throw authError;
+      }
+
+      if (!authData.user) {
+        throw new Error('No se pudo crear el usuario en auth');
+      }
+
+      // 2. Crear perfil en tabla usuarios
+      const { data: profileData, error: profileError } = await this.supabase.client
+        .from('usuarios')
+        .insert({
+          id: authData.user.id,
+          nombre: userData.nombre,
+          email: userData.email,
+          rol: userData.rol || 'Usuario',
+          activo: true,
+          fecha_creacion: new Date().toISOString()
         })
-      );
-      return response;
+        .select()
+        .single();
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        // Intentar eliminar el usuario de auth si falla la creación del perfil
+        await this.supabase.client.auth.admin.deleteUser(authData.user.id);
+        throw profileError;
+      }
+
+      return {
+        id: profileData.id,
+        nombre: profileData.nombre,
+        email: profileData.email,
+        rol: profileData.rol,
+        fechaCreacion: new Date(profileData.fecha_creacion),
+        activo: profileData.activo
+      };
     } catch (error) {
       console.error('Error creating usuario:', error);
       throw error;
     }
   }
 
-  async updateUsuario(userId: number, userData: any): Promise<Usuario> {
+  async updateUsuario(userId: string, userData: { nombre: string; email: string; rol?: string }): Promise<Usuario | null> {
     try {
-      const response = await firstValueFrom(
-        this.http.put<Usuario>(`${this.apiUrl}/admin/usuarios/${userId}`, userData, {
-          headers: this.authService.getAuthHeaders()
+      const { data, error } = await this.supabase.client
+        .from('usuarios')
+        .update({
+          nombre: userData.nombre,
+          email: userData.email,
+          rol: userData.rol
         })
-      );
-      return response;
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating usuario:', error);
+        throw error;
+      }
+
+      // Si el email cambió, actualizar también en Supabase Auth
+      if (data.email !== userData.email) {
+        const { error: authError } = await this.supabase.client.auth.admin.updateUserById(
+          userId,
+          { email: userData.email }
+        );
+
+        if (authError) {
+          console.error('Error updating auth email:', authError);
+          // No lanzar error, el perfil ya se actualizó
+        }
+      }
+
+      return {
+        id: data.id,
+        nombre: data.nombre,
+        email: data.email,
+        rol: data.rol,
+        fechaCreacion: new Date(data.fecha_creacion),
+        activo: data.activo
+      };
     } catch (error) {
       console.error('Error updating usuario:', error);
       throw error;
     }
   }
 
-  async deleteUsuario(userId: number): Promise<void> {
+  async deleteUsuario(userId: string): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.delete(`${this.apiUrl}/admin/usuarios/${userId}`, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
+      // 1. Eliminar de la tabla usuarios (esto activará CASCADE en Supabase)
+      const { error: profileError } = await this.supabase.client
+        .from('usuarios')
+        .delete()
+        .eq('id', userId);
+
+      if (profileError) {
+        console.error('Error deleting profile:', profileError);
+        throw profileError;
+      }
+
+      // 2. Eliminar de Supabase Auth
+      const { error: authError } = await this.supabase.client.auth.admin.deleteUser(userId);
+
+      if (authError) {
+        console.error('Error deleting auth user:', authError);
+        // No lanzar error si falla eliminar de auth, el perfil ya se eliminó
+      }
     } catch (error) {
       console.error('Error deleting usuario:', error);
-      // Re-lanzar el error para que el componente lo maneje
       throw error;
     }
   }
 
-  async toggleUsuarioActivo(userId: number): Promise<Usuario> {
+  async toggleUsuarioActivo(userId: string): Promise<Usuario | null> {
     try {
-      const response = await firstValueFrom(
-        this.http.patch<Usuario>(`${this.apiUrl}/admin/usuarios/${userId}/toggle-activo`, {}, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
-      return response;
+      // Primero obtener el estado actual
+      const { data: currentUser, error: fetchError } = await this.supabase.client
+        .from('usuarios')
+        .select('activo')
+        .eq('id', userId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching usuario:', fetchError);
+        throw fetchError;
+      }
+
+      // Cambiar el estado
+      const { data, error } = await this.supabase.client
+        .from('usuarios')
+        .update({ activo: !currentUser.activo })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error toggling usuario activo:', error);
+        throw error;
+      }
+
+      return {
+        id: data.id,
+        nombre: data.nombre,
+        email: data.email,
+        rol: data.rol,
+        fechaCreacion: new Date(data.fecha_creacion),
+        activo: data.activo
+      };
     } catch (error) {
       console.error('Error toggling usuario activo:', error);
       throw error;
     }
   }
 
-  async resetUserPassword(userId: number): Promise<void> {
+  async resetUserPassword(userId: string, newPassword: string = 'WayCombat2025!'): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.patch(`${this.apiUrl}/admin/usuarios/${userId}/reset-password`, {}, {
-          headers: this.authService.getAuthHeaders()
-        })
+      const { error } = await this.supabase.client.auth.admin.updateUserById(
+        userId,
+        { password: newPassword }
       );
+
+      if (error) {
+        console.error('Error resetting user password:', error);
+        throw error;
+      }
     } catch (error) {
       console.error('Error resetting user password:', error);
       throw error;
@@ -219,43 +381,70 @@ export class AdminService {
 
   async getAccesosMixes(): Promise<AccesoMixDto[]> {
     try {
-      const response = await firstValueFrom(
-        this.http.get<AccesoMixDto[]>(`${this.apiUrl}/admin/accesos`, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
-      return response;
+      const { data, error } = await this.supabase.client
+        .from('acceso_mixes')
+        .select(`
+          *,
+          usuario:usuarios(nombre, email),
+          mix:mixes(titulo)
+        `)
+        .order('fecha_acceso', { ascending: false });
+
+      if (error) {
+        console.error('Error getting accesos:', error);
+        return [];
+      }
+
+      return (data || []).map(item => ({
+        id: item.id,
+        usuarioId: item.usuario_id,
+        mixId: item.mix_id,
+        nombreUsuario: item.usuario?.nombre || '',
+        emailUsuario: item.usuario?.email || '',
+        tituloMix: item.mix?.titulo || '',
+        fechaAcceso: new Date(item.fecha_acceso),
+        fechaExpiracion: item.fecha_expiracion ? new Date(item.fecha_expiracion) : undefined,
+        activo: item.activo
+      }));
     } catch (error) {
       console.error('Error getting accesos:', error);
-      // Retornar array vacío en lugar de datos mock
       return [];
     }
   }
 
-  async assignMixToUser(usuarioId: number, mixId: number): Promise<void> {
+  async assignMixToUser(usuarioId: string, mixId: string): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.post(`${this.apiUrl}/admin/accesos`, {
-          usuarioId,
-          mixId,
+      const { error } = await this.supabase.client
+        .from('acceso_mixes')
+        .insert({
+          usuario_id: usuarioId,
+          mix_id: mixId,
+          fecha_acceso: new Date().toISOString(),
           activo: true
-        }, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
+        });
+
+      if (error) {
+        console.error('Error assigning mix to user:', error);
+        throw error;
+      }
     } catch (error) {
       console.error('Error assigning mix to user:', error);
       throw error;
     }
   }
 
-  async removeMixFromUser(usuarioId: number, mixId: number): Promise<void> {
+  async removeMixFromUser(usuarioId: string, mixId: string): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.delete(`${this.apiUrl}/admin/accesos/${usuarioId}/${mixId}`, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
+      const { error } = await this.supabase.client
+        .from('acceso_mixes')
+        .delete()
+        .eq('usuario_id', usuarioId)
+        .eq('mix_id', mixId);
+
+      if (error) {
+        console.error('Error removing mix from user:', error);
+        throw error;
+      }
     } catch (error) {
       console.error('Error removing mix from user:', error);
       throw error;
@@ -263,35 +452,77 @@ export class AdminService {
   }
 
   async getPermisos(): Promise<any[]> {
-    try {
-      const response = await firstValueFrom(
-        this.http.get<any[]>(`${this.apiUrl}/admin/accesos`, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
-      return response;
-    } catch (error) {
-      console.error('Error getting permisos:', error);
-      return [];
-    }
+    return this.getAccesosMixes();
   }
 
-  async toggleUsuarioMixPermiso(usuarioId: number, mixId: number): Promise<void> {
+  async toggleUsuarioMixPermiso(usuarioId: string, mixId: string): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.post(`${this.apiUrl}/admin/accesos/toggle`, {
-          usuarioId,
-          mixId
-        }, {
-          headers: this.authService.getAuthHeaders()
-        })
-      );
+      // Verificar si existe el acceso
+      const { data: existingAccess, error: fetchError } = await this.supabase.client
+        .from('acceso_mixes')
+        .select('id, activo')
+        .eq('usuario_id', usuarioId)
+        .eq('mix_id', mixId)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error('Error fetching acceso:', fetchError);
+        throw fetchError;
+      }
+
+      if (existingAccess) {
+        // Si existe, toggle el estado activo
+        const { error: updateError } = await this.supabase.client
+          .from('acceso_mixes')
+          .update({ activo: !existingAccess.activo })
+          .eq('id', existingAccess.id);
+
+        if (updateError) {
+          console.error('Error toggling permiso:', updateError);
+          throw updateError;
+        }
+      } else {
+        // Si no existe, crear nuevo acceso
+        await this.assignMixToUser(usuarioId, mixId);
+      }
     } catch (error) {
       console.error('Error toggling permiso:', error);
       throw error;
     }
   }
 
-  // ====== DATOS MOCK - ELIMINADOS ======
-  // Mock data removed to force real backend connection
+  // ====== MAPPERS PRIVADOS ======
+
+  private mapMixes(data: any[]): Mix[] {
+    return data.map(item => this.mapMix(item));
+  }
+
+  private mapMix(item: any): Mix {
+    return {
+      id: item.id,
+      titulo: item.titulo,
+      descripcion: item.descripcion,
+      fechaCreacion: new Date(item.fecha_creacion),
+      activo: item.activo,
+      archivos: (item.archivos || [])
+        .filter((a: any) => a.activo)
+        .map((a: any) => this.mapArchivo(a))
+        .sort((a: ArchivoMix, b: ArchivoMix) => a.orden - b.orden)
+    };
+  }
+
+  private mapArchivo(item: any): ArchivoMix {
+    return {
+      id: item.id,
+      mixId: item.mix_id,
+      tipo: item.tipo,
+      nombre: item.nombre,
+      url: item.url,
+      mimeType: item.mime_type,
+      tamañoBytes: item.tamaño_bytes,
+      orden: item.orden,
+      activo: item.activo,
+      fechaCreacion: new Date(item.fecha_creacion)
+    };
+  }
 }
