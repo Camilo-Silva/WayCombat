@@ -114,7 +114,7 @@
               </div>
 
               <div *ngIf="audioFiles.length > 0" class="row">
-                <div class="col-lg-6 col-md-6 mb-4" *ngFor="let audio of audioFiles; trackBy: trackByArchivoId">
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4" *ngFor="let audio of audioFiles; trackBy: trackByArchivoId">
                   <div class="card border-success">
                     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                       <h6 class="mb-0">
@@ -185,7 +185,7 @@
               </div>
 
               <div *ngIf="videoFiles.length > 0" class="row">
-                <div class="col-lg-6 col-md-6 mb-4" *ngFor="let video of videoFiles; trackBy: trackByArchivoId">
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4" *ngFor="let video of videoFiles; trackBy: trackByArchivoId">
                   <div class="card border-primary">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                       <h6 class="mb-0">
