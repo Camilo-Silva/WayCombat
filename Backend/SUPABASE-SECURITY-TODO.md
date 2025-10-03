@@ -34,9 +34,22 @@ USING (true);
 
 ### 🚨 Riesgos de Seguridad (SOLO tabla usuarios):
 
-1. **Exposición de datos**: Usuarios normales pueden ver emails, nombres y roles de TODOS los usuarios
-2. **Performance**: Subconsultas repetidas en cada operación de mixs
-3. **Fragilidad**: Si cambias policies de usuarios, podrías romper las de mixs
+1. **Exposición de datos a nivel de base de datos**: 
+   - ⚠️ Usuarios autenticados pueden ejecutar `SELECT * FROM usuarios` en consola
+   - ✅ **PERO**: La UI está protegida, usuarios normales NO ven admin dashboard
+   - ✅ **PERO**: Guards y routing impiden acceso a features de admin
+   - 📊 **Riesgo real**: BAJO - Solo explotable desde consola de desarrollador
+
+2. **Performance**: 
+   - ⚠️ Subconsultas repetidas en cada operación de mixs
+   - 📊 **Impacto**: Mínimo para <1000 usuarios
+
+3. **Fragilidad**: 
+   - ⚠️ Si cambias policies de usuarios, podrías romper las de mixs
+   - 📊 **Mitigación**: Documentación clara y testing
+
+**Conclusión para desarrollo:** ✅ Seguridad aceptable  
+**Acción requerida para producción:** ⚠️ Implementar tabla de roles
 
 ---
 

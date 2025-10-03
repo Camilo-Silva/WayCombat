@@ -519,7 +519,7 @@ export class AdminService {
       nombre: item.nombre,
       url: item.url,
       mimeType: item.mime_type,
-      tamañoBytes: item.tamaño_bytes,
+      tamañoBytes: item.tamano_bytes || 0, // Default 0 si no existe
       orden: item.orden,
       activo: item.activo,
       fechaCreacion: new Date(item.fecha_creacion)

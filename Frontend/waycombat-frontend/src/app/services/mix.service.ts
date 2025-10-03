@@ -181,7 +181,7 @@ export class MixService {
               nombre: archivo.nombre,
               url: archivo.url,
               mime_type: archivo.mimeType,
-              tamaño_bytes: archivo.tamañoBytes,
+              // tamano_bytes omitido - columna no existe en schema actual
               orden: archivo.orden,
               activo: archivo.activo
             })
@@ -231,7 +231,7 @@ export class MixService {
           nombre: archivo.nombre,
           url: archivo.url,
           mime_type: archivo.mimeType,
-          tamaño_bytes: archivo.tamañoBytes,
+          // tamano_bytes omitido - columna no existe en schema actual
           orden: archivo.orden || 0,
           activo: true,
           fecha_creacion: new Date().toISOString()
@@ -403,7 +403,7 @@ export class MixService {
       nombre: item.nombre,
       url: item.url,
       mimeType: item.mime_type,
-      tamañoBytes: item.tamaño_bytes,
+      tamañoBytes: item.tamano_bytes || 0, // Default 0 si no existe
       orden: item.orden,
       activo: item.activo,
       fechaCreacion: new Date(item.fecha_creacion)
