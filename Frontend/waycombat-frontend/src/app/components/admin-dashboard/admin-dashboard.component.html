@@ -153,10 +153,14 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr *ngFor="let archivo of archivosTemporales; let i = index">
+                        <tr *ngFor="let archivo of archivosTemporales; let i = index"
+                            [ngClass]="{'table-secondary opacity-75': !archivo.activo}">
                           <td>{{ i + 1 }}</td>
                           <td>
                             <small>{{ archivo.nombre }}</small>
+                            <span *ngIf="!archivo.activo" class="text-muted ms-1" title="Archivo inactivo">
+                              <i class="fas fa-eye-slash"></i>
+                            </span>
                           </td>
                           <td>
                             <span class="badge" [ngClass]="archivo.tipo.toLowerCase() === 'audio' ? 'bg-info' : 'bg-warning'">
@@ -171,6 +175,7 @@
                           </td>
                           <td>
                             <span class="badge" [ngClass]="archivo.activo ? 'bg-success' : 'bg-secondary'">
+                              <i class="fas" [ngClass]="archivo.activo ? 'fa-check-circle' : 'fa-ban'"></i>
                               {{ archivo.activo ? 'Activo' : 'Inactivo' }}
                             </span>
                           </td>

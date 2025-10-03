@@ -33,7 +33,7 @@ export interface UpdateMixRequest {
 }
 
 export interface UpdateArchivoMixRequest {
-  id: string; // UUID
+  id?: string | number; // ✅ Opcional: UUID para archivos existentes, undefined/null para nuevos
   tipo: string;
   nombre: string;
   url: string;

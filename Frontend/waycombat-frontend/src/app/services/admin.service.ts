@@ -34,11 +34,11 @@ export class AdminService {
   ) { }
 
   // ====== GESTIÓN DE MIXS ======
-  
+
   async getMixs(): Promise<Mix[]> {
     try {
       console.log('🔍 AdminService: Obteniendo todos los mixs');
-      
+
       const { data, error } = await this.supabase.client
         .from('mixes')
         .select(`
@@ -117,18 +117,45 @@ export class AdminService {
 
   async deleteMix(mixId: string): Promise<void> {
     try {
-      // Hard delete (el RLS policy se encarga de la seguridad)
+      console.log(`🗑️ AdminService: Eliminando mix ${mixId} y sus datos relacionados`);
+
+      // 1. Eliminar archivos asociados
+      const { error: archivosError } = await this.supabase.client
+        .from('archivo_mixes')
+        .delete()
+        .eq('mix_id', mixId);
+
+      if (archivosError) {
+        console.error('❌ Error deleting archivos:', archivosError);
+        throw archivosError;
+      }
+
+      // 2. Eliminar permisos de acceso
+      const { error: permisosError } = await this.supabase.client
+        .from('acceso_mixes')
+        .delete()
+        .eq('mix_id', mixId);
+
+      if (permisosError) {
+        console.error('❌ Error deleting permisos:', permisosError);
+        // No lanzar error, continuar
+        console.warn('⚠️ Continuando con eliminación del mix');
+      }
+
+      // 3. Eliminar el mix (hard delete con RLS)
       const { error } = await this.supabase.client
         .from('mixes')
         .delete()
         .eq('id', mixId);
 
       if (error) {
-        console.error('Error deleting mix:', error);
+        console.error('❌ Error deleting mix:', error);
         throw error;
       }
+
+      console.log('✅ Mix eliminado exitosamente');
     } catch (error) {
-      console.error('Error deleting mix:', error);
+      console.error('❌ Error deleting mix:', error);
       throw error;
     }
   }
@@ -504,8 +531,9 @@ export class AdminService {
       descripcion: item.descripcion,
       fechaCreacion: new Date(item.fecha_creacion),
       activo: item.activo,
+      // ✅ ADMIN: Mostrar TODOS los archivos (activos e inactivos) para gestión completa
       archivos: (item.archivos || [])
-        .filter((a: any) => a.activo)
+        // ❌ REMOVIDO: .filter((a: any) => a.activo) - Admin debe ver todos los archivos
         .map((a: any) => this.mapArchivo(a))
         .sort((a: ArchivoMix, b: ArchivoMix) => a.orden - b.orden)
     };

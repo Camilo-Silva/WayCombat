@@ -310,15 +310,20 @@ export class AdminDashboardComponent implements OnInit {
       const archivoData = this.archivoModalForm.value;
 
       if (this.editingArchivoIndex !== null) {
-        // Editar archivo existente - preservar ID si existe
+        // Editar archivo existente - preservar TODOS los campos existentes
         const archivoExistente = this.archivosTemporales[this.editingArchivoIndex];
         this.archivosTemporales[this.editingArchivoIndex] = {
-          ...archivoData,
-          id: archivoExistente.id // Preservar el ID del archivo existente
+          ...archivoExistente, // ✅ Primero copiar todos los campos existentes
+          ...archivoData,      // ✅ Luego sobrescribir solo los editados del formulario
+          id: archivoExistente.id // ✅ Asegurar que el ID se preserve
         };
       } else {
-        // Agregar nuevo archivo
-        this.archivosTemporales.push(archivoData);
+        // Agregar nuevo archivo - el mimeType se generará en saveMix()
+        this.archivosTemporales.push({
+          ...archivoData,
+          mimeType: archivoData.tipo === 'audio' ? 'audio/mpeg' : 'video/mp4', // ✅ Generar mimeType
+          tamañoBytes: null // ✅ Nuevos archivos no tienen tamaño conocido
+        });
       }
 
       this.closeArchivoModal();
@@ -400,13 +405,16 @@ export class AdminDashboardComponent implements OnInit {
       activo: mix.activo
     });
 
-    // Cargar archivos en la lista temporal con sus IDs para poder editarlos
+    // Cargar archivos en la lista temporal con TODOS los campos necesarios
     this.archivosTemporales = mix.archivos.map(archivo => ({
       id: archivo.id, // Importante: preservar el ID para edición
       nombre: archivo.nombre,
       url: archivo.url,
       tipo: archivo.tipo,
-      activo: archivo.activo
+      activo: archivo.activo,
+      mimeType: archivo.mimeType, // ✅ AGREGADO: necesario para saveMix()
+      tamañoBytes: archivo.tamañoBytes || null, // ✅ AGREGADO: necesario para saveMix()
+      orden: archivo.orden // ✅ AGREGADO: preservar el orden original
     }));
 
     this.archivosFormArray.clear();
@@ -445,7 +453,7 @@ export class AdminDashboardComponent implements OnInit {
           descripcion: formValue.descripcion,
           activo: true, // Por defecto activo al actualizar
           archivos: archivosFromForm.map((archivo: any, index: number) => ({
-            id: archivo.id || 0, // Usar el ID del archivo si existe (archivos existentes) o 0 para nuevos
+            id: archivo.id || undefined, // ✅ Usar undefined para nuevos archivos (sin ID válido)
             tipo: archivo.tipo,
             nombre: archivo.nombre,
             url: archivo.url,

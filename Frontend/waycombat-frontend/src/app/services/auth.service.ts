@@ -64,6 +64,7 @@ export class AuthService {
 
   private async loadUserProfile(userId: string): Promise<void> {
     try {
+      // 1. Obtener datos del usuario
       const { data, error } = await this.supabase.client
         .from('usuarios')
         .select('*')
@@ -76,14 +77,26 @@ export class AuthService {
       }
 
       if (data) {
+        // 2. Obtener rol activo desde user_roles
+        const { data: roleData } = await this.supabase.client
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId)
+          .eq('active', true)
+          .order('granted_at', { ascending: false })
+          .limit(1)
+          .single();
+
         const usuario: Usuario = {
           id: data.id,
           nombre: data.nombre,
           email: data.email,
-          rol: data.rol,
+          rol: roleData?.role || data.rol || 'usuario', // Prioridad: user_roles > usuarios.rol > default
           fechaCreacion: new Date(data.fecha_creacion),
           activo: data.activo
         };
+
+        console.log('✅ Usuario cargado con rol:', usuario.rol);
         this.currentUserSubject.next(usuario);
       }
     } catch (error) {
@@ -119,7 +132,7 @@ export class AuthService {
           id: authData.user.id,
           nombre: request.nombre,
           email: request.email,
-          rol: 'Usuario',
+          rol: 'usuario', // Minúscula para coincidir con constraint
           activo: true,
           fecha_creacion: new Date().toISOString()
         })

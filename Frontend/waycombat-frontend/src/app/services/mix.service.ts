@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { 
-  Mix, 
-  CreateMixRequest, 
-  UpdateMixRequest, 
-  ArchivoMix, 
+import {
+  Mix,
+  CreateMixRequest,
+  UpdateMixRequest,
+  ArchivoMix,
   CreateArchivoMixRequest,
   AccesoMix,
   CreateAccesoMixRequest
@@ -171,17 +171,69 @@ export class MixService {
         return { success: false, message: mixError.message };
       }
 
-      // 2. Si hay archivos para actualizar
+      // 2. GESTIÓN DE ARCHIVOS: UPDATE, INSERT, DELETE
+
+      // 2.1. Obtener todos los archivos actuales del mix en BD
+      const { data: archivosActuales, error: fetchError } = await this.supabase.client
+        .from('archivo_mixes')
+        .select('id')
+        .eq('mix_id', id);
+
+      if (fetchError) {
+        console.error('Error fetching current archivos:', fetchError);
+        return { success: false, message: fetchError.message };
+      }
+
+      const idsArchivosActuales = (archivosActuales || []).map(a => a.id);
+      const idsArchivosEnviados = (mix.archivos || [])
+        .filter(a => a.id && typeof a.id === 'string' && a.id.length > 10)
+        .map(a => a.id as string);
+
+      // 2.2. Identificar archivos a ELIMINAR (están en BD pero NO en archivosTemporales)
+      const idsArchivosAEliminar = idsArchivosActuales.filter(id => !idsArchivosEnviados.includes(id));
+
+      console.log(`[MixService] Archivos a eliminar: ${idsArchivosAEliminar.length}`, idsArchivosAEliminar);
+
+      // 2.3. DELETE: Eliminar archivos que fueron removidos
+      for (const archivoId of idsArchivosAEliminar) {
+        const { error: deleteError } = await this.supabase.client
+          .from('archivo_mixes')
+          .delete()
+          .eq('id', archivoId);
+
+        if (deleteError) {
+          console.error('Error deleting archivo:', deleteError);
+          return { success: false, message: deleteError.message };
+        }
+      }
+
+      // 2.4. Si hay archivos para actualizar/agregar
       if (mix.archivos && mix.archivos.length > 0) {
-        for (const archivo of mix.archivos) {
+        // ✅ Separar archivos existentes (tienen UUID válido) de nuevos (id = 0 o sin id)
+        // Archivos existentes: tienen id tipo string con formato UUID (más de 10 caracteres)
+        // Archivos nuevos: id es 0, null, undefined, o string corto
+        const archivosExistentes = mix.archivos.filter(a => {
+          return a.id && typeof a.id === 'string' && a.id.length > 10;
+        });
+        const archivosNuevos = mix.archivos.filter(a => {
+          return !a.id || (typeof a.id === 'number' && a.id === 0) || (typeof a.id === 'string' && a.id.length <= 10);
+        });
+
+        console.log(`[MixService] Archivos existentes a actualizar: ${archivosExistentes.length}`);
+        console.log(`[MixService] Archivos nuevos a insertar: ${archivosNuevos.length}`);
+
+        // ✅ UPDATE: Actualizar archivos existentes
+        for (const archivo of archivosExistentes) {
+          // ✅ Normalizar tipo: "audio" -> "Audio", "video" -> "Video"
+          const tipoNormalizado = archivo.tipo.charAt(0).toUpperCase() + archivo.tipo.slice(1).toLowerCase();
+
           const { error: archivoError } = await this.supabase.client
             .from('archivo_mixes')
             .update({
-              tipo: archivo.tipo,
+              tipo: tipoNormalizado, // ✅ "Audio" o "Video" con mayúscula inicial
               nombre: archivo.nombre,
               url: archivo.url,
               mime_type: archivo.mimeType,
-              // tamano_bytes omitido - columna no existe en schema actual
               orden: archivo.orden,
               activo: archivo.activo
             })
@@ -190,6 +242,29 @@ export class MixService {
           if (archivoError) {
             console.error('Error updating archivo:', archivoError);
             return { success: false, message: archivoError.message };
+          }
+        }
+
+        // ✅ INSERT: Insertar archivos nuevos
+        for (const archivo of archivosNuevos) {
+          // ✅ Normalizar tipo: "audio" -> "Audio", "video" -> "Video"
+          const tipoNormalizado = archivo.tipo.charAt(0).toUpperCase() + archivo.tipo.slice(1).toLowerCase();
+
+          const { error: insertError } = await this.supabase.client
+            .from('archivo_mixes')
+            .insert({
+              mix_id: id, // ✅ Asociar al mix actual
+              tipo: tipoNormalizado, // ✅ "Audio" o "Video" con mayúscula inicial
+              nombre: archivo.nombre,
+              url: archivo.url,
+              mime_type: archivo.mimeType,
+              orden: archivo.orden,
+              activo: archivo.activo ?? true
+            });
+
+          if (insertError) {
+            console.error('Error inserting new archivo:', insertError);
+            return { success: false, message: insertError.message };
           }
         }
       }
@@ -203,10 +278,35 @@ export class MixService {
 
   async deleteMix(id: string): Promise<{ success: boolean; message?: string }> {
     try {
-      // Soft delete: cambiar activo a false
+      console.log(`[MixService] Eliminando mix ${id} y sus archivos asociados`);
+
+      // 1. Primero eliminar todos los archivos asociados al mix
+      const { error: archivosError } = await this.supabase.client
+        .from('archivo_mixes')
+        .delete()
+        .eq('mix_id', id);
+
+      if (archivosError) {
+        console.error('Error deleting archivos:', archivosError);
+        return { success: false, message: archivosError.message };
+      }
+
+      // 2. Eliminar permisos de acceso al mix
+      const { error: permisosError } = await this.supabase.client
+        .from('acceso_mixes')
+        .delete()
+        .eq('mix_id', id);
+
+      if (permisosError) {
+        console.error('Error deleting permisos:', permisosError);
+        // No retornar error, continuar con la eliminación del mix
+        console.warn('Continuando con eliminación del mix a pesar del error en permisos');
+      }
+
+      // 3. Finalmente eliminar el mix
       const { error } = await this.supabase.client
         .from('mixes')
-        .update({ activo: false })
+        .delete()
         .eq('id', id);
 
       if (error) {
@@ -214,6 +314,7 @@ export class MixService {
         return { success: false, message: error.message };
       }
 
+      console.log(`✅ Mix ${id} eliminado exitosamente`);
       return { success: true };
     } catch (error: any) {
       console.error('Error in deleteMix:', error);
