@@ -117,14 +117,14 @@ export class MixsComponent implements OnInit {
            fileName.toLowerCase().includes('youtube');
   }
 
-  verMix(mixId: number): void {
+  verMix(mixId: string): void {
     console.log('=== DEBUG NAVEGACIÓN ===');
     console.log('verMix llamado con mixId:', mixId);
     console.log('Tipo de mixId:', typeof mixId);
-    console.log('mixId válido?', mixId && mixId > 0);
+    console.log('mixId válido?', mixId && mixId.length > 0);
     console.log('Ruta a navegar:', `/mixs/${mixId}`);
 
-    if (mixId && mixId > 0) {
+    if (mixId && mixId.length > 0) {
       console.log('Navegando a:', ['/mixs', mixId]);
       this.router.navigate(['/mixs', mixId]).then(
         (success) => console.log('Navegación exitosa:', success),

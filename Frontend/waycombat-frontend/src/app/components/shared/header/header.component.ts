@@ -102,7 +102,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   logout(event: Event): void {
     event.preventDefault();
     this.isUserMenuOpen = false;
-    this.authService.logout();
+    this.authService.logout(); // Ya es async en AuthService, pero no necesitamos await aquí
     this.router.navigate(['/']);
   }
 }

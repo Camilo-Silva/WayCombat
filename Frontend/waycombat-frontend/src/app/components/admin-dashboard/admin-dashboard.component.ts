@@ -11,8 +11,8 @@ import { Usuario } from '../../models/auth.models';
 import { Mix, ArchivoMix, CreateMixRequest, UpdateMixRequest, CreateArchivoMixRequest, UpdateArchivoMixRequest } from '../../models/mix.models';
 
 interface UsuarioMixPermiso {
-  usuarioId: number;
-  mixId: number;
+  usuarioId: string; // UUID
+  mixId: string; // UUID
   activo: boolean;
 }
 
@@ -35,7 +35,7 @@ export class AdminDashboardComponent implements OnInit {
   activeTab: 'mixs' | 'usuarios' | 'permisos' = 'mixs';
   isLoading = false;
   isCreatingMix = false;
-  editingMixId: number | null = null;
+  editingMixId: string | null = null; // UUID
   showDriveHelp = false;
 
   // Datos
@@ -497,18 +497,21 @@ export class AdminDashboardComponent implements OnInit {
 
         console.log('UpdateData a enviar:', updateData); // Debug
 
-        this.mixService.updateMix(this.editingMixId, updateData).subscribe({
-          next: () => {
+        try {
+          const result = await this.mixService.updateMix(this.editingMixId, updateData);
+          
+          if (result.success) {
             console.log('Mix actualizado exitosamente');
-            this.loadMixs();
+            await this.loadMixs();
             this.cancelEdit();
-            this.isLoading = false;
-          },
-          error: (error) => {
-            console.error('Error actualizando mix:', error);
-            this.isLoading = false;
+          } else {
+            console.error('Error actualizando mix:', result.message);
           }
-        });
+        } catch (error) {
+          console.error('Error actualizando mix:', error);
+        } finally {
+          this.isLoading = false;
+        }
       } else {
         // Crear nuevo mix
         const createMixData: CreateMixRequest = {
@@ -541,71 +544,54 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  private createMixArchivos(mixId: number, archivos: any[]): void {
-    let completedRequests = 0;
-    const totalRequests = archivos.length;
+  private async createMixArchivos(mixId: string, archivos: any[]): Promise<void> {
+    try {
+      for (const [index, archivo] of archivos.entries()) {
+        const archivoData: CreateArchivoMixRequest = {
+          tipo: archivo.tipo === 'audio' ? 'Audio' : 'Video',
+          nombre: archivo.nombre,
+          url: archivo.url,
+          mimeType: archivo.tipo === 'audio' ? 'audio/mpeg' : 'video/mp4',
+          orden: index + 1
+        };
 
-    archivos.forEach((archivo, index) => {
-      const archivoData: CreateArchivoMixRequest = {
-        tipo: archivo.tipo === 'audio' ? 'Audio' : 'Video',
-        nombre: archivo.nombre,
-        url: archivo.url,
-        mimeType: archivo.tipo === 'audio' ? 'audio/mpeg' : 'video/mp4',
-        orden: index + 1
-      };
+        await this.mixService.addArchivo(mixId, archivoData);
+      }
 
-      this.mixService.addArchivo(mixId, archivoData).subscribe({
-        next: () => {
-          completedRequests++;
-          if (completedRequests === totalRequests) {
-            console.log('Todos los archivos creados exitosamente');
-            this.loadMixs();
-            // Actualizar permisos para mostrar la auto-asignación
-            this.loadPermisos();
-            this.cancelEdit();
-            this.isLoading = false;
-          }
-        },
-        error: (error: any) => {
-          console.error('Error creando archivo:', error);
-          completedRequests++;
-          if (completedRequests === totalRequests) {
-            this.loadMixs();
-            // Actualizar permisos para mostrar la auto-asignación
-            this.loadPermisos();
-            this.cancelEdit();
-            this.isLoading = false;
-          }
-        }
-      });
-    });
+      console.log('Todos los archivos creados exitosamente');
+      await this.loadMixs();
+      await this.loadPermisos();
+      this.cancelEdit();
+    } catch (error) {
+      console.error('Error creando archivos:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  async deleteMix(mixId: number): Promise<void> {
+  async deleteMix(mixId: string): Promise<void> {
     if (!confirm('¿Estás seguro de que quieres eliminar este mix?')) {
       return;
     }
 
     this.isLoading = true;
     try {
-      this.mixService.deleteMix(mixId).subscribe({
-        next: () => {
-          console.log('Mix eliminado exitosamente');
-          this.loadMixs();
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error eliminando mix:', error);
-          this.isLoading = false;
-        }
-      });
+      const result = await this.mixService.deleteMix(mixId);
+      
+      if (result.success) {
+        console.log('Mix eliminado exitosamente');
+        await this.loadMixs();
+      } else {
+        console.error('Error eliminando mix:', result.message);
+      }
     } catch (error) {
       console.error('Error deleting mix:', error);
+    } finally {
       this.isLoading = false;
     }
   }
 
-  async toggleMixActivo(mixId: number): Promise<void> {
+  async toggleMixActivo(mixId: string): Promise<void> {
     try {
       await this.adminService.toggleMixActivo(mixId);
 
@@ -623,7 +609,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   // ====== GESTIÓN DE PERMISOS ======
-  async toggleUsuarioMixPermiso(usuarioId: number, mixId: number): Promise<void> {
+  async toggleUsuarioMixPermiso(usuarioId: string, mixId: string): Promise<void> {
     try {
       await this.adminService.toggleUsuarioMixPermiso(usuarioId, mixId);
       await this.loadPermisos();
@@ -634,7 +620,7 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  hasPermiso(usuarioId: number, mixId: number): boolean {
+  hasPermiso(usuarioId: string, mixId: string): boolean {
     return this.permisos.some(p =>
       p.usuarioId === usuarioId &&
       p.mixId === mixId &&
@@ -642,7 +628,7 @@ export class AdminDashboardComponent implements OnInit {
     );
   }
 
-  getPermisosActivosCount(usuarioId: number): number {
+  getPermisosActivosCount(usuarioId: string): number {
     return this.permisos.filter(p =>
       p.usuarioId === usuarioId && p.activo
     ).length;
@@ -650,7 +636,7 @@ export class AdminDashboardComponent implements OnInit {
 
   // ====== GESTIÓN DE USUARIOS ======
 
-  async toggleUsuarioActivo(usuarioId: number): Promise<void> {
+  async toggleUsuarioActivo(usuarioId: string): Promise<void> {
     try {
       const usuario = this.usuarios.find(u => u.id === usuarioId);
       if (!usuario) {
@@ -671,7 +657,7 @@ export class AdminDashboardComponent implements OnInit {
 
       // Actualizar el usuario en la lista local
       const index = this.usuarios.findIndex(u => u.id === usuarioId);
-      if (index !== -1) {
+      if (index !== -1 && usuarioActualizado) {
         this.usuarios[index] = usuarioActualizado;
       }
 
@@ -699,11 +685,11 @@ export class AdminDashboardComponent implements OnInit {
     );
 
     if (confirmation) {
-      this.resetUserPassword(usuario.id!);
+      this.resetUserPassword(usuario.id);
     }
   }
 
-  async resetUserPassword(userId: number): Promise<void> {
+  async resetUserPassword(userId: string): Promise<void> {
     try {
       await this.adminService.resetUserPassword(userId);
       alert('Contraseña reseteada exitosamente. La nueva contraseña es: 123456');
@@ -752,7 +738,7 @@ export class AdminDashboardComponent implements OnInit {
         // Fallback simple: usar confirm
         const confirmMessage = `¿Estás seguro de que quieres eliminar al usuario "${usuario.nombre}"?\n\nEsta acción no se puede deshacer.`;
         if (confirm(confirmMessage)) {
-          this.deleteUsuario(usuario.id!);
+          this.deleteUsuario(usuario.id);
         }
       }
     }
@@ -767,7 +753,7 @@ export class AdminDashboardComponent implements OnInit {
     this.hideDeleteModal();
 
     // Ejecutar la eliminación
-    this.deleteUsuario(this.userToDelete.id!);
+    this.deleteUsuario(this.userToDelete.id);
 
     // Limpiar las variables del modal
     this.userToDelete = null;
@@ -779,7 +765,7 @@ export class AdminDashboardComponent implements OnInit {
     if (modalElement) {
       try {
         const bootstrap = (window as any).bootstrap;
-        if (bootstrap && bootstrap.Modal) {
+        if (bootstrap?.Modal) {
           const modal = bootstrap.Modal.getInstance(modalElement);
           if (modal) {
             modal.hide();
@@ -817,7 +803,7 @@ export class AdminDashboardComponent implements OnInit {
     this.deleteConfirmationText = '';
   }
 
-  async deleteUsuario(usuarioId: number): Promise<void> {
+  async deleteUsuario(usuarioId: string): Promise<void> {
     try {
       const usuario = this.usuarios.find(u => u.id === usuarioId);
       if (!usuario) {

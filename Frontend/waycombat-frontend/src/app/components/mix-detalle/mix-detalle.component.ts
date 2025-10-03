@@ -91,7 +91,7 @@ export class MixDetalleComponent implements OnInit, OnDestroy {
     // Suscribirse a cambios de parámetros con cache
     this.subscription.add(
       this.route.params.subscribe(params => {
-        const mixId = parseInt(params['id']);
+        const mixId = params['id']; // UUID string
         this.loadMix(mixId);
       })
     );
@@ -103,22 +103,18 @@ export class MixDetalleComponent implements OnInit, OnDestroy {
     this.urlCache.clear();
   }
 
-  loadMix(id: number): void {
+  async loadMix(id: string): Promise<void> {
     this.isLoading = true;
     
-    // Cargar desde el backend
-    this.mixService.getMixById(id).subscribe({
-      next: (mix) => {
-        this.mix = mix;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error cargando mix:', error);
-        // En caso de error, mostrar que no se encontró el mix
-        this.mix = null;
-        this.isLoading = false;
-      }
-    });
+    try {
+      // Cargar desde el backend
+      this.mix = await this.mixService.getMixById(id);
+    } catch (error) {
+      console.error('Error cargando mix:', error);
+      this.mix = null;
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   setActiveTab(tab: string): void {
@@ -224,8 +220,8 @@ export class MixDetalleComponent implements OnInit, OnDestroy {
   }
 
   // TrackBy function para prevenir re-renderizado de iframes
-  trackByArchivoId(index: number, archivo: ArchivoMix): number {
-    return archivo.id;
+  trackByArchivoId(index: number, archivo: ArchivoMix): string {
+    return archivo.id; // UUID string
   }
 
   // Método para generar un ID único y estable para cada iframe
