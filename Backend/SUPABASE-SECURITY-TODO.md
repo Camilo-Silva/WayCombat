@@ -1,10 +1,22 @@
 # 🔒 Supabase Security - TODO para Producción
 
-## ⚠️ IMPORTANTE: Policies Temporales Activas
+## ✅ PROGRESO: Mixs y Permisos Protegidos
 
-Actualmente las RLS policies de la tabla `usuarios` son **PERMISIVAS** para evitar recursión infinita durante desarrollo.
+**Fecha última actualización:** 2 de octubre de 2025
 
-### Estado Actual (TEMPORAL - Solo Desarrollo):
+### ✅ **Lo que YA está implementado (Desarrollo):**
+
+1. ✅ **RLS en tabla `mixes`** - Usuarios solo ven mixs con permiso activo
+2. ✅ **RLS en tabla `acceso_mixes`** - Control granular de permisos
+3. ✅ **RLS en tabla `archivo_mixes`** - Archivos protegidos según permisos del mix
+4. ✅ **Admins pueden gestionar todo** - Crear/editar mixs y asignar permisos
+5. ✅ **Sin recursión infinita** - Policies funcionan correctamente
+
+### ⚠️ **Lo que SIGUE pendiente (Producción):**
+
+Las RLS policies de la tabla `usuarios` son **PERMISIVAS** para evitar recursión infinita.
+
+**Estado Actual (TEMPORAL - Solo Desarrollo):**
 
 ```sql
 -- ⚠️ PERMITE a TODOS los usuarios autenticados ver TODOS los usuarios
@@ -13,11 +25,18 @@ ON usuarios FOR SELECT TO authenticated
 USING (true);
 ```
 
-### 🚨 Riesgos de Seguridad:
+**Las policies de mixs usan subconsultas a usuarios:**
+
+```sql
+-- Esto funciona pero es sub-óptimo
+(SELECT rol FROM usuarios WHERE id = auth.uid()) = 'admin'
+```
+
+### 🚨 Riesgos de Seguridad (SOLO tabla usuarios):
 
 1. **Exposición de datos**: Usuarios normales pueden ver emails, nombres y roles de TODOS los usuarios
-2. **Sin control de acceso por roles**: No hay diferencia entre usuario común y admin
-3. **Violación de privacidad**: Información sensible accesible sin restricción
+2. **Performance**: Subconsultas repetidas en cada operación de mixs
+3. **Fragilidad**: Si cambias policies de usuarios, podrías romper las de mixs
 
 ---
 
@@ -179,12 +198,20 @@ USING (
 
 ## 📋 Checklist antes de Producción
 
-- [ ] Elegir e implementar una de las 3 opciones arriba
-- [ ] Eliminar policies temporales (`usuarios_select_all`, `usuarios_insert_all`)
-- [ ] Implementar policies restrictivas por rol
+### ✅ Completado:
+- [x] RLS habilitado en `mixes`, `acceso_mixes`, `archivo_mixes`
+- [x] Usuarios solo ven mixs con permiso activo
+- [x] Admins pueden gestionar todos los mixs
+- [x] Control de permisos funcionando correctamente
+- [x] Sin recursión infinita
+
+### ⚠️ Pendiente:
+- [ ] Elegir e implementar una de las 3 opciones abajo (para tabla `usuarios`)
+- [ ] Eliminar policies temporales (`usuarios_select_all`)
+- [ ] Implementar policies restrictivas por rol para `usuarios`
 - [ ] Probar que usuarios normales NO pueden ver datos de otros usuarios
 - [ ] Probar que admins SÍ pueden gestionar todos los usuarios
-- [ ] Verificar que la creación de usuarios funciona correctamente
+- [ ] Optimizar subconsultas en policies de mixs (usar tabla de roles o JWT)
 - [ ] Ejecutar tests de penetración básicos
 - [ ] Revisar logs de Supabase para detectar intentos de acceso no autorizado
 
