@@ -351,26 +351,21 @@ export class AdminService {
 
   async deleteUsuario(userId: string): Promise<void> {
     try {
-      // 1. Eliminar de la tabla usuarios (esto activará CASCADE en Supabase)
-      const { error: profileError } = await this.supabase.client
-        .from('usuarios')
-        .delete()
-        .eq('id', userId);
+      console.log(`🗑️ Iniciando eliminación completa del usuario: ${userId}`);
 
-      if (profileError) {
-        console.error('Error deleting profile:', profileError);
-        throw profileError;
+      // Llamar a la Edge Function que elimina TODO (incluido auth.users)
+      const { data, error } = await this.supabase.client.functions.invoke('delete-user-complete', {
+        body: { userId }
+      });
+
+      if (error) {
+        console.error('❌ Error llamando a Edge Function:', error);
+        throw error;
       }
 
-      // 2. Eliminar de Supabase Auth
-      const { error: authError } = await this.supabase.client.auth.admin.deleteUser(userId);
-
-      if (authError) {
-        console.error('Error deleting auth user:', authError);
-        // No lanzar error si falla eliminar de auth, el perfil ya se eliminó
-      }
+      console.log('✅ Usuario eliminado completamente:', data);
     } catch (error) {
-      console.error('Error deleting usuario:', error);
+      console.error('❌ Error eliminando usuario:', error);
       throw error;
     }
   }
