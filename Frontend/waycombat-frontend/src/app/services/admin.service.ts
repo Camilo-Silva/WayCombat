@@ -62,6 +62,14 @@ export class AdminService {
 
   async createMix(mixData: CreateMixRequest): Promise<Mix | null> {
     try {
+      // Obtener el usuario actual (admin)
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser) {
+        console.error('No hay usuario autenticado');
+        return null;
+      }
+
+      // Crear el mix
       const { data, error } = await this.supabase.client
         .from('mixes')
         .insert({
@@ -79,6 +87,27 @@ export class AdminService {
       if (error) {
         console.error('Error creating mix:', error);
         throw error;
+      }
+
+      // Auto-asignar el mix al admin que lo creó
+      console.log(`🔄 Intentando auto-asignar mix ${data.id} al usuario ${currentUser.id} (${currentUser.email})`);
+
+      const { data: accesoData, error: accesoError } = await this.supabase.client
+        .from('acceso_mixes')
+        .insert({
+          mix_id: data.id,
+          usuario_id: currentUser.id,
+          activo: true
+        })
+        .select();
+
+      if (accesoError) {
+        console.error('❌ Error auto-asignando mix al admin:', accesoError);
+        console.error('Detalles del error:', JSON.stringify(accesoError, null, 2));
+        // No lanzamos error aquí, el mix ya se creó correctamente
+      } else {
+        console.log(`✅ Mix ${data.id} auto-asignado exitosamente al admin ${currentUser.email}`);
+        console.log('Datos de acceso creados:', accesoData);
       }
 
       return this.mapMix(data);
@@ -247,7 +276,7 @@ export class AdminService {
           id: authData.user.id,
           nombre: userData.nombre,
           email: userData.email,
-          rol: userData.rol || 'Usuario',
+          rol: userData.rol || 'usuario',
           activo: true,
           fecha_creacion: new Date().toISOString()
         })
