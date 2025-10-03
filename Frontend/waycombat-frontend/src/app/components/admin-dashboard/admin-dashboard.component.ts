@@ -120,47 +120,8 @@ export class AdminDashboardComponent implements OnInit {
       console.log('✅ AdminDashboard: Mixs cargados:', this.mixs);
     } catch (error) {
       console.error('❌ AdminDashboard: Error loading mixs:', error);
-      this.loadMockMixs();
+      this.mixs = []; // Limpiar mixs en caso de error
     }
-  }
-
-  private loadMockMixs(): void {
-    // Datos mock para desarrollo
-    this.mixs = [
-      {
-        id: 1,
-        titulo: 'Mix Principiantes',
-        descripcion: 'Primer mix para estudiantes',
-        fechaCreacion: new Date(),
-        activo: true,
-        archivos: [
-          {
-            id: 1,
-            mixId: 1,
-            nombre: 'track1.mp3',
-            url: 'https://drive.google.com/file/d/example1',
-            tipo: 'Audio',
-            mimeType: 'audio/mpeg',
-            tamañoBytes: 5242880,
-            orden: 1,
-            fechaCreacion: new Date(),
-            activo: true
-          },
-          {
-            id: 2,
-            mixId: 1,
-            nombre: 'video1.mp4',
-            url: 'https://drive.google.com/file/d/example2',
-            tipo: 'Video',
-            mimeType: 'video/mp4',
-            tamañoBytes: 52428800,
-            orden: 2,
-            fechaCreacion: new Date(),
-            activo: true
-          }
-        ]
-      }
-    ];
   }
 
   async loadUsuarios(): Promise<void> {
@@ -499,7 +460,7 @@ export class AdminDashboardComponent implements OnInit {
 
         try {
           const result = await this.mixService.updateMix(this.editingMixId, updateData);
-          
+
           if (result.success) {
             console.log('Mix actualizado exitosamente');
             await this.loadMixs();
@@ -521,6 +482,14 @@ export class AdminDashboardComponent implements OnInit {
 
         try {
           const newMix = await this.adminService.createMix(createMixData);
+
+          if (!newMix) {
+            console.error('Error: No se pudo crear el mix');
+            alert('Error al crear el mix. Por favor intenta de nuevo.');
+            this.isLoading = false;
+            return;
+          }
+
           console.log('Mix creado exitosamente:', newMix);
 
           // Crear archivos del mix usando archivos temporales
@@ -577,7 +546,7 @@ export class AdminDashboardComponent implements OnInit {
     this.isLoading = true;
     try {
       const result = await this.mixService.deleteMix(mixId);
-      
+
       if (result.success) {
         console.log('Mix eliminado exitosamente');
         await this.loadMixs();

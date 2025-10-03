@@ -27,19 +27,38 @@ export class AuthService {
 
     // Inicializar usuario desde Supabase Auth
     if (this.isBrowser) {
-      this.initializeUser();
+      this.initializeUser().catch(err => {
+        console.error('Error en initializeUser:', err);
+        // Asegurarse de que el observable emita null para desbloquear la UI
+        this.currentUserSubject.next(null);
+      });
+    } else {
+      // En SSR, emitir null inmediatamente
+      this.currentUserSubject.next(null);
     }
   }
 
   private async initializeUser(): Promise<void> {
     try {
-      const { data: { user } } = await this.supabase.client.auth.getUser();
+      console.log('🔍 AuthService: Inicializando usuario...');
+      const { data: { user }, error } = await this.supabase.client.auth.getUser();
+
+      if (error) {
+        console.error('❌ Error obteniendo usuario de Supabase:', error);
+        this.currentUserSubject.next(null);
+        return;
+      }
 
       if (user) {
+        console.log('✅ Usuario encontrado en Supabase:', user.id);
         await this.loadUserProfile(user.id);
+      } else {
+        console.log('ℹ️ No hay usuario autenticado');
+        this.currentUserSubject.next(null);
       }
     } catch (error) {
-      console.error('Error initializing user:', error);
+      console.error('❌ Error initializing user:', error);
+      this.currentUserSubject.next(null);
     }
   }
 

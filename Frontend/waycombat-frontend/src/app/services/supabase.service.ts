@@ -16,11 +16,16 @@ export class SupabaseService {
   public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
 
   constructor() {
+    console.log('🚀 SupabaseService: Inicializando...');
+    console.log('📍 Supabase URL:', environment.supabase.url);
+
     // Inicializar cliente de Supabase
     this.supabase = createClient(
       environment.supabase.url,
       environment.supabase.anonKey
     );
+
+    console.log('✅ SupabaseService: Cliente inicializado');
 
     // Verificar sesión actual al iniciar
     this.checkSession();
