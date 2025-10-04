@@ -656,23 +656,23 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     const confirmation = confirm(
-      `¿Estás seguro de que quieres resetear la contraseña de ${usuario.nombre}?\n\n` +
-      `La nueva contraseña será: 123456\n\n` +
-      `El usuario deberá usar esta contraseña para iniciar sesión.`
+      `¿Enviar email de recuperación de contraseña a ${usuario.nombre}?\n\n` +
+      `Email: ${usuario.email}\n\n` +
+      `El usuario recibirá un link para crear una nueva contraseña.`
     );
 
     if (confirmation) {
-      this.resetUserPassword(usuario.id);
+      this.sendPasswordResetEmail(usuario.email, usuario.nombre);
     }
   }
 
-  async resetUserPassword(userId: string): Promise<void> {
+  async sendPasswordResetEmail(userEmail: string, userName: string): Promise<void> {
     try {
-      await this.adminService.resetUserPassword(userId);
-      alert('Contraseña reseteada exitosamente. La nueva contraseña es: 123456');
+      await this.adminService.sendPasswordResetEmail(userEmail);
+      alert(`✅ Email de recuperación enviado exitosamente a ${userName} (${userEmail}).\n\nEl usuario recibirá un link para crear su nueva contraseña.`);
     } catch (error) {
-      console.error('Error al resetear contraseña:', error);
-      alert('Error al resetear la contraseña. Por favor intenta de nuevo.');
+      console.error('Error al enviar email de reset:', error);
+      alert('❌ Error al enviar el email de recuperación. Por favor intenta de nuevo.');
     }
   }
 

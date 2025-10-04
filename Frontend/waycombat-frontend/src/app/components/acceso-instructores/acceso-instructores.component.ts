@@ -110,8 +110,6 @@ export class AccesoInstructoresComponent implements OnInit {
     this.showContactAdminForm = false;
   }
 
-  // Métodos comentados de forgot password
-  /*
   showForgotPassword(event: Event): void {
     event.preventDefault();
     this.showForgotPasswordForm = true;
@@ -124,7 +122,6 @@ export class AccesoInstructoresComponent implements OnInit {
     this.forgotPasswordForm.reset();
     this.forgotPasswordMessage = '';
   }
-  */
 
   async onLogin(): Promise<void> {
     if (this.loginForm.invalid) {
@@ -201,7 +198,6 @@ export class AccesoInstructoresComponent implements OnInit {
     }
   }
 
-  /*
   async onForgotPassword(): Promise<void> {
     if (this.forgotPasswordForm.invalid) {
       this.markFormGroupTouched(this.forgotPasswordForm);
@@ -210,23 +206,27 @@ export class AccesoInstructoresComponent implements OnInit {
 
     this.isLoading = true;
     this.forgotPasswordMessage = '';
+    this.errorMessage = '';
 
     try {
       const email = this.forgotPasswordForm.value.email;
       
-      // Simulación de envío de email (implementar según backend)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const result = await this.authService.forgotPassword({ email });
       
-      this.forgotPasswordMessage = `Se ha enviado un enlace de recuperación a ${email}. Revisa tu bandeja de entrada y spam.`;
-      this.forgotPasswordForm.reset();
+      if (result.success) {
+        this.forgotPasswordMessage = `✅ Se ha enviado un enlace de recuperación a ${email}.\n\nRevisa tu bandeja de entrada y carpeta de spam.`;
+        this.forgotPasswordForm.reset();
+      } else {
+        this.errorMessage = result.message || 'Error al enviar el email de recuperación.';
+      }
       
     } catch (error: any) {
-      this.forgotPasswordMessage = 'Error al enviar el email de recuperación. Por favor, intenta nuevamente.';
+      console.error('Error en forgot password:', error);
+      this.errorMessage = error?.message || 'Error al enviar el email de recuperación. Por favor, intenta nuevamente.';
     } finally {
       this.isLoading = false;
     }
   }
-  */
 
   private markFormGroupTouched(formGroup: FormGroup): void {
     Object.keys(formGroup.controls).forEach(key => {

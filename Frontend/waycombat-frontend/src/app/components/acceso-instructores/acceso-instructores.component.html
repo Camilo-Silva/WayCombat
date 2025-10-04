@@ -103,8 +103,7 @@
                       <!-- Recordarme -->
                     </label>
                   </div>
-                  <!-- <a href="#" class="text-primary text-decoration-none" (click)="showForgotPassword($event)"> -->
-                    <a href="#" class="text-primary text-decoration-none" (click)="showContactAdmin($event)">
+                  <a href="#" class="text-primary text-decoration-none" (click)="showForgotPassword($event)">
                     ¿Olvidaste tu contraseña?
                   </a>
                 </div>
@@ -248,7 +247,6 @@
           </div>
 
           <!-- Modal/Form de Recuperar Contraseña -->
-          <!-- 
           <div *ngIf="showForgotPasswordForm" class="tab-content fade-in">
             <div class="text-center mb-4">
               <h4 class="text-primary-blue">Recuperar Contraseña</h4>
@@ -295,9 +293,9 @@
               </div>
             </form>
           </div>
-          -->
 
-          <!-- Mensaje de contacto con administrador -->
+          <!-- Mensaje de contacto con administrador - YA NO SE USA, ahora hay reset por email -->
+          <!--
           <div *ngIf="showContactAdminForm" class="tab-content fade-in">
             <div class="text-center mb-4">
               <h4 class="text-primary-blue">¿Olvidaste tu contraseña?</h4>
@@ -327,6 +325,7 @@
               </div>
             </div>
           </div>
+          -->
         </div>
       </div>
     </div>

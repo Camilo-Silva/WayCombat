@@ -325,6 +325,26 @@ export class AuthService {
     }
   }
 
+  /**
+   * Actualiza la contraseña del usuario autenticado (para reset password por email)
+   * @param newPassword - Nueva contraseña
+   */
+  async updatePassword(newPassword: string): Promise<{ success: boolean; message?: string }> {
+    try {
+      const { error } = await this.supabase.client.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        return { success: false, message: error.message };
+      }
+
+      return { success: true, message: 'Contraseña actualizada correctamente' };
+    } catch (error: any) {
+      return { success: false, message: error?.message || 'Error al actualizar contraseña' };
+    }
+  }
+
   async updateProfile(usuario: Usuario): Promise<{ success: boolean; message?: string; data?: Usuario }> {
     try {
       const { data, error } = await this.supabase.client

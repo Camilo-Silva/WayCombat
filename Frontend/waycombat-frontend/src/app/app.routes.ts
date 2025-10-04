@@ -8,6 +8,7 @@ import { MixDetalleComponent } from './components/mix-detalle/mix-detalle.compon
 import { MiCuentaComponent } from './components/mi-cuenta/mi-cuenta.component';
 import { ContactoComponent } from './components/contacto/contacto.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 
@@ -16,26 +17,27 @@ export const routes: Routes = [
   { path: 'capacitaciones', component: CapacitacionesComponent },
   { path: 'galeria', component: GaleriaComponent },
   { path: 'acceso-instructores', component: AccesoInstructoresComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'contacto', component: ContactoComponent },
-  { 
-    path: 'mixs', 
-    component: MixsComponent 
+  {
+    path: 'mixs',
+    component: MixsComponent
     // canActivate: [authGuard] // Temporalmente comentado para pruebas
   },
-  { 
-    path: 'mixs/:id', 
-    component: MixDetalleComponent 
+  {
+    path: 'mixs/:id',
+    component: MixDetalleComponent
     // canActivate: [authGuard] // Temporalmente comentado para pruebas
   },
-  { 
-    path: 'mi-cuenta', 
-    component: MiCuentaComponent, 
-    canActivate: [authGuard] 
+  {
+    path: 'mi-cuenta',
+    component: MiCuentaComponent,
+    canActivate: [authGuard]
   },
-  { 
-    path: 'admin-dashboard', 
-    component: AdminDashboardComponent, 
-    canActivate: [authGuard, adminGuard] 
+  {
+    path: 'admin-dashboard',
+    component: AdminDashboardComponent,
+    canActivate: [authGuard, adminGuard]
   },
   { path: '**', redirectTo: '' } // Ruta comodín para páginas no encontradas
 ];

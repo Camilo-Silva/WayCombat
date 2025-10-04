@@ -411,19 +411,27 @@ export class AdminService {
     }
   }
 
-  async resetUserPassword(userId: string, newPassword: string = 'WayCombat2025!'): Promise<void> {
+  /**
+   * Envía un email de recuperación de contraseña al usuario
+   * @param userEmail - Email del usuario al que se le enviará el link de reset
+   */
+  async sendPasswordResetEmail(userEmail: string): Promise<void> {
     try {
-      const { error } = await this.supabase.client.auth.admin.updateUserById(
-        userId,
-        { password: newPassword }
+      const { error } = await this.supabase.client.auth.resetPasswordForEmail(
+        userEmail,
+        {
+          redirectTo: `${window.location.origin}/reset-password`
+        }
       );
 
       if (error) {
-        console.error('Error resetting user password:', error);
+        console.error('Error enviando email de reset:', error);
         throw error;
       }
+
+      console.log('✅ Email de reset enviado a:', userEmail);
     } catch (error) {
-      console.error('Error resetting user password:', error);
+      console.error('Error enviando email de reset:', error);
       throw error;
     }
   }
