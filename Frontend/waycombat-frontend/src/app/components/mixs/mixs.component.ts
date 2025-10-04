@@ -27,10 +27,17 @@ export class MixsComponent implements OnInit {
   }
 
   private async checkAuthAndLoadMixs(): Promise<void> {
-    this.isAuthenticated = await this.authService.isLoggedIn();
+    // Esperar a que el usuario esté completamente cargado
+    // Esto es importante cuando se refresca la página
+    const currentUser = await this.authService.waitForUser();
+    
+    this.isAuthenticated = currentUser !== null;
 
     if (this.isAuthenticated) {
       this.loadUserMixs();
+    } else {
+      // Redirigir a login si no está autenticado
+      this.router.navigate(['/acceso-instructores']);
     }
   }
 

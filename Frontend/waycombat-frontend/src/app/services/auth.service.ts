@@ -77,7 +77,8 @@ export class AuthService {
       }
 
       if (data) {
-        // 2. Obtener rol activo desde user_roles
+        // 2. Obtener rol activo desde user_roles (opcional, solo para admins)
+        // Usamos .maybeSingle() en lugar de .single() para evitar error 406 cuando no hay rol
         const { data: roleData } = await this.supabase.client
           .from('user_roles')
           .select('role')
@@ -85,7 +86,7 @@ export class AuthService {
           .eq('active', true)
           .order('granted_at', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle(); // ← Cambiado de .single() a .maybeSingle()
 
         const usuario: Usuario = {
           id: data.id,
@@ -126,6 +127,8 @@ export class AuthService {
       }
 
       // 2. Crear perfil en tabla usuarios
+      console.log('🔄 Intentando crear perfil para usuario:', authData.user.id);
+
       const { data: profileData, error: profileError } = await this.supabase.client
         .from('usuarios')
         .insert({
@@ -140,9 +143,21 @@ export class AuthService {
         .single();
 
       if (profileError) {
-        console.error('Error creating profile:', profileError);
-        return { success: false, message: 'Error al crear perfil de usuario' };
+        console.error('❌ Error creating profile:', profileError);
+        console.error('❌ Error details:', {
+          code: profileError.code,
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint
+        });
+
+        // Eliminar usuario de auth si falla el perfil
+        await this.supabase.client.auth.signOut();
+
+        return { success: false, message: `Error al crear perfil: ${profileError.message}` };
       }
+
+      console.log('✅ Perfil creado exitosamente:', profileData);
 
       const usuario: Usuario = {
         id: profileData.id,
@@ -206,6 +221,58 @@ export class AuthService {
     } catch (error) {
       console.error('Error during logout:', error);
     }
+  }
+
+  /**
+   * Espera a que el usuario esté completamente cargado desde Supabase.
+   * Útil para evitar race conditions al refrescar la página.
+   * @returns Promise<Usuario | null> - El usuario cargado o null si no está autenticado
+   */
+  async waitForUser(): Promise<Usuario | null> {
+    // Si ya hay un usuario cargado, retornarlo inmediatamente
+    const currentUser = this.getCurrentUser();
+    if (currentUser !== null) {
+      console.log('✅ Usuario ya cargado en memoria');
+      return currentUser;
+    }
+
+    // Si no hay usuario pero estamos en servidor, retornar null
+    if (!this.isBrowser) {
+      return null;
+    }
+
+    console.log('⏳ Esperando a que el usuario se cargue...');
+
+    // Esperar a que initializeUser() complete
+    return new Promise<Usuario | null>((resolve) => {
+      let resolved = false;
+
+      const subscription = this.currentUser$.subscribe((user) => {
+        // initializeUser() emite null o Usuario cuando termina
+        // Verificamos que ya se completó la inicialización
+        if (!resolved) {
+          // Si hay usuario, resolver inmediatamente
+          if (user !== null) {
+            console.log('✅ Usuario cargado:', user.email);
+            resolved = true;
+            subscription.unsubscribe();
+            resolve(user);
+          }
+        }
+      });
+
+      // Timeout de seguridad: si después de 3 segundos no hay respuesta
+      // Verificar una última vez y resolver
+      setTimeout(() => {
+        if (!resolved) {
+          const finalUser = this.getCurrentUser();
+          console.log('⏱️ Timeout alcanzado, usuario final:', finalUser?.email || 'No autenticado');
+          resolved = true;
+          subscription.unsubscribe();
+          resolve(finalUser);
+        }
+      }, 3000);
+    });
   }
 
   async forgotPassword(request: ForgotPasswordRequest): Promise<{ success: boolean; message?: string }> {
