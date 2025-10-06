@@ -106,7 +106,9 @@
                         formControlName="activo"
                         id="mixActivo">
                       <label class="form-check-label" for="mixActivo">
-                        Activo
+                        <span class="badge" [class.bg-success]="mixForm.get('activo')?.value" [class.bg-secondary]="!mixForm.get('activo')?.value">
+                          {{ mixForm.get('activo')?.value ? 'Activo' : 'Inactivo' }}
+                        </span>
                       </label>
                     </div>
                   </div>

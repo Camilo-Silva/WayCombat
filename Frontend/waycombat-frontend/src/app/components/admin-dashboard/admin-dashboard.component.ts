@@ -443,6 +443,12 @@ export class AdminDashboardComponent implements OnInit {
         // Actualizar mix existente
         const editingMix = this.mixs.find(m => m.id === this.editingMixId);
 
+        if (!editingMix) {
+          console.error('Mix a editar no encontrado');
+          this.isLoading = false;
+          return;
+        }
+
         // Usar archivos temporales en lugar del FormArray
         const archivosFromForm = this.archivosTemporales || [];
 
@@ -451,7 +457,7 @@ export class AdminDashboardComponent implements OnInit {
         const updateData: UpdateMixRequest = {
           titulo: formValue.titulo,
           descripcion: formValue.descripcion,
-          activo: true, // Por defecto activo al actualizar
+          activo: formValue.activo, // ✅ FIX: Usar el valor del formulario (permite edición)
           archivos: archivosFromForm.map((archivo: any, index: number) => ({
             id: archivo.id || undefined, // ✅ Usar undefined para nuevos archivos (sin ID válido)
             tipo: archivo.tipo,
