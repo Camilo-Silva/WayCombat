@@ -90,6 +90,7 @@ export class AuthService {
 
         const usuario: Usuario = {
           id: data.id,
+          codigo: data.codigo || 'N/A', // ✅ NUEVO: Código legible
           nombre: data.nombre,
           email: data.email,
           rol: roleData?.role || data.rol || 'usuario', // Prioridad: user_roles > usuarios.rol > default
@@ -161,6 +162,7 @@ export class AuthService {
 
       const usuario: Usuario = {
         id: profileData.id,
+        codigo: profileData.codigo || 'N/A', // ✅ NUEVO: Código legible
         nombre: profileData.nombre,
         email: profileData.email,
         rol: profileData.rol,
@@ -374,6 +376,7 @@ export class AuthService {
 
       const updatedUsuario: Usuario = {
         id: data.id,
+        codigo: data.codigo || 'N/A', // ✅ NUEVO: Código legible
         nombre: data.nombre,
         email: data.email,
         rol: data.rol,

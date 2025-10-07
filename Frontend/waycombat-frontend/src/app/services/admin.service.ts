@@ -236,6 +236,7 @@ export class AdminService {
       console.log('✅ AdminService: Usuarios obtenidos del backend:', data);
       return (data || []).map(item => ({
         id: item.id,
+        codigo: item.codigo || 'N/A', // ✅ NUEVO: Código legible
         nombre: item.nombre,
         email: item.email,
         rol: item.rol,
@@ -292,6 +293,7 @@ export class AdminService {
 
       return {
         id: profileData.id,
+        codigo: profileData.codigo || 'N/A', // ✅ NUEVO: Código legible
         nombre: profileData.nombre,
         email: profileData.email,
         rol: profileData.rol,
@@ -337,6 +339,7 @@ export class AdminService {
 
       return {
         id: data.id,
+        codigo: data.codigo || 'N/A', // ✅ NUEVO: Código legible
         nombre: data.nombre,
         email: data.email,
         rol: data.rol,
@@ -399,6 +402,7 @@ export class AdminService {
 
       return {
         id: data.id,
+        codigo: data.codigo || 'N/A', // ✅ NUEVO: Código legible
         nombre: data.nombre,
         email: data.email,
         rol: data.rol,
@@ -559,6 +563,7 @@ export class AdminService {
   private mapMix(item: any): Mix {
     return {
       id: item.id,
+      codigo: item.codigo || 'N/A', // ✅ NUEVO: Código legible
       titulo: item.titulo,
       descripcion: item.descripcion,
       fechaCreacion: new Date(item.fecha_creacion),

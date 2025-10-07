@@ -514,6 +514,7 @@ export class MixService {
   private mapMix(item: any): Mix {
     return {
       id: item.id,
+      codigo: item.codigo || 'N/A', // ✅ NUEVO: Código legible
       titulo: item.titulo,
       descripcion: item.descripcion,
       fechaCreacion: new Date(item.fecha_creacion),

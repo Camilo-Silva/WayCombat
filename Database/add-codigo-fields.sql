@@ -5,7 +5,7 @@
 
 -- 1. AGREGAR COLUMNA CODIGO A TABLA MIXES
 -- ============================================
-ALTER TABLE mixes 
+ALTER TABLE mixes
 ADD COLUMN IF NOT EXISTS codigo VARCHAR(20) UNIQUE;
 
 -- Generar códigos para registros existentes de mixes
@@ -22,7 +22,7 @@ WHERE mixes.id = numbered_mixes.id;
 
 -- 2. AGREGAR COLUMNA CODIGO A TABLA USUARIOS
 -- ============================================
-ALTER TABLE usuarios 
+ALTER TABLE usuarios
 ADD COLUMN IF NOT EXISTS codigo VARCHAR(20) UNIQUE;
 
 -- Generar códigos para usuarios existentes
@@ -51,11 +51,11 @@ BEGIN
     INTO next_num
     FROM mixes
     WHERE codigo LIKE 'MIX-%';
-    
+
     -- Asignar código con formato MIX-XXX (3 dígitos)
     NEW.codigo := 'MIX-' || LPAD(next_num::TEXT, 3, '0');
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -83,11 +83,11 @@ BEGIN
     INTO next_num
     FROM usuarios
     WHERE codigo LIKE 'USR-%';
-    
+
     -- Asignar código con formato USR-XXX (3 dígitos)
     NEW.codigo := 'USR-' || LPAD(next_num::TEXT, 3, '0');
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -105,12 +105,12 @@ EXECUTE FUNCTION generate_usuario_codigo();
 -- VERIFICACIÓN
 -- ============================================
 -- Verificar que los códigos se generaron correctamente
-SELECT id, codigo, titulo, fecha_creacion 
-FROM mixes 
+SELECT id, codigo, titulo, fecha_creacion
+FROM mixes
 ORDER BY codigo;
 
-SELECT id, codigo, nombre, email, fecha_creacion 
-FROM usuarios 
+SELECT id, codigo, nombre, email, fecha_creacion
+FROM usuarios
 ORDER BY codigo;
 
 -- ============================================
