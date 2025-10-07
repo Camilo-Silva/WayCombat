@@ -10,7 +10,7 @@
               Accede a tu cuenta para disfrutar de entrenamientos exclusivos y contenido premium
             </p>
           </div>
-          
+
           <div class="mb-4">
             <h5 class="mb-3"><i class="fas fa-star me-2"></i>Beneficios Exclusivos</h5>
             <ul class="list-unstyled">
@@ -33,15 +33,15 @@
         <div class="col-lg-6 p-5">
           <!-- Pestañas -->
           <nav class="nav nav-pills nav-justified mb-4" role="tablist">
-            <button 
-              class="nav-link" 
+            <button
+              class="nav-link"
               [class.active]="activeTab === 'login'"
               (click)="setActiveTab('login')"
               type="button">
               <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
             </button>
-            <button 
-              class="nav-link" 
+            <button
+              class="nav-link"
               [class.active]="activeTab === 'register'"
               (click)="setActiveTab('register')"
               type="button">
@@ -56,8 +56,8 @@
                 <label for="loginEmail" class="form-label">
                   <i class="fas fa-envelope me-2"></i>Email
                 </label>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   class="form-control form-control-lg"
                   [class.is-invalid]="loginForm.get('email')?.touched && loginForm.get('email')?.errors"
                   id="loginEmail"
@@ -75,7 +75,7 @@
                   <i class="fas fa-lock me-2"></i>Contraseña
                 </label>
                 <div class="input-group">
-                  <input 
+                  <input
                     [type]="showPassword ? 'text' : 'password'"
                     class="form-control form-control-lg"
                     [class.is-invalid]="loginForm.get('contraseña')?.touched && loginForm.get('contraseña')?.errors"
@@ -83,9 +83,9 @@
                     formControlName="contraseña"
                     placeholder="Tu contraseña"
                     autocomplete="current-password">
-                  <button 
-                    class="btn btn-outline-secondary" 
-                    type="button" 
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
                     (click)="togglePasswordVisibility()">
                     <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                   </button>
@@ -115,8 +115,8 @@
               </div>
 
               <div class="d-grid">
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   class="btn btn-way-primary btn-lg"
                   [disabled]="loginForm.invalid || isLoading">
                   <i *ngIf="isLoading" class="fas fa-spinner fa-spin me-2"></i>
@@ -134,8 +134,8 @@
                 <label for="registerName" class="form-label">
                   <i class="fas fa-user me-2"></i>Nombre Completo
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   class="form-control form-control-lg"
                   [class.is-invalid]="registerForm.get('nombre')?.touched && registerForm.get('nombre')?.errors"
                   id="registerName"
@@ -152,8 +152,8 @@
                 <label for="registerEmail" class="form-label">
                   <i class="fas fa-envelope me-2"></i>Email
                 </label>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   class="form-control form-control-lg"
                   [class.is-invalid]="registerForm.get('email')?.touched && registerForm.get('email')?.errors"
                   id="registerEmail"
@@ -171,7 +171,7 @@
                   <i class="fas fa-lock me-2"></i>Contraseña
                 </label>
                 <div class="input-group">
-                  <input 
+                  <input
                     [type]="showPassword ? 'text' : 'password'"
                     class="form-control form-control-lg"
                     [class.is-invalid]="registerForm.get('contraseña')?.touched && registerForm.get('contraseña')?.errors"
@@ -179,9 +179,9 @@
                     formControlName="contraseña"
                     placeholder="Mínimo 6 caracteres"
                     autocomplete="new-password">
-                  <button 
-                    class="btn btn-outline-secondary" 
-                    type="button" 
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
                     (click)="togglePasswordVisibility()">
                     <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                   </button>
@@ -196,14 +196,23 @@
                 <label for="confirmPassword" class="form-label">
                   <i class="fas fa-lock me-2"></i>Confirmar Contraseña
                 </label>
-                <input 
-                  type="password"
-                  class="form-control form-control-lg"
-                  [class.is-invalid]="registerForm.get('confirmarContraseña')?.touched && registerForm.get('confirmarContraseña')?.errors"
-                  id="confirmPassword"
-                  formControlName="confirmarContraseña"
-                  placeholder="Repite tu contraseña"
-                  autocomplete="new-password">
+                <div class="input-group">
+                  <input
+                    [type]="showConfirmPassword ? 'text' : 'password'"
+                    class="form-control form-control-lg"
+                    [class.is-invalid]="registerForm.get('confirmarContraseña')?.touched && registerForm.get('confirmarContraseña')?.errors"
+                    id="confirmPassword"
+                    formControlName="confirmarContraseña"
+                    placeholder="Repite tu contraseña"
+                    autocomplete="new-password">
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    (click)="toggleConfirmPasswordVisibility()"
+                    tabindex="-1">
+                    <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  </button>
+                </div>
                 <div *ngIf="registerForm.get('confirmarContraseña')?.touched && registerForm.get('confirmarContraseña')?.errors" class="invalid-feedback">
                   <div *ngIf="registerForm.get('confirmarContraseña')?.errors?.['required']">Confirma tu contraseña</div>
                   <div *ngIf="registerForm.get('confirmarContraseña')?.errors?.['passwordMismatch']">Las contraseñas no coinciden</div>
@@ -212,14 +221,14 @@
 
               <div class="mb-3">
                 <div class="form-check">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
                     id="acceptTerms"
                     formControlName="acceptTerms"
                     [class.is-invalid]="registerForm.get('acceptTerms')?.touched && registerForm.get('acceptTerms')?.errors">
                   <label class="form-check-label" for="acceptTerms">
-                    Acepto los <a href="#" class="text-primary">términos y condiciones</a> y la 
+                    Acepto los <a href="#" class="text-primary">términos y condiciones</a> y la
                     <a href="#" class="text-primary">política de privacidad</a>
                   </label>
                   <div *ngIf="registerForm.get('acceptTerms')?.touched && registerForm.get('acceptTerms')?.errors" class="invalid-feedback d-block">
@@ -234,8 +243,8 @@
               </div>
 
               <div class="d-grid">
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   class="btn btn-way-primary btn-lg"
                   [disabled]="registerForm.invalid || isLoading">
                   <i *ngIf="isLoading" class="fas fa-spinner fa-spin me-2"></i>
@@ -258,8 +267,8 @@
                 <label for="forgotEmail" class="form-label">
                   <i class="fas fa-envelope me-2"></i>Email
                 </label>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   class="form-control form-control-lg"
                   [class.is-invalid]="forgotPasswordForm.get('email')?.touched && forgotPasswordForm.get('email')?.errors"
                   id="forgotEmail"
@@ -276,14 +285,14 @@
               </div>
 
               <div class="d-flex gap-2">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   class="btn btn-secondary flex-fill"
                   (click)="hideForgotPassword()">
                   <i class="fas fa-arrow-left me-2"></i>Volver
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   class="btn btn-way-primary flex-fill"
                   [disabled]="forgotPasswordForm.invalid || isLoading">
                   <i *ngIf="isLoading" class="fas fa-spinner fa-spin me-2"></i>
@@ -307,16 +316,16 @@
                 <i class="fas fa-info-circle mb-3" style="font-size: 2rem;"></i>
                 <h5 class="mb-3">Contacta al Administrador</h5>
                 <p class="mb-4">Para restablecer tu contraseña, envía un mensaje al administrador por WhatsApp con tu información de contacto (tu nombre y email).</p>
-                
+
                 <div class="d-grid gap-2">
-                  <a 
-                    href="https://wa.me/5491127355020?text=Hola,%20necesito%20ayuda%20para%20recuperar%20mi%20contraseña%20de%20WayCombat" 
-                    target="_blank" 
+                  <a
+                    href="https://wa.me/5491127355020?text=Hola,%20necesito%20ayuda%20para%20recuperar%20mi%20contraseña%20de%20WayCombat"
+                    target="_blank"
                     class="btn btn-success btn-lg">
                     <i class="fab fa-whatsapp me-2"></i>Contactar por WhatsApp
                   </a>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     class="btn btn-secondary"
                     (click)="hideContactAdmin()">
                     <i class="fas fa-arrow-left me-2"></i>Volver al Login

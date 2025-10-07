@@ -57,3 +57,5 @@ Migrations/*.Designer.cs
 
 # Archivos de configuración local
 appsettings.Development.json.bak
+# Local Netlify folder
+.netlify

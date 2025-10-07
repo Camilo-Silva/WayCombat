@@ -18,6 +18,7 @@ export class AccesoInstructoresComponent implements OnInit {
 
   activeTab: 'login' | 'register' = 'login';
   showPassword = false;
+  showConfirmPassword = false;
   isLoading = false;
   errorMessage = '';
   showForgotPasswordForm = false;
@@ -30,7 +31,7 @@ export class AccesoInstructoresComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForms();
-    
+
     // Redirigir si ya está autenticado
     this.checkAuthenticationStatus();
   }
@@ -100,6 +101,10 @@ export class AccesoInstructoresComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
   showContactAdmin(event: Event): void {
     event.preventDefault();
     this.showContactAdminForm = true;
@@ -135,7 +140,7 @@ export class AccesoInstructoresComponent implements OnInit {
     try {
       const loginData = this.loginForm.value;
       const result = await this.authService.login(loginData);
-      
+
       if (result.success) {
         // Redirigir según el rol del usuario
         const userRole = this.authService.getUserRole();
@@ -171,17 +176,17 @@ export class AccesoInstructoresComponent implements OnInit {
       };
 
       const result = await this.authService.register(registerData);
-      
+
       if (result.success) {
         // Cambiar a pestaña de login y mostrar mensaje de éxito
         this.activeTab = 'login';
         this.resetForms();
         // Aquí podrías mostrar un toast o mensaje de éxito
         this.errorMessage = '';
-        
+
         // Pre-llenar el email en el formulario de login
         this.loginForm.patchValue({ email: registerData.email });
-        
+
         // Mostrar mensaje temporal de éxito
         const successMessage = 'Registro exitoso. Ya puedes iniciar sesión con tu cuenta.';
         setTimeout(() => {
@@ -210,16 +215,16 @@ export class AccesoInstructoresComponent implements OnInit {
 
     try {
       const email = this.forgotPasswordForm.value.email;
-      
+
       const result = await this.authService.forgotPassword({ email });
-      
+
       if (result.success) {
         this.forgotPasswordMessage = `✅ Se ha enviado un enlace de recuperación a ${email}.\n\nRevisa tu bandeja de entrada y carpeta de spam.`;
         this.forgotPasswordForm.reset();
       } else {
         this.errorMessage = result.message || 'Error al enviar el email de recuperación.';
       }
-      
+
     } catch (error: any) {
       console.error('Error en forgot password:', error);
       this.errorMessage = error?.message || 'Error al enviar el email de recuperación. Por favor, intenta nuevamente.';
@@ -232,7 +237,7 @@ export class AccesoInstructoresComponent implements OnInit {
     Object.keys(formGroup.controls).forEach(key => {
       const control = formGroup.get(key);
       control?.markAsTouched();
-      
+
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       }
