@@ -88,9 +88,10 @@
                 <!-- Información básica del mix -->
                 <div class="row mb-3">
                   <div class="col-md-8">
-                    <label class="form-label fw-bold">Título del Mix *</label>
+                    <label for="mixTitulo" class="form-label fw-bold">Título del Mix *</label>
                     <input
                       type="text"
+                      id="mixTitulo"
                       class="form-control"
                       [class.is-invalid]="isFieldInvalid('titulo')"
                       formControlName="titulo"
@@ -116,8 +117,9 @@
 
                 <div class="row mb-4">
                   <div class="col-12">
-                    <label class="form-label fw-bold">Descripción *</label>
+                    <label for="mixDescripcion" class="form-label fw-bold">Descripción *</label>
                     <textarea
+                      id="mixDescripcion"
                       class="form-control"
                       [class.is-invalid]="isFieldInvalid('descripcion')"
                       formControlName="descripcion"
@@ -311,7 +313,7 @@
                           </button>
                           <button
                             class="btn btn-outline-danger"
-                            (click)="deleteMix(mix.id!)"
+                            (click)="confirmDeleteMix(mix)"
                             title="Eliminar mix">
                             <i class="fas fa-trash"></i>
                           </button>
@@ -488,7 +490,7 @@
                             [class.btn-outline-warning]="usuario.activo"
                             [class.btn-outline-success]="!usuario.activo"
                             [disabled]="usuario.rol === 'admin'"
-                            (click)="toggleUsuarioActivo(usuario.id!)"
+                            (click)="confirmToggleUsuario(usuario)"
                             [title]="usuario.activo ? 'Desactivar usuario' : 'Activar usuario'">
                             <i class="fas" [class.fa-pause]="usuario.activo" [class.fa-play]="!usuario.activo"></i>
                           </button>
@@ -496,8 +498,8 @@
                           <button
                             class="btn btn-outline-info"
                             [disabled]="usuario.rol === 'admin'"
-                            (click)="confirmResetPassword(usuario)"
-                            title="Resetear contraseña a 123456">
+                            (click)="showResetPasswordConfirmation(usuario)"
+                            title="Resetear contraseña">
                             <i class="fas fa-key"></i>
                           </button>
                           <!-- Botón de eliminar -->
@@ -727,7 +729,7 @@
         <h5 class="modal-title" id="deleteUserModalLabel">
           <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelDeleteUsuario()" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="text-center mb-3">
@@ -935,3 +937,201 @@
 <!-- Backdrop del modal -->
 <div class="modal-backdrop fade" [class.show]="showArchivoModal" *ngIf="showArchivoModal"
      (click)="closeArchivoModal()" (keydown.escape)="closeArchivoModal()"></div>
+
+<!-- ============================================
+     MODAL: ACTIVAR/DESACTIVAR USUARIO
+     ============================================ -->
+<div class="modal fade" [class.show]="showToggleUserModal" [style.display]="showToggleUserModal ? 'block' : 'none'"
+     tabindex="-1" *ngIf="showToggleUserModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" [class.bg-warning]="userToToggle?.activo" [class.bg-success]="!userToToggle?.activo">
+        <h5 class="modal-title text-white">
+          <i class="fas" [class.fa-pause]="userToToggle?.activo" [class.fa-play]="!userToToggle?.activo" class="me-2"></i>
+          {{ userToToggle?.activo ? 'Desactivar' : 'Activar' }} Usuario
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelToggleUsuario()"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="userToToggle" class="text-center">
+          <i class="fas fa-user-circle fa-3x mb-3" [class.text-warning]="userToToggle.activo" [class.text-success]="!userToToggle.activo"></i>
+          <h6 class="fw-bold">{{ userToToggle.nombre }}</h6>
+          <p class="text-muted">{{ userToToggle.email }}</p>
+
+          <div class="alert" [class.alert-warning]="userToToggle.activo" [class.alert-success]="!userToToggle.activo">
+            <strong>Acción:</strong> {{ userToToggle.activo ? 'Desactivar' : 'Activar' }} este usuario
+          </div>
+
+          <p class="text-muted" *ngIf="userToToggle.activo">
+            <i class="fas fa-info-circle me-2"></i>
+            Al desactivar este usuario, no podrá iniciar sesión en la aplicación.
+          </p>
+          <p class="text-muted" *ngIf="!userToToggle.activo">
+            <i class="fas fa-info-circle me-2"></i>
+            Al activar este usuario, podrá iniciar sesión nuevamente.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelToggleUsuario()">
+          <i class="fas fa-times me-2"></i>Cancelar
+        </button>
+        <button type="button"
+                class="btn"
+                [class.btn-warning]="userToToggle?.activo"
+                [class.btn-success]="!userToToggle?.activo"
+                (click)="executeToggleUsuario()">
+          <i class="fas" [class.fa-pause]="userToToggle?.activo" [class.fa-play]="!userToToggle?.activo" class="me-2"></i>
+          {{ userToToggle?.activo ? 'Desactivar' : 'Activar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showToggleUserModal" *ngIf="showToggleUserModal"></div>
+
+<!-- ============================================
+     MODAL: RESETEAR CONTRASEÑA
+     ============================================ -->
+<div class="modal fade" [class.show]="showResetPasswordModal" [style.display]="showResetPasswordModal ? 'block' : 'none'"
+     tabindex="-1" *ngIf="showResetPasswordModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title text-white">
+          <i class="fas fa-key me-2"></i>Resetear Contraseña
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelResetPassword()"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="userToResetPassword" class="text-center">
+          <i class="fas fa-envelope fa-3x text-info mb-3"></i>
+          <h6 class="fw-bold">{{ userToResetPassword.nombre }}</h6>
+          <p class="text-muted">{{ userToResetPassword.email }}</p>
+
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Se enviará un email de recuperación</strong>
+          </div>
+
+          <p class="text-muted">
+            El usuario recibirá un correo electrónico con un enlace para restablecer su contraseña.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelResetPassword()">
+          <i class="fas fa-times me-2"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-info text-white" (click)="executeResetPassword()">
+          <i class="fas fa-paper-plane me-2"></i>Enviar Email
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showResetPasswordModal" *ngIf="showResetPasswordModal"></div>
+
+<!-- ============================================
+     MODAL: ELIMINAR MIX
+     ============================================ -->
+<div class="modal fade" [class.show]="showDeleteMixModal" [style.display]="showDeleteMixModal ? 'block' : 'none'"
+     tabindex="-1" *ngIf="showDeleteMixModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title text-white">
+          <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Mix
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelDeleteMix()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-3">
+          <i class="fas fa-music fa-3x text-danger mb-3"></i>
+          <h6 class="fw-bold">⚠️ ADVERTENCIA: Esta acción es irreversible</h6>
+        </div>
+
+        <div *ngIf="mixToDelete" class="alert alert-warning">
+          <strong>Mix a eliminar:</strong><br>
+          <i class="fas fa-code me-2"></i>Código: {{ mixToDelete.codigo }}<br>
+          <i class="fas fa-music me-2"></i>{{ mixToDelete.titulo }}<br>
+          <i class="fas fa-file me-2"></i>{{ mixToDelete.archivos.length }} archivos
+        </div>
+
+        <p class="text-muted">
+          Al eliminar este mix:
+        </p>
+        <ul class="text-muted">
+          <li>Se eliminarán todos sus archivos asociados</li>
+          <li>Se removerán todos los permisos de acceso de usuarios</li>
+          <li>No podrá recuperar esta información</li>
+        </ul>
+
+        <div class="mt-3">
+          <label for="deleteMixConfirmationInput" class="form-label fw-bold text-danger">
+            Para confirmar, escribe <code>ELIMINAR</code> en el campo de abajo:
+          </label>
+          <input
+            id="deleteMixConfirmationInput"
+            type="text"
+            class="form-control"
+            [(ngModel)]="deleteMixConfirmationText"
+            placeholder="Escribe ELIMINAR para confirmar"
+            autocomplete="off">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelDeleteMix()">
+          <i class="fas fa-times me-2"></i>Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          [disabled]="deleteMixConfirmationText !== 'ELIMINAR'"
+          (click)="executeDeleteMix()">
+          <i class="fas fa-trash me-2"></i>Eliminar Mix
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showDeleteMixModal" *ngIf="showDeleteMixModal"></div>
+
+<!-- ============================================
+     MODAL: ÉXITO - EMAIL DE RECUPERACIÓN ENVIADO
+     ============================================ -->
+<div class="modal fade" [class.show]="showPasswordResetSuccessModal" [style.display]="showPasswordResetSuccessModal ? 'block' : 'none'"
+     tabindex="-1" *ngIf="showPasswordResetSuccessModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title text-white">
+          <i class="fas fa-check-circle me-2"></i>Email Enviado Exitosamente
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closePasswordResetSuccessModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="resetPasswordSuccessData" class="text-center">
+          <i class="fas fa-envelope-circle-check fa-4x text-success mb-3"></i>
+          <h5 class="fw-bold text-success mb-3">✅ Email de recuperación enviado exitosamente</h5>
+
+          <div class="alert alert-success">
+            <strong>Enviado a:</strong><br>
+            <i class="fas fa-user me-2"></i>{{ resetPasswordSuccessData.userName }}<br>
+            <i class="fas fa-envelope me-2"></i>{{ resetPasswordSuccessData.userEmail }}
+          </div>
+
+          <p class="text-muted">
+            El usuario recibirá un link para crear su nueva contraseña.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" (click)="closePasswordResetSuccessModal()">
+          <i class="fas fa-check me-2"></i>Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showPasswordResetSuccessModal" *ngIf="showPasswordResetSuccessModal"></div>

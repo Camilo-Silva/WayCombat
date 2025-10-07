@@ -19,10 +19,22 @@ export class SupabaseService {
     console.log('🚀 SupabaseService: Inicializando...');
     console.log('📍 Supabase URL:', environment.supabase.url);
 
-    // Inicializar cliente de Supabase
+    // Inicializar cliente de Supabase con configuración para evitar lock timeout
     this.supabase = createClient(
       environment.supabase.url,
-      environment.supabase.anonKey
+      environment.supabase.anonKey,
+      {
+        auth: {
+          // Aumentar timeout para evitar NavigatorLockAcquireTimeoutError
+          // Útil cuando hay múltiples pestañas abiertas
+          storageKey: 'sb-auth-token',
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true,
+          // Configuración de lock para evitar timeouts
+          flowType: 'pkce'
+        }
+      }
     );
 
     console.log('✅ SupabaseService: Cliente inicializado');

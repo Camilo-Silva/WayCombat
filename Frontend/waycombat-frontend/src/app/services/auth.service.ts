@@ -41,9 +41,28 @@ export class AuthService {
   private async initializeUser(): Promise<void> {
     try {
       console.log('🔍 AuthService: Inicializando usuario...');
-      const { data: { user }, error } = await this.supabase.client.auth.getUser();
+
+      // Agregar timeout para evitar bloqueos indefinidos
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout getting user')), 5000)
+      );
+
+      const userPromise = this.supabase.client.auth.getUser();
+
+      const { data: { user }, error } = await Promise.race([
+        userPromise,
+        timeoutPromise
+      ]) as any;
 
       if (error) {
+        // AuthSessionMissingError es NORMAL cuando no hay usuario autenticado
+        if (error.name === 'AuthSessionMissingError' || error.message?.includes('Auth session missing')) {
+          console.log('ℹ️ No hay sesión activa (usuario no autenticado)');
+          this.currentUserSubject.next(null);
+          return;
+        }
+
+        // Otros errores sí son problemáticos
         console.error('❌ Error obteniendo usuario de Supabase:', error);
         this.currentUserSubject.next(null);
         return;
@@ -56,7 +75,15 @@ export class AuthService {
         console.log('ℹ️ No hay usuario autenticado');
         this.currentUserSubject.next(null);
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Manejo específico para NavigatorLockAcquireTimeoutError
+      if (error?.message?.includes('NavigatorLock') || error?.message?.includes('Timeout')) {
+        console.warn('⚠️ Lock timeout detectado - Reintentando en 1 segundo...');
+        // Reintentar después de un breve delay
+        setTimeout(() => this.initializeUser(), 1000);
+        return;
+      }
+
       console.error('❌ Error initializing user:', error);
       this.currentUserSubject.next(null);
     }
@@ -179,35 +206,45 @@ export class AuthService {
 
   async login(request: LoginRequest): Promise<{ success: boolean; message?: string; data?: AuthResponse }> {
     try {
+      console.log('🔐 Intentando login para:', request.email);
+
       const { data, error } = await this.supabase.client.auth.signInWithPassword({
         email: request.email,
         password: request.contraseña
       });
 
       if (error) {
+        console.warn('⚠️ Error en login:', error.message);
         return { success: false, message: error.message };
       }
 
       if (!data.user) {
+        console.warn('⚠️ Login sin usuario');
         return { success: false, message: 'Credenciales inválidas' };
       }
+
+      console.log('✅ Login exitoso en Supabase Auth para:', data.user.email);
 
       // Cargar perfil del usuario
       await this.loadUserProfile(data.user.id);
       const usuario = this.currentUserSubject.value;
 
       if (!usuario) {
+        console.error('❌ No se pudo cargar el perfil del usuario');
         return { success: false, message: 'Error al cargar perfil de usuario' };
       }
 
       // Verificar si el usuario está activo
       if (!usuario.activo) {
+        console.warn('⚠️ Usuario desactivado:', usuario.email);
         await this.logout();
         return { success: false, message: 'Usuario desactivado. Contacte al administrador.' };
       }
 
+      console.log('🎉 Login completo para:', usuario.nombre);
       return { success: true, data: { usuario } };
     } catch (error: any) {
+      console.error('❌ Error inesperado en login:', error);
       return { success: false, message: error?.message || 'Error al iniciar sesión' };
     }
   }

@@ -1,14 +1,13 @@
 import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { FormsModule } from '@angular/forms'; // Para ngModel en el modal
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { MixService } from '../../services/mix.service';
 import { Usuario } from '../../models/auth.models';
-import { Mix, ArchivoMix, CreateMixRequest, UpdateMixRequest, CreateArchivoMixRequest, UpdateArchivoMixRequest } from '../../models/mix.models';
+import { Mix, CreateMixRequest, UpdateMixRequest, CreateArchivoMixRequest } from '../../models/mix.models';
 
 interface UsuarioMixPermiso {
   usuarioId: string; // UUID
@@ -56,6 +55,19 @@ export class AdminDashboardComponent implements OnInit {
   // Modal de eliminación de usuario
   userToDelete: Usuario | null = null;
   deleteConfirmationText: string = '';
+
+  // Modales de confirmación
+  showToggleUserModal = false;
+  userToToggle: Usuario | null = null;
+  showResetPasswordModal = false;
+  userToResetPassword: Usuario | null = null;
+  showDeleteMixModal = false;
+  mixToDelete: Mix | null = null;
+  deleteMixConfirmationText: string = '';
+
+  // Modal de éxito después de enviar email
+  showPasswordResetSuccessModal = false;
+  resetPasswordSuccessData: { userName: string; userEmail: string } | null = null;
 
   // Modal de agregar archivo
   showArchivoModal = false;
@@ -552,25 +564,44 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
-  async deleteMix(mixId: string): Promise<void> {
-    if (!confirm('¿Estás seguro de que quieres eliminar este mix?')) {
+  // ====== MODAL: ELIMINAR MIX ======
+  confirmDeleteMix(mix: Mix): void {
+    this.mixToDelete = mix;
+    this.deleteMixConfirmationText = '';
+    this.showDeleteMixModal = true;
+  }
+
+  cancelDeleteMix(): void {
+    this.showDeleteMixModal = false;
+    this.mixToDelete = null;
+    this.deleteMixConfirmationText = '';
+  }
+
+  async executeDeleteMix(): Promise<void> {
+    if (!this.mixToDelete || this.deleteMixConfirmationText !== 'ELIMINAR') {
       return;
     }
 
+    this.showDeleteMixModal = false;
     this.isLoading = true;
+
     try {
-      const result = await this.mixService.deleteMix(mixId);
+      const result = await this.mixService.deleteMix(this.mixToDelete.id!);
 
       if (result.success) {
         console.log('Mix eliminado exitosamente');
         await this.loadMixs();
       } else {
         console.error('Error eliminando mix:', result.message);
+        alert(`Error: ${result.message}`);
       }
     } catch (error) {
       console.error('Error deleting mix:', error);
+      alert('Error al eliminar el mix');
     } finally {
       this.isLoading = false;
+      this.mixToDelete = null;
+      this.deleteMixConfirmationText = '';
     }
   }
 
@@ -619,27 +650,30 @@ export class AdminDashboardComponent implements OnInit {
 
   // ====== GESTIÓN DE USUARIOS ======
 
-  async toggleUsuarioActivo(usuarioId: string): Promise<void> {
+  // ====== MODAL: TOGGLE USUARIO ACTIVO ======
+  confirmToggleUsuario(usuario: Usuario): void {
+    this.userToToggle = usuario;
+    this.showToggleUserModal = true;
+  }
+
+  cancelToggleUsuario(): void {
+    this.showToggleUserModal = false;
+    this.userToToggle = null;
+  }
+
+  async executeToggleUsuario(): Promise<void> {
+    if (!this.userToToggle) {
+      return;
+    }
+
+    this.showToggleUserModal = false;
+
     try {
-      const usuario = this.usuarios.find(u => u.id === usuarioId);
-      if (!usuario) {
-        console.error('Usuario no encontrado');
-        return;
-      }
-
-      // Confirmar la acción
-      const accion = usuario.activo ? 'desactivar' : 'activar';
-      const confirmacion = confirm(`¿Estás seguro de que quieres ${accion} a ${usuario.nombre}?`);
-
-      if (!confirmacion) {
-        return;
-      }
-
       // Llamar al servicio
-      const usuarioActualizado = await this.adminService.toggleUsuarioActivo(usuarioId);
+      const usuarioActualizado = await this.adminService.toggleUsuarioActivo(this.userToToggle.id);
 
       // Actualizar el usuario en la lista local
-      const index = this.usuarios.findIndex(u => u.id === usuarioId);
+      const index = this.usuarios.findIndex(u => u.id === this.userToToggle!.id);
       if (index !== -1 && usuarioActualizado) {
         this.usuarios[index] = usuarioActualizado;
       }
@@ -647,39 +681,58 @@ export class AdminDashboardComponent implements OnInit {
       // Sincronizar datos después de cambiar estado del usuario
       this.syncUserMixData();
 
-      console.log(`Usuario ${usuario.nombre} ${usuario.activo ? 'desactivado' : 'activado'} exitosamente`);
+      console.log(`Usuario ${this.userToToggle.nombre} ${this.userToToggle.activo ? 'desactivado' : 'activado'} exitosamente`);
     } catch (error) {
       console.error('Error toggling usuario activo:', error);
       alert('Error al cambiar el estado del usuario. Por favor intenta de nuevo.');
+    } finally {
+      this.userToToggle = null;
     }
   }
 
-  confirmResetPassword(usuario: Usuario): void {
+  // ====== MODAL: RESET PASSWORD ======
+  showResetPasswordConfirmation(usuario: Usuario): void {
     // No permitir resetear contraseñas de administradores
     if (usuario.rol === 'admin') {
       alert('No se puede resetear la contraseña de usuarios administradores.');
       return;
     }
 
-    const confirmation = confirm(
-      `¿Enviar email de recuperación de contraseña a ${usuario.nombre}?\n\n` +
-      `Email: ${usuario.email}\n\n` +
-      `El usuario recibirá un link para crear una nueva contraseña.`
-    );
+    this.userToResetPassword = usuario;
+    this.showResetPasswordModal = true;
+  }
 
-    if (confirmation) {
-      this.sendPasswordResetEmail(usuario.email, usuario.nombre);
+  cancelResetPassword(): void {
+    this.showResetPasswordModal = false;
+    this.userToResetPassword = null;
+  }
+
+  executeResetPassword(): void {
+    if (!this.userToResetPassword) {
+      return;
     }
+
+    this.showResetPasswordModal = false;
+    this.sendPasswordResetEmail(this.userToResetPassword.email, this.userToResetPassword.nombre);
+    this.userToResetPassword = null;
   }
 
   async sendPasswordResetEmail(userEmail: string, userName: string): Promise<void> {
     try {
       await this.adminService.sendPasswordResetEmail(userEmail);
-      alert(`✅ Email de recuperación enviado exitosamente a ${userName} (${userEmail}).\n\nEl usuario recibirá un link para crear su nueva contraseña.`);
+
+      // Mostrar modal de éxito
+      this.resetPasswordSuccessData = { userName, userEmail };
+      this.showPasswordResetSuccessModal = true;
     } catch (error) {
       console.error('Error al enviar email de reset:', error);
       alert('❌ Error al enviar el email de recuperación. Por favor intenta de nuevo.');
     }
+  }
+
+  closePasswordResetSuccessModal(): void {
+    this.showPasswordResetSuccessModal = false;
+    this.resetPasswordSuccessData = null;
   }
 
   confirmDeleteUsuario(usuario: Usuario): void {
