@@ -55,6 +55,14 @@ export class AuthService {
       ]) as any;
 
       if (error) {
+        // Si el usuario del JWT no existe, limpiar sesión corrupta
+        if (error.message?.includes('User from sub claim in JWT does not exist')) {
+          console.warn('⚠️ Token JWT inválido detectado - Limpiando sesión...');
+          await this.supabase.client.auth.signOut();
+          this.currentUserSubject.next(null);
+          return;
+        }
+
         // AuthSessionMissingError es NORMAL cuando no hay usuario autenticado
         if (error.name === 'AuthSessionMissingError' || error.message?.includes('Auth session missing')) {
           console.log('ℹ️ No hay sesión activa (usuario no autenticado)');
@@ -64,6 +72,7 @@ export class AuthService {
 
         // Otros errores sí son problemáticos
         console.error('❌ Error obteniendo usuario de Supabase:', error);
+        await this.supabase.client.auth.signOut(); // Limpiar sesión en caso de error
         this.currentUserSubject.next(null);
         return;
       }
@@ -85,6 +94,7 @@ export class AuthService {
       }
 
       console.error('❌ Error initializing user:', error);
+      await this.supabase.client.auth.signOut(); // Limpiar sesión en caso de error
       this.currentUserSubject.next(null);
     }
   }
@@ -136,6 +146,7 @@ export class AuthService {
   async register(request: RegisterRequest): Promise<{ success: boolean; message?: string; data?: AuthResponse }> {
     try {
       // 1. Crear usuario en Supabase Auth
+      console.log('🔐 Iniciando registro en Supabase Auth...');
       const { data: authData, error: authError } = await this.supabase.client.auth.signUp({
         email: request.email,
         password: request.contraseña,
@@ -147,6 +158,7 @@ export class AuthService {
       });
 
       if (authError) {
+        console.error('❌ Error en auth.signUp:', authError);
         return { success: false, message: authError.message };
       }
 
@@ -154,42 +166,58 @@ export class AuthService {
         return { success: false, message: 'Error al crear usuario' };
       }
 
-      // 2. Crear perfil en tabla usuarios
-      console.log('🔄 Intentando crear perfil para usuario:', authData.user.id);
+      console.log('✅ Usuario creado en Auth:', authData.user.id);
 
-      const { data: profileData, error: profileError } = await this.supabase.client
-        .from('usuarios')
-        .insert({
-          id: authData.user.id,
-          nombre: request.nombre,
-          email: request.email,
-          rol: 'usuario', // Minúscula para coincidir con constraint
-          activo: true,
-          fecha_creacion: new Date().toISOString()
-        })
-        .select()
-        .single();
+      // 2. ESPERAR a que el trigger cree el perfil automáticamente
+      console.log('⏳ Esperando a que el trigger cree el perfil...');
 
-      if (profileError) {
-        console.error('❌ Error creating profile:', profileError);
-        console.error('❌ Error details:', {
-          code: profileError.code,
-          message: profileError.message,
-          details: profileError.details,
-          hint: profileError.hint
-        });
+      let profileData = null;
+      let attempts = 0;
+      const maxAttempts = 20; // 20 intentos = 10 segundos máximo
+      const delayMs = 500; // Esperar 500ms entre intentos
 
-        // Eliminar usuario de auth si falla el perfil
-        await this.supabase.client.auth.signOut();
+      while (attempts < maxAttempts) {
+        attempts++;
 
-        return { success: false, message: `Error al crear perfil: ${profileError.message}` };
+        // Intentar obtener el perfil creado por el trigger
+        const { data, error } = await this.supabase.client
+          .from('usuarios')
+          .select('*')
+          .eq('id', authData.user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error(`❌ Error consultando perfil (intento ${attempts}):`, error);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          continue;
+        }
+
+        if (data) {
+          profileData = data;
+          console.log(`✅ Perfil encontrado en intento ${attempts}:`, profileData);
+          break;
+        }
+
+        console.log(`⏳ Intento ${attempts}/${maxAttempts} - Perfil aún no creado, esperando...`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
       }
 
-      console.log('✅ Perfil creado exitosamente:', profileData);
+      // Si después de todos los intentos no se creó el perfil
+      if (!profileData) {
+        console.error('❌ Timeout: El trigger no creó el perfil a tiempo');
+        await this.supabase.client.auth.signOut();
+        return {
+          success: false,
+          message: 'Error: El perfil no se creó automáticamente. Por favor contacta al administrador.'
+        };
+      }
 
+      console.log('✅ Perfil creado por trigger:', profileData);
+
+      // 3. Crear objeto Usuario y actualizar estado
       const usuario: Usuario = {
         id: profileData.id,
-        codigo: profileData.codigo || 'N/A', // ✅ NUEVO: Código legible
+        codigo: profileData.codigo || 'N/A',
         nombre: profileData.nombre,
         email: profileData.email,
         rol: profileData.rol,
