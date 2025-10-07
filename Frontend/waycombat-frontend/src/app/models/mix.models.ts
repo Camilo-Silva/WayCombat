@@ -1,5 +1,6 @@
 export interface Mix {
   id: string; // UUID
+  codigo: string; // Código legible: "MIX-001", "MIX-002", etc.
   titulo: string;
   descripcion?: string;
   fechaCreacion: Date;

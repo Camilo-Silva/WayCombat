@@ -260,7 +260,7 @@
                 <table class="table table-hover mb-0">
                   <thead class="table-light">
                     <tr>
-                      <th>ID</th>
+                      <th>Código</th>
                       <th>Título</th>
                       <th>Descripción</th>
                       <th>Archivos</th>
@@ -271,7 +271,9 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let mix of mixs">
-                      <td>{{ mix.id }}</td>
+                      <td>
+                        <span class="badge bg-primary">{{ mix.codigo || 'N/A' }}</span>
+                      </td>
                       <td>
                         <strong>{{ mix.titulo }}</strong>
                       </td>
@@ -431,7 +433,7 @@
                 <table class="table table-hover mb-0">
                   <thead class="table-light">
                     <tr>
-                      <th>ID</th>
+                      <th>Código</th>
                       <th>Nombre</th>
                       <th>Email</th>
                       <th>Rol</th>
@@ -443,7 +445,9 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let usuario of usuariosFiltrados" [class.table-danger]="!usuario.activo">
-                      <td>{{ usuario.id }}</td>
+                      <td>
+                        <span class="badge bg-info">{{ usuario.codigo || 'N/A' }}</span>
+                      </td>
                       <td>
                         <div class="d-flex align-items-center">
                           <i class="fas fa-user-circle me-2 text-primary"></i>
@@ -604,8 +608,8 @@
                       <th class="sticky-column text-white">Usuario</th>
                       <th *ngFor="let mix of mixs" class="text-center text-white">
                         <div class="d-flex flex-column align-items-center">
+                          <span class="badge bg-primary mb-1">{{ mix.codigo || 'N/A' }}</span>
                           <strong class="text-white">{{ mix.titulo }}</strong>
-                          <small class="text-white-50">ID: {{ mix.id }}</small>
                         </div>
                       </th>
                     </tr>
@@ -616,7 +620,10 @@
                         <div class="d-flex align-items-center">
                           <i class="fas fa-user me-2"></i>
                           <div>
-                            <div>{{ usuario.nombre }}</div>
+                            <div>
+                              <span class="badge bg-info me-2">{{ usuario.codigo || 'N/A' }}</span>
+                              {{ usuario.nombre }}
+                            </div>
                             <small class="text-muted">{{ usuario.email }}</small>
                           </div>
                         </div>

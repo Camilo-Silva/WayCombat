@@ -1,5 +1,6 @@
 export interface Usuario {
   id: string; // UUID de Supabase
+  codigo: string; // Código legible: "USR-001", "USR-002", etc.
   nombre: string;
   email: string;
   rol: string;
