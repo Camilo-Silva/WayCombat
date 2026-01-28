@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AnimationService } from '../../services/animation.service';
+import { ContactService } from '../../services/contact.service';
 
 @Component({
   selector: 'app-capacitaciones',
@@ -14,6 +15,7 @@ import { AnimationService } from '../../services/animation.service';
 export class CapacitacionesComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private animationService = inject(AnimationService);
+  contactService = inject(ContactService); // Público para usar en template
 
   isAuthenticated: boolean = false;
 

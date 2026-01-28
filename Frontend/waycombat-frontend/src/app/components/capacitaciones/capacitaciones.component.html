@@ -160,13 +160,13 @@
           <p class="lead mb-4 animate-stagger">No dudes en contactarnos</p>
           
           <a 
-            href="https://wa.me/5491127355020" 
+            [href]="contactService.getWhatsAppUrl('Hola! Tengo dudas sobre las capacitaciones de WayCombat. Me gustaría recibir más información sobre los programas disponibles.')" 
             target="_blank" 
             class="btn btn-success btn-lg card-hover-effect animate-stagger">
             <i class="fab fa-whatsapp me-2"></i>CONTACTAR
           </a>
           <div class="mt-3 animate-stagger">
-            <small class="text-muted">+54 9 11 2735-5020</small>
+            <small class="text-muted">{{ contactService.getContactInfo().telefono }}</small>
           </div>
         </div>
       </div>

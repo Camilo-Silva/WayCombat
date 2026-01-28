@@ -52,12 +52,12 @@
         <!-- WhatsApp -->
         <div class="mb-3">
           <a
-            href="https://wa.me/5491127355020"
+            [href]="contactService.getWhatsAppUrl('Hola! Me gustaría obtener información sobre WayCombat y sus programas de entrenamiento.')"
             target="_blank"
             class="btn btn-success btn-sm me-2"
             title="Contactar por WhatsApp">
             <i class="fab fa-whatsapp me-1"></i>
-            +54 9 11 2735-5020
+            {{ contactInfo.telefono }}
           </a>
         </div>
 

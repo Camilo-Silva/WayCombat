@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ContactService } from '../../services/contact.service';
 
 @Component({
   selector: 'app-acceso-instructores',
@@ -15,6 +16,7 @@ export class AccesoInstructoresComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  contactService = inject(ContactService); // Público para usar en template
 
   activeTab: 'login' | 'register' = 'login';
   showPassword = false;

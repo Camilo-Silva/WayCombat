@@ -23,7 +23,10 @@
 
           <div class="text-center">
             <p class="mb-2"><small>¿Necesitas ayuda?</small></p>
-            <a href="https://wa.me/5491127355020" target="_blank" class="btn btn-success btn-sm">
+            <a 
+              [href]="contactService.getWhatsAppUrl('Hola! Necesito ayuda con mi cuenta de WayCombat. No puedo iniciar sesión.')"
+              target="_blank" 
+              class="btn btn-success btn-sm">
               <i class="fab fa-whatsapp me-1"></i>Contactar WhatsApp
             </a>
           </div>
@@ -319,7 +322,7 @@
 
                 <div class="d-grid gap-2">
                   <a
-                    href="https://wa.me/5491127355020?text=Hola,%20necesito%20ayuda%20para%20recuperar%20mi%20contraseña%20de%20WayCombat"
+                    [href]="contactService.getWhatsAppUrl('Hola, necesito ayuda para recuperar mi contraseña de WayCombat')"
                     target="_blank"
                     class="btn btn-success btn-lg">
                     <i class="fab fa-whatsapp me-2"></i>Contactar por WhatsApp

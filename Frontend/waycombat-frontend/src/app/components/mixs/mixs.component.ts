@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MixService } from '../../services/mix.service';
+import { ContactService } from '../../services/contact.service';
 import { Mix, ArchivoMix } from '../../models/mix.models';
 
 @Component({
@@ -16,6 +17,7 @@ export class MixsComponent implements OnInit {
   private authService = inject(AuthService);
   private mixService = inject(MixService);
   private router = inject(Router);
+  contactService = inject(ContactService); // Público para usar en template
 
   isAuthenticated: boolean = false;
   isLoading: boolean = false;

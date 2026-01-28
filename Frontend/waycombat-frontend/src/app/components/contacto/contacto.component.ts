@@ -232,13 +232,8 @@ export class ContactoComponent implements OnInit, OnDestroy {
   }
 
   openWhatsApp(): void {
-    // Número de WhatsApp de WayCombat (puedes cambiarlo por el número real)
-    const phoneNumber = '5491127355020'; // Formato internacional sin + ni espacios
     const message = 'Hola! Me interesa obtener asesoría académica sobre los cursos de WayCombat. ¿Podrían ayudarme a elegir el programa adecuado para mi nivel?';
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-    
-    window.open(whatsappUrl, '_blank');
+    this.contactService.openWhatsApp(message);
   }
 
   openSocialNetwork(network: keyof ContactInfo['redes']): void {

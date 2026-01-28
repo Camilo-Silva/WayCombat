@@ -12,7 +12,8 @@ import { ContactService } from '../../../services/contact.service';
   styleUrls: ['./footer.component.css']
 })
 export class FooterComponent {
-  private contactService = inject(ContactService);
+  // Hacer público el servicio para usarlo en el template
+  contactService = inject(ContactService);
   
   currentYear = new Date().getFullYear();
   
