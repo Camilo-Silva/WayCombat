@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   // CTA Certificación (dinámico desde Supabase)
   ctaTexto   = 'PRÓXIMA FECHA DE CERTIFICACIÓN';
   ctaSublabel = '— Click acá para más info.';
-  ctaActivo  = true;
+  ctaActivo  = false;
 
   constructor(private animationService: AnimationService, private configService: ConfigService) {}
 
@@ -62,7 +62,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         if (item.clave === 'cta_certificacion_activo')   this.ctaActivo   = item.valor === 'true';
       }
     } catch {
-      // Si falla Supabase se muestran los valores por defecto
+      // Si falla Supabase se muestra el botón por defecto
+      this.ctaActivo = true;
     }
   }
   benefits: Benefit[] = [
