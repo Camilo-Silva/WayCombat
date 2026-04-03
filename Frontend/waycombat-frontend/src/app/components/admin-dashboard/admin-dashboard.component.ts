@@ -6,6 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { MixService } from '../../services/mix.service';
+import { GaleriaService, GaleriaItem, CategoriaGaleria } from '../../services/galeria.service';
+import { ConfigService } from '../../services/config.service';
 import { Usuario } from '../../models/auth.models';
 import { Mix, CreateMixRequest, UpdateMixRequest, CreateArchivoMixRequest } from '../../models/mix.models';
 
@@ -27,11 +29,13 @@ export class AdminDashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private adminService = inject(AdminService);
   private mixService = inject(MixService);
+  private galeriaService = inject(GaleriaService);
+  private configService = inject(ConfigService);
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
 
   // Estado de la vista
-  activeTab: 'mixs' | 'usuarios' | 'permisos' = 'mixs';
+  activeTab: 'mixs' | 'usuarios' | 'permisos' | 'galeria' = 'mixs';
   isLoading = false;
   isCreatingMix = false;
   editingMixId: string | null = null; // UUID
@@ -75,6 +79,33 @@ export class AdminDashboardComponent implements OnInit {
   editingArchivoIndex: number | null = null;
   archivosTemporales: any[] = [];
 
+  // ====== GALERÍA ABM ======
+  galeriaItems: GaleriaItem[] = [];
+  galeriaFiltro: string = 'todos';
+  galeriaSearchText: string = '';
+  galeriaItemsFiltrados: GaleriaItem[] = [];
+
+  // Modal galería
+  showGaleriaModal = false;
+  editingGaleriaItem: GaleriaItem | null = null;
+  galeriaForm: FormGroup;
+  galeriaIsUploading = false;
+  galeriaUploadProgress = 0;
+  galeriaSelectedFile: File | null = null;
+  galeriaPreviewUrl: string | null = null;
+  galeriaUseUrl = false;
+
+  // Modal eliminar galería
+  showDeleteGaleriaModal = false;
+  galeriaItemToDelete: GaleriaItem | null = null;
+  deleteGaleriaConfirmText = '';
+
+  // ====== CTA CERTIFICACIÓN ======
+  ctaTexto = 'PRÓXIMA FECHA DE CERTIFICACIÓN';
+  ctaSublabel = '— Click acá para más info.';
+  ctaActivo = true;
+  ctaIsSaving = false;
+
   // Formularios
   mixForm: FormGroup;
 
@@ -92,6 +123,14 @@ export class AdminDashboardComponent implements OnInit {
       tipo: ['audio', [Validators.required]],
       activo: [true]
     });
+
+    this.galeriaForm = this.fb.group({
+      titulo: ['', [Validators.required, Validators.minLength(3)]],
+      descripcion: [''],
+      categoria: ['entrenamientos', [Validators.required]],
+      url: [''],
+      activo: [true]
+    });
   }
 
   ngOnInit(): void {
@@ -99,7 +138,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   // ====== GESTIÓN DE PESTAÑAS ======
-  setActiveTab(tab: 'mixs' | 'usuarios' | 'permisos'): void {
+  setActiveTab(tab: 'mixs' | 'usuarios' | 'permisos' | 'galeria'): void {
     this.activeTab = tab;
     // Ya no cargamos datos condicionalmente, todo se carga al inicio
   }
@@ -112,7 +151,9 @@ export class AdminDashboardComponent implements OnInit {
       await Promise.all([
         this.loadMixs(),
         this.loadUsuarios(),
-        this.loadPermisos()
+        this.loadPermisos(),
+        this.loadGaleria(),
+        this.loadConfig()
       ]);
 
       // Sincronizar datos después de cargar todo
@@ -968,5 +1009,216 @@ export class AdminDashboardComponent implements OnInit {
     // Para Google Drive, podríamos inferir por el nombre del archivo
     // o por defecto asumir audio si no está claro
     return 'audio';
+  }
+
+  // ====== GALERÍA ABM ======
+
+  async loadGaleria(): Promise<void> {
+    try {
+      this.galeriaItems = await this.galeriaService.getAllAdmin();
+      this.applyGaleriaFilters();
+    } catch (error) {
+      console.error('Error cargando galería:', error);
+    }
+  }
+
+  applyGaleriaFilters(): void {
+    let items = [...this.galeriaItems];
+    if (this.galeriaFiltro !== 'todos') {
+      items = items.filter(i => i.categoria === this.galeriaFiltro);
+    }
+    if (this.galeriaSearchText.trim()) {
+      const q = this.galeriaSearchText.toLowerCase();
+      items = items.filter(i =>
+        i.titulo.toLowerCase().includes(q) ||
+        (i.descripcion || '').toLowerCase().includes(q)
+      );
+    }
+    this.galeriaItemsFiltrados = items;
+  }
+
+  openGaleriaModal(item?: GaleriaItem): void {
+    this.editingGaleriaItem = item || null;
+    this.galeriaSelectedFile = null;
+    this.galeriaPreviewUrl = null;
+    this.galeriaUseUrl = false;
+    this.galeriaForm.reset({
+      titulo: item?.titulo || '',
+      descripcion: item?.descripcion || '',
+      categoria: item?.categoria || 'entrenamientos',
+      url: item?.url || '',
+      activo: item?.activo !== false
+    });
+    // Si ya tiene URL y no tiene storage_path, es URL externa
+    if (item?.url && !item?.storage_path) {
+      this.galeriaUseUrl = true;
+      this.galeriaPreviewUrl = item.url;
+    } else if (item?.url) {
+      this.galeriaPreviewUrl = item.url;
+    }
+    this.showGaleriaModal = true;
+  }
+
+  closeGaleriaModal(): void {
+    this.showGaleriaModal = false;
+    this.editingGaleriaItem = null;
+    this.galeriaSelectedFile = null;
+    this.galeriaPreviewUrl = null;
+    this.galeriaUseUrl = false;
+  }
+
+  onGaleriaFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    this.galeriaSelectedFile = file;
+    this.galeriaUseUrl = false;
+    // Preview local
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.galeriaPreviewUrl = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onGaleriaUrlChange(): void {
+    const url = this.galeriaForm.get('url')?.value;
+    if (url) {
+      this.galeriaPreviewUrl = url;
+      this.galeriaSelectedFile = null;
+    }
+  }
+
+  async saveGaleriaItem(): Promise<void> {
+    if (this.galeriaForm.invalid) {
+      this.galeriaForm.markAllAsTouched();
+      return;
+    }
+
+    const formValue = this.galeriaForm.value;
+
+    // Validar que haya imagen (archivo o URL)
+    if (!this.galeriaSelectedFile && !formValue.url && !this.editingGaleriaItem?.url) {
+      alert('Debes subir una imagen o ingresar una URL.');
+      return;
+    }
+
+    this.galeriaIsUploading = true;
+
+    try {
+      let url = formValue.url || this.editingGaleriaItem?.url || '';
+      let storagePath = this.editingGaleriaItem?.storage_path;
+
+      // Si seleccionó archivo, subirlo a Storage
+      if (this.galeriaSelectedFile) {
+        const uploadResult = await this.galeriaService.uploadImage(this.galeriaSelectedFile);
+        if (!uploadResult) {
+          alert('Error al subir la imagen. Verifica que el bucket de Supabase esté configurado.');
+          return;
+        }
+        url = uploadResult.url;
+        storagePath = uploadResult.storagePath;
+      }
+
+      const payload = {
+        titulo: formValue.titulo,
+        descripcion: formValue.descripcion || '',
+        categoria: formValue.categoria as CategoriaGaleria,
+        url,
+        storage_path: storagePath,
+        activo: formValue.activo
+      };
+
+      if (this.editingGaleriaItem) {
+        await this.galeriaService.update(this.editingGaleriaItem.id, payload);
+      } else {
+        await this.galeriaService.create(payload);
+      }
+
+      await this.loadGaleria();
+      this.closeGaleriaModal();
+    } catch (error: any) {
+      console.error('Error guardando item de galería:', error);
+      alert('Error al guardar: ' + (error?.message || 'Error desconocido'));
+    } finally {
+      this.galeriaIsUploading = false;
+    }
+  }
+
+  confirmDeleteGaleria(item: GaleriaItem): void {
+    this.galeriaItemToDelete = item;
+    this.deleteGaleriaConfirmText = '';
+    this.showDeleteGaleriaModal = true;
+  }
+
+  cancelDeleteGaleria(): void {
+    this.showDeleteGaleriaModal = false;
+    this.galeriaItemToDelete = null;
+    this.deleteGaleriaConfirmText = '';
+  }
+
+  async executeDeleteGaleria(): Promise<void> {
+    if (!this.galeriaItemToDelete || this.deleteGaleriaConfirmText !== 'ELIMINAR') return;
+    this.showDeleteGaleriaModal = false;
+    this.isLoading = true;
+    try {
+      await this.galeriaService.delete(this.galeriaItemToDelete.id);
+      await this.loadGaleria();
+    } catch (error) {
+      console.error('Error eliminando imagen:', error);
+      alert('Error al eliminar la imagen.');
+    } finally {
+      this.isLoading = false;
+      this.galeriaItemToDelete = null;
+    }
+  }
+
+  getCategoriaBadgeClass(categoria: string): string {
+    switch (categoria) {
+      case 'entrenamientos': return 'bg-primary';
+      case 'jornada-waycombat': return 'bg-warning text-dark';
+      case 'eventos': return 'bg-success';
+      default: return 'bg-secondary';
+    }
+  }
+
+  getCategoriaLabel(categoria: string): string {
+    switch (categoria) {
+      case 'entrenamientos': return 'Entrenamiento';
+      case 'jornada-waycombat': return 'Jornada WayCombat';
+      case 'eventos': return 'Eventos';
+      default: return categoria;
+    }
+  }
+
+  // ====== CONFIGURACIÓN CTA ======
+
+  async loadConfig(): Promise<void> {
+    try {
+      const items = await this.configService.getAll();
+      for (const item of items) {
+        if (item.clave === 'cta_certificacion_texto')    this.ctaTexto    = item.valor;
+        if (item.clave === 'cta_certificacion_sublabel') this.ctaSublabel = item.valor;
+        if (item.clave === 'cta_certificacion_activo')   this.ctaActivo   = item.valor === 'true';
+      }
+    } catch (error) {
+      console.error('Error cargando configuración:', error);
+    }
+  }
+
+  async saveCta(): Promise<void> {
+    this.ctaIsSaving = true;
+    try {
+      await this.configService.upsertMany([
+        { clave: 'cta_certificacion_texto',    valor: this.ctaTexto,                activo: true },
+        { clave: 'cta_certificacion_sublabel', valor: this.ctaSublabel,             activo: true },
+        { clave: 'cta_certificacion_activo',   valor: String(this.ctaActivo),       activo: true }
+      ]);
+    } catch (error) {
+      console.error('Error guardando CTA:', error);
+      alert('Error al guardar la configuración.');
+    } finally {
+      this.ctaIsSaving = false;
+    }
   }
 }

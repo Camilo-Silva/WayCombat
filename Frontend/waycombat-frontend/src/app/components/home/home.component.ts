@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AnimationService } from '../../services/animation.service';
+import { ConfigService } from '../../services/config.service';
 
 interface Benefit {
   icon: string;
@@ -25,9 +26,17 @@ interface Director {
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-  constructor(private animationService: AnimationService) {}
+  // CTA Certificación (dinámico desde Supabase)
+  ctaTexto   = 'PRÓXIMA FECHA DE CERTIFICACIÓN';
+  ctaSublabel = '— Click acá para más info.';
+  ctaActivo  = true;
+
+  constructor(private animationService: AnimationService, private configService: ConfigService) {}
 
   ngOnInit(): void {
+    // Cargar configuración dinámica del CTA
+    this.loadCtaConfig();
+
     // Respetar preferencias de accesibilidad
     this.animationService.respectMotionPreference();
 
@@ -42,6 +51,19 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.animationService.cleanup();
+  }
+
+  private async loadCtaConfig(): Promise<void> {
+    try {
+      const items = await this.configService.getAll();
+      for (const item of items) {
+        if (item.clave === 'cta_certificacion_texto')    this.ctaTexto    = item.valor;
+        if (item.clave === 'cta_certificacion_sublabel') this.ctaSublabel = item.valor;
+        if (item.clave === 'cta_certificacion_activo')   this.ctaActivo   = item.valor === 'true';
+      }
+    } catch {
+      // Si falla Supabase se muestran los valores por defecto
+    }
   }
   benefits: Benefit[] = [
     {
