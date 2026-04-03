@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GaleriaService } from '../../services/galeria.service';
 
 interface GalleryItem {
   id: number;
@@ -27,8 +28,8 @@ export class GaleriaComponent implements OnInit {
   selectedFilter: string = 'todos';
   isLoading: boolean = true;
   selectedItem: GalleryItem | null = null;
-  
-  // Datos mock de la galería
+
+  // Se mantiene el array local como fallback estático por compatibilidad con el template
   galleryItems: GalleryItem[] = [
     {
       id: 1,
@@ -619,18 +620,38 @@ export class GaleriaComponent implements OnInit {
 
   filteredItems: GalleryItem[] = [];
 
+  constructor(private galeriaService: GaleriaService) {}
+
   ngOnInit(): void {
     this.loadGallery();
   }
 
-  private loadGallery(): void {
+  private async loadGallery(): Promise<void> {
     this.isLoading = true;
-    
-    // Simular carga
-    setTimeout(() => {
-      this.filteredItems = [...this.galleryItems];
+    try {
+      const items = await this.galeriaService.getAll();
+      if (items.length > 0) {
+        this.galleryItems = items.map((item, index) => ({
+          id: index + 1,
+          titulo: item.titulo,
+          descripcion: item.descripcion || '',
+          tipo: 'imagen' as const,
+          categoria: item.categoria as GalleryItem['categoria'],
+          url: item.url,
+          thumbnail: item.url,
+          fecha: new Date(item.fecha_creacion),
+          visualizaciones: 0,
+          favorito: false,
+          descargable: false
+        }));
+      }
+      this.filterGallery(this.selectedFilter);
+    } catch (error) {
+      console.error('Error cargando galería desde Supabase, usando datos locales:', error);
+      this.filterGallery(this.selectedFilter);
+    } finally {
       this.isLoading = false;
-    }, 500);
+    }
   }
 
   filterGallery(filter: string): void {

@@ -50,6 +50,15 @@
             <i class="fas fa-key me-2"></i>Asignación de Permisos
           </button>
         </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            [class.active]="activeTab === 'galeria'"
+            (click)="setActiveTab('galeria')"
+            type="button">
+            <i class="fas fa-images me-2"></i>Galería
+          </button>
+        </li>
       </ul>
     </div>
   </div>
@@ -716,6 +725,148 @@
       </div>
     </div>
 
+    <!-- ========== PESTAÑA: GALERÍA ========== -->
+    <div *ngIf="activeTab === 'galeria'" class="tab-pane fade show active">
+      <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <h5 class="mb-0 text-primary-blue">
+            <i class="fas fa-images me-2"></i>Gestión de Galería
+          </h5>
+          <button class="btn btn-way-primary" (click)="openGaleriaModal()">
+            <i class="fas fa-plus me-2"></i>Agregar Imagen
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== CONFIGURACIÓN CTA CERTIFICACIÓN ===== -->
+      <div class="card shadow-sm mb-4 border-start border-success border-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">
+            <i class="fab fa-whatsapp text-success me-2"></i>Botón CTA — Próxima Certificación
+          </h6>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="ctaActivo"
+                   [(ngModel)]="ctaActivo">
+            <label class="form-check-label fw-bold" for="ctaActivo"
+                   [class.text-success]="ctaActivo" [class.text-muted]="!ctaActivo">
+              {{ ctaActivo ? 'Visible' : 'Oculto' }}
+            </label>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+              <label class="form-label fw-bold small">Título principal</label>
+              <input type="text" class="form-control" [(ngModel)]="ctaTexto"
+                     placeholder="PRÓXIMA FECHA DE CERTIFICACIÓN">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label fw-bold small">Subtexto</label>
+              <input type="text" class="form-control" [(ngModel)]="ctaSublabel"
+                     placeholder="— Click acá para más info.">
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-success w-100" (click)="saveCta()" [disabled]="ctaIsSaving">
+                <span *ngIf="ctaIsSaving"><span class="spinner-border spinner-border-sm me-1"></span></span>
+                <span *ngIf="!ctaIsSaving"><i class="fas fa-save me-1"></i></span>
+                Guardar
+              </button>
+            </div>
+          </div>
+          <!-- Preview del botón -->
+          <div class="mt-3 rounded overflow-hidden" style="background: rgba(0,0,0,0.55) url('assets/images/Portada.png') center/cover no-repeat; background-blend-mode: darken;">
+            <div class="d-flex flex-column align-items-center justify-content-center py-4 px-3" style="backdrop-filter: blur(2px);">
+              <p class="text-white-50 small mb-3" style="letter-spacing:0.1em; text-transform:uppercase; font-size:0.7rem;">Previsualización en el sitio</p>
+              <a class="btn-cta-certificacion d-inline-flex"
+                 [style.opacity]="ctaActivo ? 1 : 0.3"
+                 style="pointer-events:none; text-decoration:none;">
+                <i class="fab fa-whatsapp me-2"></i>
+                <span class="cta-label">{{ ctaTexto || 'PRÓXIMA FECHA DE CERTIFICACIÓN' }}</span>
+                <span class="cta-sublabel">&nbsp;{{ ctaSublabel }}</span>
+              </a>
+              <span *ngIf="!ctaActivo" class="mt-3 badge bg-secondary px-3 py-2">
+                <i class="fas fa-eye-slash me-1"></i>Oculto en el sitio
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ===== FIN CTA ===== -->
+
+      <!-- Filtros galería -->
+      <div class="row mb-4 g-3 align-items-end">
+        <div class="col-md-5">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control" placeholder="Buscar por título..."
+                   [(ngModel)]="galeriaSearchText" (ngModelChange)="applyGaleriaFilters()">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <select class="form-select" [(ngModel)]="galeriaFiltro" (ngModelChange)="applyGaleriaFilters()">
+            <option value="todos">Todas las categorías</option>
+            <option value="entrenamientos">Entrenamientos</option>
+            <option value="jornada-waycombat">Jornada WayCombat</option>
+            <option value="eventos">Eventos</option>
+          </select>
+        </div>
+        <div class="col-md-3 text-muted small">
+          Mostrando {{ galeriaItemsFiltrados.length }} / {{ galeriaItems.length }} imágenes
+        </div>
+      </div>
+
+      <!-- Grid de imágenes -->
+      <div class="row g-3" *ngIf="!isLoading && galeriaItemsFiltrados.length > 0">
+        <div class="col-lg-3 col-md-4 col-sm-6" *ngFor="let item of galeriaItemsFiltrados">
+          <div class="card h-100 shadow-sm border-0 position-relative">
+            <!-- Badge activo/inactivo -->
+            <span class="position-absolute top-0 start-0 m-2 badge"
+                  [class.bg-success]="item.activo" [class.bg-secondary]="!item.activo"
+                  style="z-index:2">
+              {{ item.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+            <!-- Badge categoría -->
+            <span class="position-absolute top-0 end-0 m-2 badge"
+                  [ngClass]="getCategoriaBadgeClass(item.categoria)"
+                  style="z-index:2">
+              {{ getCategoriaLabel(item.categoria) }}
+            </span>
+            <img [src]="item.url" [alt]="item.titulo"
+                 class="card-img-top"
+                 style="height:180px; object-fit:cover;"
+                 onerror="this.src='assets/images/default-gallery.jpg'">
+            <div class="card-body p-2">
+              <p class="card-title fw-bold mb-1 small text-truncate" [title]="item.titulo">{{ item.titulo }}</p>
+              <p class="card-text text-muted" style="font-size:0.75rem; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
+                {{ item.descripcion || '—' }}
+              </p>
+            </div>
+            <div class="card-footer p-2 d-flex gap-2 justify-content-end bg-transparent border-0">
+              <button class="btn btn-sm btn-outline-primary" (click)="openGaleriaModal(item)" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="confirmDeleteGaleria(item)" title="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado cargando -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Cargando galería...</p>
+      </div>
+
+      <!-- Sin resultados -->
+      <div *ngIf="!isLoading && galeriaItemsFiltrados.length === 0" class="text-center py-5">
+        <i class="fas fa-images fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No hay imágenes</h5>
+        <p class="text-muted">Agrega tu primera imagen con el botón de arriba.</p>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1135,3 +1286,192 @@
   </div>
 </div>
 <div class="modal-backdrop fade" [class.show]="showPasswordResetSuccessModal" *ngIf="showPasswordResetSuccessModal"></div>
+
+<!-- ============================================
+     MODAL: CREAR / EDITAR IMAGEN DE GALERÍA
+     ============================================ -->
+<div class="modal fade" [class.show]="showGaleriaModal" [style.display]="showGaleriaModal ? 'block' : 'none'"
+     tabindex="-1" *ngIf="showGaleriaModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title text-white">
+          <i class="fas fa-image me-2"></i>
+          {{ editingGaleriaItem ? 'Editar Imagen' : 'Agregar Nueva Imagen' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeGaleriaModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="galeriaForm">
+
+          <!-- Título -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Título *</label>
+            <input type="text" class="form-control"
+                   [class.is-invalid]="galeriaForm.get('titulo')?.invalid && galeriaForm.get('titulo')?.touched"
+                   formControlName="titulo" placeholder="Ej: Jornada WayCombat 2025">
+            <div class="invalid-feedback">El título es requerido (mínimo 3 caracteres)</div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Descripción</label>
+            <textarea class="form-control" rows="2" formControlName="descripcion"
+                      placeholder="Descripción opcional de la imagen"></textarea>
+          </div>
+
+          <!-- Categoría -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Categoría *</label>
+            <select class="form-select"
+                    [class.is-invalid]="galeriaForm.get('categoria')?.invalid && galeriaForm.get('categoria')?.touched"
+                    formControlName="categoria">
+              <option value="entrenamientos">
+                <i class="fas fa-dumbbell"></i> Entrenamientos
+              </option>
+              <option value="jornada-waycombat">Jornada WayCombat</option>
+              <option value="eventos">Eventos</option>
+            </select>
+          </div>
+
+          <!-- Imagen: archivo o URL -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Imagen *</label>
+
+            <!-- Toggle archivo / URL -->
+            <div class="d-flex gap-3 mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="modoArchivo"
+                       [checked]="!galeriaUseUrl"
+                       (change)="galeriaUseUrl = false">
+                <label class="form-check-label" for="modoArchivo">
+                  <i class="fas fa-upload me-1"></i>Subir archivo
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="modoUrl"
+                       [checked]="galeriaUseUrl"
+                       (change)="galeriaUseUrl = true">
+                <label class="form-check-label" for="modoUrl">
+                  <i class="fas fa-link me-1"></i>URL externa
+                </label>
+              </div>
+            </div>
+
+            <!-- Subir archivo -->
+            <div *ngIf="!galeriaUseUrl">
+              <input type="file" class="form-control" accept="image/*"
+                     (change)="onGaleriaFileSelected($event)">
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>
+                Formatos: JPG, PNG, WebP, GIF. Máx. 5 MB. Se sube a Supabase Storage.
+              </div>
+            </div>
+
+            <!-- URL externa -->
+            <div *ngIf="galeriaUseUrl">
+              <input type="url" class="form-control" formControlName="url"
+                     placeholder="https://..." (input)="onGaleriaUrlChange()">
+            </div>
+
+            <!-- Preview -->
+            <div *ngIf="galeriaPreviewUrl" class="mt-3 text-center">
+              <img [src]="galeriaPreviewUrl" alt="Preview"
+                   class="img-fluid rounded shadow-sm"
+                   style="max-height:200px; object-fit:cover;"
+                   onerror="this.style.display='none'">
+            </div>
+          </div>
+
+          <!-- Estado activo -->
+          <div class="mb-2">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="galeriaActivo"
+                     formControlName="activo">
+              <label class="form-check-label fw-bold" for="galeriaActivo">
+                Imagen activa (visible en la galería pública)
+              </label>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeGaleriaModal()"
+                [disabled]="galeriaIsUploading">
+          <i class="fas fa-times me-1"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveGaleriaItem()"
+                [disabled]="galeriaIsUploading">
+          <span *ngIf="galeriaIsUploading">
+            <span class="spinner-border spinner-border-sm me-1"></span>Guardando...
+          </span>
+          <span *ngIf="!galeriaIsUploading">
+            <i class="fas fa-save me-1"></i>
+            {{ editingGaleriaItem ? 'Actualizar' : 'Agregar' }} Imagen
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showGaleriaModal" *ngIf="showGaleriaModal"
+     (click)="closeGaleriaModal()"></div>
+
+<!-- ============================================
+     MODAL: ELIMINAR IMAGEN DE GALERÍA
+     ============================================ -->
+<div class="modal fade" [class.show]="showDeleteGaleriaModal" [style.display]="showDeleteGaleriaModal ? 'block' : 'none'"
+     tabindex="-1" *ngIf="showDeleteGaleriaModal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title text-white">
+          <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Imagen
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelDeleteGaleria()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-3">
+          <i class="fas fa-image fa-3x text-danger mb-3"></i>
+          <h6 class="fw-bold">⚠️ ADVERTENCIA: Esta acción es irreversible</h6>
+        </div>
+
+        <div *ngIf="galeriaItemToDelete" class="alert alert-warning">
+          <strong>Imagen a eliminar:</strong><br>
+          <i class="fas fa-heading me-2"></i>{{ galeriaItemToDelete.titulo }}<br>
+          <i class="fas fa-tag me-2"></i>{{ getCategoriaLabel(galeriaItemToDelete.categoria) }}
+        </div>
+
+        <div *ngIf="galeriaItemToDelete" class="text-center mb-3">
+          <img [src]="galeriaItemToDelete.url" alt="preview"
+               class="img-fluid rounded" style="max-height:120px; object-fit:cover;"
+               onerror="this.style.display='none'">
+        </div>
+
+        <div class="mt-3">
+          <label class="form-label fw-bold text-danger">
+            Para confirmar, escribe <code>ELIMINAR</code>:
+          </label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="deleteGaleriaConfirmText"
+                 placeholder="Escribe ELIMINAR para confirmar"
+                 autocomplete="off">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelDeleteGaleria()">
+          <i class="fas fa-times me-2"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-danger"
+                [disabled]="deleteGaleriaConfirmText !== 'ELIMINAR'"
+                (click)="executeDeleteGaleria()">
+          <i class="fas fa-trash me-2"></i>Eliminar Imagen
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showDeleteGaleriaModal" *ngIf="showDeleteGaleriaModal"></div>

@@ -7,6 +7,16 @@
     <div class="row align-items-center" style="min-height: 60vh;">
       <div class="col-lg-6">
         <div class="hero-content animate-slide-left animate-gpu">
+          <!-- CTA Certificación WhatsApp -->
+          <a *ngIf="ctaActivo"
+            href="https://wa.me/5491171342320"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-cta-certificacion mb-4 d-inline-flex">
+            <i class="fab fa-whatsapp me-2"></i>
+            <span class="cta-label">{{ ctaTexto }}</span>
+            <span class="cta-sublabel">&nbsp;{{ ctaSublabel }}</span>
+          </a>
           <h1 class="hero-title text-white">WAY COMBAT</h1>
           <p class="hero-subtitle text-white">Programa de Fitness de combate</p>
           <p class="lead mb-4 text-white">
